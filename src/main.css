@@ -1,0 +1,21 @@
+@font-face {
+    font-family: 'Aptos';
+    src: url('./assets/fonts/aptos.ttf');
+}
+
+body {
+    font-family: 'Aptos';
+}
+
+.toast-message {
+    color: black;
+    font-family: 'Aptos';
+}
+
+.toast-message .Toastify__progress-bar {
+    background: black;
+}
+
+.toast-message .Toastify__toast-icon svg {
+    fill: black;
+}
