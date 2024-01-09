@@ -21,6 +21,10 @@ function Routes() {
             element: <Dashboard />,
             children: [
                 {
+                    path: '',
+                    element: <Panel />,
+                },
+                {
                     path: 'panel',
                     element: <Panel />,
                 },

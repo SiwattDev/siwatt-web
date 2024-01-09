@@ -19,7 +19,10 @@ const useFirebase = () => {
                     if (!doc.exists()) reject('No such document!')
                     else resolve(doc.data())
                 })
-                .catch((error) => reject(error))
+                .catch((error) => {
+                    console.error(error)
+                    reject(error)
+                })
         })
     }
 
@@ -30,7 +33,10 @@ const useFirebase = () => {
                 .then((docs) => {
                     resolve(docs.data.map((doc) => doc.data()))
                 })
-                .catch((error) => reject(error))
+                .catch((error) => {
+                    console.error(error)
+                    reject(error)
+                })
         })
     }
 
@@ -39,11 +45,14 @@ const useFirebase = () => {
             if (id) {
                 setDoc(doc(db, path, id), data)
                     .then(() => resolve(id))
-                    .catch((err) => reject(err))
+                    .catch((error) => reject(error))
             } else {
                 addDoc(collection(db, path), data)
                     .then((docRef) => resolve(docRef))
-                    .catch((err) => reject(err))
+                    .catch((error) => {
+                        console.error(error)
+                        reject(error)
+                    })
             }
         })
     }
@@ -52,7 +61,10 @@ const useFirebase = () => {
         return new Promise((resolve, reject) => {
             updateDoc(doc(db, path, id), data)
                 .then(() => resolve(true))
-                .catch((err) => reject(err))
+                .catch((error) => {
+                    console.error(error)
+                    reject(error)
+                })
         })
     }
 
@@ -60,7 +72,10 @@ const useFirebase = () => {
         return new Promise((resolve, reject) => {
             deleteDoc(doc(db, path, id))
                 .then(() => resolve(''))
-                .then((err) => reject(err))
+                .catch((error) => {
+                    console.error(error)
+                    reject(error)
+                })
         })
     }
 

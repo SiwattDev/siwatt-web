@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
@@ -7,8 +6,8 @@ import IconLogo from '../../../assets/icon-logo.png'
 import Illustration from '../../../assets/login.png'
 import TextLogo from '../../../assets/logo.png'
 import { UserContext } from '../../../contexts/userContext'
+import useAuth from '../../../hooks/useAuth'
 import Input from '../../template/global/Input'
-import { baseApiUrl, userKey } from './../../../global'
 
 const AuthContainer = styled.div`
     display: flex;
@@ -51,11 +50,6 @@ const Logo = styled.div`
     gap: 10px;
 `
 
-const Label = styled.p`
-    margin: 0px 0px 3px 0px;
-    font-weight: bold;
-`
-
 const Button = styled.button`
     border: none;
     background: #0656b4;
@@ -76,6 +70,7 @@ function Auth() {
     const { setUser } = useContext(UserContext)
     const navigate = useNavigate()
     const params = useParams()
+    const { loginInUser } = useAuth()
 
     useEffect(() => {
         console.log(email, password)
@@ -92,27 +87,14 @@ function Auth() {
     }
 
     const login = () => {
-        console.log('Tentando fazer login')
-        console.log(email, password)
-        axios
-            .post(`${baseApiUrl}/login`, {
-                email,
-                password,
-            })
+        loginInUser(email, password)
             .then((user) => {
                 showToastMessage('success', 'Usuário logado com sucesso')
-                setUser(user.data)
-                localStorage.setItem(userKey, JSON.stringify(user.data))
+                setUser(user)
                 if (params.redirect_url) navigate(params.redirect_url)
                 else navigate('/dashboard')
             })
-            .catch((e) => {
-                showToastMessage(
-                    'error',
-                    'Ops! Estamos com problemas, tente novamente mais tarde'
-                )
-                console.error(e)
-            })
+            .catch((e) => showToastMessage('error', e))
     }
 
     return (
@@ -157,18 +139,18 @@ function Auth() {
                     <h1>Entre na sua conta</h1>
                 </div>
                 <div className='w-100 mt-3 mt-md-5'>
-                    <Label>E-mail:</Label>
                     <Input
                         type='text'
                         placeholder='Digite seu e-mail'
+                        label='E-mail:'
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
                     <div className='m-4'></div>
-                    <Label>Senha:</Label>
                     <Input
                         type='text'
                         placeholder='Informe sua senha'
+                        label='Senha:'
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />

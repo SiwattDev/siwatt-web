@@ -1,5 +1,10 @@
 import styled from 'styled-components'
 
+const Label = styled.p`
+    margin: 0px 0px 3px 0px;
+    font-weight: bold;
+`
+
 const InputComponent = styled.input`
     border: none;
     border-radius: 7px;
@@ -16,14 +21,15 @@ const InputComponent = styled.input`
 
 function Input(props) {
     return (
-        <>
+        <div className={props.className}>
+            {props.label && <Label>{props.label}</Label>}
             <InputComponent
                 type={props.type}
                 placeholder={props.placeholder}
                 value={props.value}
                 onChange={props.onChange}
             ></InputComponent>
-        </>
+        </div>
     )
 }
 
