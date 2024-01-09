@@ -1,5 +1,6 @@
 import {
     AssessmentRounded,
+    AutoAwesomeRounded,
     BadgeRounded,
     ConstructionRounded,
     HandshakeRounded,
@@ -48,6 +49,15 @@ function Sidebar() {
                     size='large'
                 >
                     <Typography variant='h6'>Vendas</Typography>
+                </Button>
+                <Button
+                    variant='text'
+                    color='black'
+                    className='rounded-0 text-capitalize px-4 w-100 justify-content-start'
+                    startIcon={<AutoAwesomeRounded />}
+                    size='large'
+                >
+                    <Typography variant='h6'>Documentos</Typography>
                 </Button>
                 <Button
                     variant='text'

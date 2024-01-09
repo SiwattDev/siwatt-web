@@ -1,3 +1,5 @@
+import { onAuthStateChanged } from 'firebase/auth'
+import { useContext } from 'react'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import Auth from './components/pages/Auth/Auth'
 import AfterSales from './components/pages/Dashboard/AfterSales/AfterSales'
@@ -9,8 +11,19 @@ import Panel from './components/pages/Dashboard/Panel/Panel'
 import Partners from './components/pages/Dashboard/Partners/Partners'
 import Projects from './components/pages/Dashboard/Projects/Projects'
 import Sales from './components/pages/Dashboard/Sales/Sales'
+import { UserContext } from './contexts/userContext'
+import { auth } from './firebase'
 
 function Routes() {
+    const { user, setUser } = useContext(UserContext)
+
+    onAuthStateChanged(auth, (userData) => {
+        if (userData) {
+            setUser(userData)
+            console.log('Usuário logado', user)
+        } else setUser(false)
+    })
+
     const router = createBrowserRouter([
         {
             path: '/',

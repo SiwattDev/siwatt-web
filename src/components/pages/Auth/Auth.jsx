@@ -67,13 +67,17 @@ const Button = styled.button`
 function Auth() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const { setUser } = useContext(UserContext)
+    const { user, setUser } = useContext(UserContext)
     const navigate = useNavigate()
     const params = useParams()
     const { loginInUser } = useAuth()
 
     useEffect(() => {
-        console.log(email, password)
+        if (user) {
+            params.redirect_url
+                ? navigate(params.redirect_url)
+                : navigate('/dashboard')
+        }
     })
 
     const showToastMessage = (type, title, text = '') => {
