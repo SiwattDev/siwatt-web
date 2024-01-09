@@ -11,6 +11,7 @@ const DashboardBox = styled.div`
     grid-template-areas:
         'header header'
         'sidebar content';
+    overflow: hidden;
 `
 
 function Dashboard() {

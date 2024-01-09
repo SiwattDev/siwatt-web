@@ -254,7 +254,6 @@ function EntityRegistration() {
                                 color='black'
                             />
                         </div>
-                        {/* ... outros campos ... */}
                         {state.type_entity === 'legal-entity' && (
                             <div className='col-12 row g-3'>
                                 <Typography
@@ -338,7 +337,6 @@ function EntityRegistration() {
                                 </div>
                             </div>
                         )}
-                        {/* ... outros campos ... */}
                         {(state.type === 'client' ||
                             state.type === 'supplier') && (
                             <div className='col-12'>

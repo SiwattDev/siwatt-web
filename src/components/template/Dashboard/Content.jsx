@@ -7,6 +7,7 @@ const ContentBox = styled.div`
     padding: 20px;
     grid-area: content;
     margin: 0px 10px 10px 0px;
+    overflow: auto;
 `
 
 function Content() {
