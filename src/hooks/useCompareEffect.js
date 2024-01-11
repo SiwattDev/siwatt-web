@@ -38,7 +38,7 @@ const useCompareEffect = () => {
                 dependenciesRef.current = dependencies
                 firstRenderRef.current = false
             }
-        }, [dependencies])
+        }, [callback, dependencies])
     }
 
     return { useDeepCompareEffect }
