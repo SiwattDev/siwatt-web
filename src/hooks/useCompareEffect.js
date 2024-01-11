@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-const useDeepCompareEffect = () => {
+const useCompareEffect = () => {
     const deepEqual = (obj1, obj2) => {
         if (obj1 === obj2) return true
 
@@ -44,4 +44,4 @@ const useDeepCompareEffect = () => {
     return { useDeepCompareEffect }
 }
 
-export default useDeepCompareEffect
+export default useCompareEffect
