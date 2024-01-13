@@ -42,18 +42,17 @@ const useFirebase = () => {
 
     const createDocument = (path, id, data) => {
         return new Promise((resolve, reject) => {
-            if (id) {
+            if (id)
                 setDoc(doc(db, path, id), data)
                     .then(() => resolve(id))
                     .catch((error) => reject(error))
-            } else {
+            else
                 addDoc(collection(db, path), data)
                     .then((docRef) => resolve(docRef))
                     .catch((error) => {
                         console.error(error)
                         reject(error)
                     })
-            }
         })
     }
 
