@@ -1,12 +1,13 @@
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import { css, styled } from 'styled-components'
 import IconLogo from '../../../assets/icon-logo.png'
 import Illustration from '../../../assets/login.png'
 import TextLogo from '../../../assets/logo.png'
 import { UserContext } from '../../../contexts/userContext'
 import useAuth from '../../../hooks/useAuth'
+import useUtilities from '../../../hooks/useUtilities'
 import Input from '../../template/global/Input'
 
 const AuthContainer = styled.div`
@@ -71,6 +72,7 @@ function Auth() {
     const navigate = useNavigate()
     const params = useParams()
     const { loginInUser } = useAuth()
+    const { showToastMessage } = useUtilities()
 
     useEffect(() => {
         if (user) {
@@ -79,16 +81,6 @@ function Auth() {
                 : navigate('/dashboard')
         }
     })
-
-    const showToastMessage = (type, title, text = '') => {
-        toast(title, {
-            title,
-            text,
-            type,
-            position: toast.POSITION.BOTTOM_LEFT,
-            className: 'toast-message',
-        })
-    }
 
     const login = () => {
         loginInUser(email, password)
@@ -166,7 +158,7 @@ function Auth() {
                     </Button>
                 </div>
             </Card>
-            <ToastContainer autoClose={2000} />
+            <ToastContainer autoClose={5000} />
         </AuthContainer>
     )
 }

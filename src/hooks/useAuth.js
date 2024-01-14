@@ -10,11 +10,14 @@ const useAuth = () => {
 
     const createUser = (email, password, confirmPassword, data) => {
         return new Promise((resolve, reject) => {
-            if (password !== confirmPassword) reject('Senhas não conferem.')
+            if (!password) reject('Senha invalida.')
+            else if (password !== confirmPassword)
+                reject('Senhas não conferem.')
             createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     const user = userCredential.user
                     data.email = email
+                    data.id = user.uid
                     createDocument('users', user.uid, data).them(() =>
                         resolve('Conta criada com sucesso.')
                     )
@@ -23,7 +26,6 @@ const useAuth = () => {
                     console.error(error)
                     const errorCode = error.code
                     const errorMessage = error.message
-                    // Verificar por que ocorreu o erro
                     reject(errorCode, errorMessage)
                 })
         })

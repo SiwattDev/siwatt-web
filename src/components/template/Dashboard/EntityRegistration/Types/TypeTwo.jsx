@@ -128,19 +128,21 @@ function Client(props) {
                     onChange={(e) => updateState('name', e.target.value)}
                 />
             </div>
-            <div className='col-6'>
-                <TextField
-                    className='w-100'
-                    label='Nome fantasia: '
-                    variant='outlined'
-                    size='small'
-                    color='black'
-                    value={state.fantasy_name || ''}
-                    onChange={(e) =>
-                        updateState('fantasy_name', e.target.value)
-                    }
-                />
-            </div>
+            {state.type_entity === 'legal-entity' && (
+                <div className='col-6'>
+                    <TextField
+                        className='w-100'
+                        label='Nome fantasia: '
+                        variant='outlined'
+                        size='small'
+                        color='black'
+                        value={state.fantasy_name || ''}
+                        onChange={(e) =>
+                            updateState('fantasy_name', e.target.value)
+                        }
+                    />
+                </div>
+            )}
             <div className='col-6'>
                 <TextField
                     className='w-100'
@@ -178,6 +180,36 @@ function Client(props) {
                     state={state}
                     updateStateSubObject={updateStateSubObject}
                 />
+            )}
+            {state.type === 'client' && (
+                <div className='col-12'>
+                    <FormControl fullWidth>
+                        <InputLabel
+                            id='seller'
+                            color='black'
+                        >
+                            Vendedor:
+                        </InputLabel>
+                        <Select
+                            labelId='seller'
+                            label='Vendedor: '
+                            size='small'
+                            color='black'
+                            sx={{
+                                background: 'white',
+                                borderRadius: 2,
+                            }}
+                            value={state.seller}
+                            onChange={(e) =>
+                                updateState('seller', e.target.value)
+                            }
+                        >
+                            <MenuItem value='gilvan'>Gilvan</MenuItem>
+                            <MenuItem value='vanortton'>Vanorton</MenuItem>
+                            <MenuItem value='people'>Pessoa</MenuItem>
+                        </Select>
+                    </FormControl>
+                </div>
             )}
         </form>
     )

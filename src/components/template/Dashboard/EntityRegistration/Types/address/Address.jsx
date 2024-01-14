@@ -1,16 +1,24 @@
 import { TextField, Typography } from '@mui/material'
 import { maskBr, validateBr } from 'js-brasil'
 import useAPI from '../../../../../../hooks/useAPI'
+import useCompareEffect from './../../../../../../hooks/useCompareEffect'
 
 function Address(props) {
     const { state, updateStateSubObject } = props
     const { APICep } = useAPI()
+    const { useDeepCompareEffect } = useCompareEffect()
 
-    const handleCepChange = (e) => {
-        let value = e.target.value
+    useDeepCompareEffect(() => {
+        const cep = state.address.cep
+        if (cep) handleCepChange(cep)
+    }, [state.address.cep])
+
+    const handleCepChange = (value) => {
+        console.log('Valor mudou')
         if (validateBr.cep(value)) {
+            const originalValue = value
             value = maskBr.cep(value)
-            APICep(e.target.value).then((result) => {
+            APICep(originalValue).then((result) => {
                 updateStateSubObject('address', 'road', result.data.logradouro)
                 updateStateSubObject(
                     'address',
@@ -40,7 +48,7 @@ function Address(props) {
                     size='small'
                     color='black'
                     value={state.address.cep || ''}
-                    onChange={handleCepChange}
+                    onChange={(e) => handleCepChange(e.target.value)}
                 />
             </div>
             <div className='col-6'>
