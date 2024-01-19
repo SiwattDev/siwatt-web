@@ -69,36 +69,53 @@ function EntityRegistration() {
         }))
     }
 
-    const filterFields = (state, type) => {
-        const userFields = ['name', 'email', 'phone', 'address', 'user_type']
-        const partnerFields = ['name', 'email', 'phone', 'address']
-        const clientFields = [
-            'name',
-            'email',
-            'phone',
-            'type_entity',
-            'address',
-        ]
+    const filterUserFields = (state) => {
+        const fields = ['name', 'email', 'phone', 'address', 'user_type']
+        return fields.reduce(
+            (obj, field) => ({ ...obj, [field]: state[field] }),
+            {}
+        )
+    }
 
-        if (state.type_entity === 'individual') clientFields.splice(1, 0, 'cpf')
-        else {
-            clientFields.splice(1, 0, 'fantasy_name')
-            clientFields.splice(2, 0, 'cnpj')
-            clientFields.splice(5, 0, 'state_registration')
-            clientFields.push('direct_contact')
+    const filterPartnerFields = (state) => {
+        const fields = ['name', 'email', 'phone', 'address']
+        return fields.reduce(
+            (obj, field) => ({ ...obj, [field]: state[field] }),
+            {}
+        )
+    }
+
+    const filterClientFields = (state) => {
+        let fields = ['name', 'email', 'phone', 'type_entity', 'address']
+        if (state.type_entity === 'individual') {
+            fields.splice(1, 0, 'cpf')
+        } else {
+            fields.splice(
+                1,
+                0,
+                'fantasy_name',
+                'cnpj',
+                'state_registration',
+                'direct_contact'
+            )
         }
+        if (state.type === 'client') {
+            fields.push('seller')
+        }
+        return fields.reduce(
+            (obj, field) => ({ ...obj, [field]: state[field] }),
+            {}
+        )
+    }
 
-        if (state.type === 'client') clientFields.push('seller')
-
-        let fields
-        if (type === 'user') fields = userFields
-        else if (type === 'partner') fields = partnerFields
-        else if (type === 'client' || type === 'supplier') fields = clientFields
-
-        const filteredState = {}
-        fields.forEach((field) => (filteredState[field] = state[field]))
-
-        return filteredState
+    const filterFields = (state, type) => {
+        if (type === 'user') {
+            return filterUserFields(state)
+        } else if (type === 'partner') {
+            return filterPartnerFields(state)
+        } else if (type === 'client' || type === 'supplier') {
+            return filterClientFields(state)
+        }
     }
 
     useDeepCompareEffect(() => {
