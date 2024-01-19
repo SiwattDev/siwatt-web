@@ -20,6 +20,10 @@ body {
     fill: black;
 }
 
+.css-1aquho2-MuiTabs-indicator {
+    background: black !important;
+}
+
 ::-webkit-scrollbar {
     background: transparent;
     width: 20px;

@@ -30,8 +30,9 @@ const useFirebase = () => {
         return new Promise((resolve, reject) => {
             const collectionRef = collection(db, path)
             getDocs(collectionRef)
-                .then((docs) => {
-                    resolve(docs.data.map((doc) => doc.data()))
+                .then((data) => {
+                    const result = data.docs.map((doc) => doc.data())
+                    resolve(result)
                 })
                 .catch((error) => {
                     console.error(error)

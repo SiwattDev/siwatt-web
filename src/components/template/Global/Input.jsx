@@ -10,7 +10,7 @@ const InputComponent = styled.input`
     border-radius: 7px;
     padding: 7px 12px;
     font-size: 17px;
-    box-shadow: 0px 0px 8px #1d202624;
+    box-shadow: 0px 0px 5px #1d202630;
     width: 100%;
     transition: box-shadow 0.3s linear;
     outline: none;
@@ -28,6 +28,7 @@ function Input(props) {
                 placeholder={props.placeholder}
                 value={props.value}
                 onChange={props.onChange}
+                style={props.style}
             ></InputComponent>
         </div>
     )

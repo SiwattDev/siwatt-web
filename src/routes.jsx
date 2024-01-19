@@ -3,6 +3,7 @@ import { useContext } from 'react'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import Auth from './components/pages/Auth/Auth'
 import AfterSales from './components/pages/Dashboard/AfterSales/AfterSales'
+import AgentDetails from './components/pages/Dashboard/Agents/AgentDetails'
 import Agents from './components/pages/Dashboard/Agents/Agents'
 import Customers from './components/pages/Dashboard/Customers/Customers'
 import Dashboard from './components/pages/Dashboard/Dashboard'
@@ -11,6 +12,7 @@ import Panel from './components/pages/Dashboard/Panel/Panel'
 import Partners from './components/pages/Dashboard/Partners/Partners'
 import Projects from './components/pages/Dashboard/Projects/Projects'
 import Sales from './components/pages/Dashboard/Sales/Sales'
+import EntityRegistration from './components/template/Dashboard/EntityRegistration/EntityRegistration'
 import { UserContext } from './contexts/userContext'
 import { auth } from './firebase'
 
@@ -66,8 +68,16 @@ function Routes() {
                     element: <Agents />,
                 },
                 {
+                    path: 'agents/:id',
+                    element: <AgentDetails />,
+                },
+                {
                     path: 'partners',
                     element: <Partners />,
+                },
+                {
+                    path: 'entity-registration',
+                    element: <EntityRegistration />,
                 },
             ],
         },

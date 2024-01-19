@@ -1,10 +1,7 @@
-import EntityRegistration from '../../../template/Dashboard/EntityRegistration/EntityRegistration'
-
 function Panel() {
     return (
         <>
-            {/* <h1>Painel</h1> */}
-            <EntityRegistration />
+            <h1>Painel</h1>
         </>
     )
 }

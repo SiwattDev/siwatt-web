@@ -1,11 +1,6 @@
-import {
-    Button,
-    Card,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
-} from '@mui/material'
+import { PersonAddRounded } from '@mui/icons-material'
+import { TabContext, TabList, TabPanel } from '@mui/lab'
+import { Box, Button, Card, Paper, Tab, Typography } from '@mui/material'
 import { useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import useAuth from '../../../../hooks/useAuth'
@@ -16,7 +11,7 @@ import TypeTwo from './Types/TypeTwo'
 
 function EntityRegistration() {
     const [state, setState] = useState({
-        type: null,
+        type: 'user',
         name: null,
         fantasy_name: null,
         email: null,
@@ -112,64 +107,109 @@ function EntityRegistration() {
     }
 
     return (
-        <Card className='py-4 px-5 rounded-4'>
-            <h1 className='mb-4'>Cadastro de Entidade</h1>
-            <div className='col-12 mb-3'>
-                <FormControl fullWidth>
-                    <InputLabel
-                        id='type-registration'
+        <>
+            <Paper className='d-flex gap-2 align-items-center px-3 py-2 mb-3'>
+                <PersonAddRounded color='black' />
+                <Typography
+                    variant='h6'
+                    sx={{ color: 'black' }}
+                >
+                    Cadastrar Entidade
+                </Typography>
+            </Paper>
+            <Card className='p-4 rounded-2'>
+                <Box sx={{ width: '100%', typography: 'body1' }}>
+                    <TabContext value={state.type}>
+                        <Box
+                            sx={{
+                                borderBottom: 1,
+                                borderColor: 'divider',
+                            }}
+                        >
+                            <TabList
+                                centered
+                                onChange={(e, value) =>
+                                    updateState('type', value)
+                                }
+                                textColor='black'
+                                indicatorColor='primary'
+                                aria-label='lab API tabs example'
+                            >
+                                <Tab
+                                    label='Usuário'
+                                    value='user'
+                                />
+                                <Tab
+                                    label='Cliente'
+                                    value='client'
+                                />
+                                <Tab
+                                    label='Fornecedor'
+                                    value='supplier'
+                                />
+                                <Tab
+                                    label='Parceiro'
+                                    value='partner'
+                                />
+                            </TabList>
+                        </Box>
+                        <TabPanel
+                            value='user'
+                            className='px-0'
+                        >
+                            <TypeOne
+                                type='user'
+                                state={state}
+                                updateState={updateState}
+                                updateStateSubObject={updateStateSubObject}
+                            />
+                        </TabPanel>
+                        <TabPanel
+                            value='client'
+                            className='px-0'
+                        >
+                            <TypeTwo
+                                state={state}
+                                updateState={updateState}
+                                updateStateSubObject={updateStateSubObject}
+                            />
+                        </TabPanel>
+                        <TabPanel
+                            value='supplier'
+                            className='px-0'
+                        >
+                            <TypeTwo
+                                state={state}
+                                updateState={updateState}
+                                updateStateSubObject={updateStateSubObject}
+                            />
+                        </TabPanel>
+                        <TabPanel
+                            value='partner'
+                            className='px-0'
+                        >
+                            <TypeOne
+                                type='partner'
+                                state={state}
+                                updateState={updateState}
+                                updateStateSubObject={updateStateSubObject}
+                            />
+                        </TabPanel>
+                    </TabContext>
+                </Box>
+                {state.type && (
+                    <Button
+                        variant='contained'
                         color='black'
+                        className='mt-3'
+                        onClick={registerEntity}
                     >
-                        Tipo de cadastro:
-                    </InputLabel>
-                    <Select
-                        labelId='type-registration'
-                        label='Tipo de cadastro: '
-                        size='small'
-                        color='black'
-                        value={state.type || ''}
-                        onChange={(e) => updateState('type', e.target.value)}
-                    >
-                        <MenuItem value='user'>Usuário</MenuItem>
-                        <MenuItem value='client'>Cliente</MenuItem>
-                        <MenuItem value='supplier'>Fornecedor</MenuItem>
-                        <MenuItem value='partner'>Parceiro</MenuItem>
-                    </Select>
-                </FormControl>
-            </div>
-            {state.type === 'user' && (
-                <TypeOne
-                    type='user'
-                    state={state}
-                    updateState={updateState}
-                    updateStateSubObject={updateStateSubObject}
-                />
-            )}
-            {(state.type === 'client' || state.type === 'supplier') && (
-                <TypeTwo
-                    state={state}
-                    updateState={updateState}
-                    updateStateSubObject={updateStateSubObject}
-                />
-            )}
-            {state.type === 'partner' && (
-                <TypeOne
-                    type='partner'
-                    state={state}
-                    updateState={updateState}
-                    updateStateSubObject={updateStateSubObject}
-                />
-            )}
-            <Button
-                variant='contained'
-                color='black'
-                className='mt-3'
-                onClick={registerEntity}
-            >
-                Cadastrar
-            </Button>
-            <ToastContainer autoClose={5000} />
-        </Card>
+                        Cadastrar
+                    </Button>
+                )}
+                <ToastContainer autoClose={5000} />
+            </Card>
+        </>
     )
 }
 

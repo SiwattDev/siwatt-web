@@ -7,6 +7,7 @@ import {
     MenuItem,
     Select,
     TextField,
+    Typography,
 } from '@mui/material'
 import { maskBr, validateBr } from 'js-brasil'
 import { useState } from 'react'
@@ -103,6 +104,12 @@ function TypeOne(props) {
             />
             {type === 'user' && (
                 <div className='col-6'>
+                    <Typography
+                        className='col-12'
+                        variant='h6'
+                    >
+                        Tipo de usuário
+                    </Typography>
                     <FormControl fullWidth>
                         <InputLabel
                             id='user-type'
