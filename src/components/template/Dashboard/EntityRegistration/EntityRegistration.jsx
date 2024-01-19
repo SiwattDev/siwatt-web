@@ -2,8 +2,10 @@ import { PersonAddRounded } from '@mui/icons-material'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Button, Card, Paper, Tab, Typography } from '@mui/material'
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import useAuth from '../../../../hooks/useAuth'
+import useCompareEffect from '../../../../hooks/useCompareEffect'
 import useFirebase from '../../../../hooks/useFirebase'
 import useUtilities from '../../../../hooks/useUtilities'
 import TypeOne from './Types/TypeOne'
@@ -43,9 +45,12 @@ function EntityRegistration() {
         },
         seller: null,
     })
-    const { createDocument } = useFirebase()
+    const [isDataLoaded, setIsDataLoaded] = useState(false)
+    const { getDocumentById, createDocument, updateDocument } = useFirebase()
     const { generateCode, showToastMessage } = useUtilities()
     const { createUser } = useAuth()
+    const { useDeepCompareEffect } = useCompareEffect()
+    const { action, id, type } = useParams()
 
     const updateState = (key, value) => {
         setState((prevState) => ({
@@ -96,13 +101,30 @@ function EntityRegistration() {
         return filteredState
     }
 
+    useDeepCompareEffect(() => {
+        if (type) updateState('type', type)
+        if (action === 'edit' && id && !isDataLoaded) {
+            getDocumentById(`${state.type}s`, id)
+                .then((userData) => {
+                    setState(userData)
+                    setIsDataLoaded(true)
+                })
+                .catch((error) => {
+                    console.error('Erro ao buscar usuário:', error)
+                })
+        }
+    }, [action, getDocumentById, id, state.type, type, isDataLoaded])
+
     const registerEntity = () => {
         const data = filterFields(state, state.type)
-        const id = generateCode()
-        data.id = id
-        if (state.type === 'user')
-            createUser(state.email, state.password, state.password, data)
-        else createDocument(`${state.type}s`, id, data)
+        if (action === 'edit' && id) updateDocument(`${state.type}s`, id, data)
+        else {
+            const newId = generateCode()
+            data.id = newId
+            if (state.type === 'user')
+                createUser(state.email, state.password, state.password, data)
+            else createDocument(`${state.type}s`, id, data)
+        }
         showToastMessage('success', 'Entidade cadastrada com sucesso')
     }
 
@@ -133,7 +155,6 @@ function EntityRegistration() {
                                 }
                                 textColor='black'
                                 indicatorColor='primary'
-                                aria-label='lab API tabs example'
                             >
                                 <Tab
                                     label='Usuário'

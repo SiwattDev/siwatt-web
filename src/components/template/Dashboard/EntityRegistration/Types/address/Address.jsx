@@ -14,7 +14,6 @@ function Address(props) {
     }, [state.address.cep])
 
     const handleCepChange = (value) => {
-        console.log('Valor mudou')
         if (validateBr.cep(value)) {
             const originalValue = value
             value = maskBr.cep(value)

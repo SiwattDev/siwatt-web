@@ -1,6 +1,6 @@
 import { NotificationsRounded } from '@mui/icons-material'
 import { Avatar, Button, IconButton, Tooltip } from '@mui/material'
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import IconLogo from '../../../assets/icon-logo.png'
@@ -17,8 +17,6 @@ const HeaderContainer = styled.div`
 
 function Header() {
     const { user } = useContext(UserContext)
-
-    useEffect(() => console.log(user))
 
     return (
         <HeaderContainer>

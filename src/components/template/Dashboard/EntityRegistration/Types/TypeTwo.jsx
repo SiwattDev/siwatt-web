@@ -37,7 +37,7 @@ function Client(props) {
                         result.data.estabelecimento.cep
                     )
                 })
-                .catch((err) => console.log(err))
+                .catch((err) => console.error(err))
         }
         updateState('cnpj', value)
     }

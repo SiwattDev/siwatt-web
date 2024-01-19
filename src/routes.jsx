@@ -17,12 +17,11 @@ import { UserContext } from './contexts/userContext'
 import { auth } from './firebase'
 
 function Routes() {
-    const { user, setUser } = useContext(UserContext)
+    const { setUser } = useContext(UserContext)
 
     onAuthStateChanged(auth, (userData) => {
         if (userData) {
             setUser(userData)
-            console.log('Usuário logado', user)
         } else setUser(false)
     })
 
@@ -77,6 +76,10 @@ function Routes() {
                 },
                 {
                     path: 'entity-registration',
+                    element: <EntityRegistration />,
+                },
+                {
+                    path: 'entity-registration/:type/:action/:id',
                     element: <EntityRegistration />,
                 },
             ],

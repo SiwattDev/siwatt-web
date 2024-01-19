@@ -56,11 +56,9 @@ function ListEntities() {
     const { useDeepCompareEffect } = useCompareEffect()
 
     useDeepCompareEffect(() => {
-        console.log('Buscando os dados', users)
         getDocumentsInCollection('users').then((data) => {
             setLoading(false)
             setUsers(data)
-            console.log('Data', users)
         })
     })
 
@@ -119,7 +117,6 @@ function ListEntities() {
                         <AccordionDetails className='row g-3'>
                             <FormGroup className='col-6'>
                                 {filters.map((filter, index) => {
-                                    console.log(index, index >= 0 && index <= 6)
                                     if (index >= 0 && index < 6) {
                                         return (
                                             <FormControlLabel
@@ -145,7 +142,6 @@ function ListEntities() {
                             </FormGroup>
                             <FormGroup className='col-6'>
                                 {filters.map((filter, index) => {
-                                    console.log(index, index >= 6)
                                     if (index >= 6) {
                                         return (
                                             <FormControlLabel
@@ -308,7 +304,7 @@ function ListEntities() {
                         </>
                     ) : (
                         <Typography variant='h4'>
-                            Nenhum usuário encontrado
+                            Nenhuma entidade encontrado
                         </Typography>
                     )}
                 </Paper>
