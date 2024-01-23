@@ -132,17 +132,45 @@ function EntityRegistration() {
         }
     }, [action, getDocumentById, id, state.type, type, isDataLoaded])
 
-    const registerEntity = () => {
+    const registerEntity = async () => {
         const data = filterFields(state, state.type)
-        if (action === 'edit' && id) updateDocument(`${state.type}s`, id, data)
-        else {
-            const newId = generateCode()
-            data.id = newId
-            if (state.type === 'user')
-                createUser(state.email, state.password, state.password, data)
-            else createDocument(`${state.type}s`, id, data)
+        const newId = generateCode()
+        data.id = newId
+
+        const showToast = (type, message) => {
+            showToastMessage(type, message)
         }
-        showToastMessage('success', 'Entidade cadastrada com sucesso')
+
+        const handleError = (err) => {
+            console.error(err)
+            showToast('error', 'Error ao atualizar entidade')
+        }
+
+        const handleSuccess = () => {
+            showToast('success', 'Entidade atualizada com sucesso')
+        }
+
+        try {
+            if (action === 'edit' && id) {
+                await updateDocument(`${state.type}s`, id, data)
+                handleSuccess()
+            } else {
+                if (state.type === 'user') {
+                    await createUser(
+                        state.email,
+                        state.password,
+                        state.password,
+                        data
+                    )
+                    handleSuccess()
+                } else {
+                    await createDocument(`${state.type}s`, newId, data)
+                    handleSuccess()
+                }
+            }
+        } catch (err) {
+            handleError(err)
+        }
     }
 
     return (
@@ -242,7 +270,7 @@ function EntityRegistration() {
                         className='mt-3'
                         onClick={registerEntity}
                     >
-                        Cadastrar
+                        {type !== 'edit' ? 'Cadastrar' : 'Editar'}
                     </Button>
                 )}
                 <ToastContainer autoClose={5000} />

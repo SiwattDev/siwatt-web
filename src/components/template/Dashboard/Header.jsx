@@ -1,4 +1,4 @@
-import { NotificationsRounded } from '@mui/icons-material'
+import { NotificationsRounded, PersonAddRounded } from '@mui/icons-material'
 import { Avatar, Button, IconButton, Tooltip } from '@mui/material'
 import { useContext } from 'react'
 import { Link } from 'react-router-dom'
@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import IconLogo from '../../../assets/icon-logo.png'
 import TextLogo from '../../../assets/logo.png'
 import { UserContext } from '../../../contexts/userContext'
+import useUtilities from '../../../hooks/useUtilities'
 import Input from '../Global/Input'
 
 const HeaderContainer = styled.div`
@@ -17,6 +18,7 @@ const HeaderContainer = styled.div`
 
 function Header() {
     const { user } = useContext(UserContext)
+    const { getWindowSizes } = useUtilities()
 
     return (
         <HeaderContainer>
@@ -30,20 +32,37 @@ function Header() {
                     src={TextLogo}
                     alt='Logo do Siwatt'
                     height={25}
+                    className='d-none d-md-block'
                 />
             </div>
-            <div>
+            <div className='d-flex w-100 mx-3'>
                 <Input
                     type='text'
                     placeholder='Pesquisar entidade'
+                    divStyle={{
+                        width: '100%',
+                        display: 'flex',
+                        flex: 1,
+                        justifyContent: 'center',
+                    }}
                     style={{
-                        minWidth: '500px',
+                        width: '100%',
+                        maxWidth: '500px',
                     }}
                 />
             </div>
             <div className='actions d-flex align-items-center gap-3'>
                 <Link to='/dashboard/entity-registration'>
-                    <Button color='black'>Cadastrar Entidade</Button>
+                    {getWindowSizes() > 1045 ? (
+                        <Button color='black'>Cadastrar Entidade</Button>
+                    ) : (
+                        <IconButton
+                            aria-label='Notificações'
+                            color='black'
+                        >
+                            <PersonAddRounded />
+                        </IconButton>
+                    )}
                 </Link>
                 <Tooltip title='Notificações'>
                     <IconButton

@@ -1,27 +1,26 @@
-import { BadgeRounded } from '@mui/icons-material'
+import { PeopleAltRounded } from '@mui/icons-material'
 import { Paper, Typography } from '@mui/material'
 import ListEntities from '../../../template/Dashboard/ListEntities/ListEntities'
 
-function Agents() {
+function Clients() {
     return (
         <>
             <Paper className='d-flex gap-2 align-items-center px-3 py-2 mb-3'>
-                <BadgeRounded color='black' />
+                <PeopleAltRounded color='black' />
                 <Typography
                     variant='h6'
                     sx={{ color: 'black' }}
                 >
-                    Usuários
+                    Clientes
                 </Typography>
             </Paper>
             <ListEntities
-                type='users'
+                type='clients'
                 entityFilters={[
                     { property: 'id', value: false },
                     { property: 'name', value: true },
                     { property: 'email', value: true },
                     { property: 'phone', value: true },
-                    { property: 'type', value: true },
                     { property: 'uf', value: false },
                     { property: 'city', value: false },
                     { property: 'neighborhood', value: false },
@@ -32,13 +31,9 @@ function Agents() {
                 ]}
                 entityColumns={[
                     { key: 'id', title: 'ID' },
-                    { key: 'name', title: 'Nome' },
+                    { key: 'name', title: 'Razão Social' },
                     { key: 'email', title: 'Email' },
                     { key: 'phone', title: 'Telefone' },
-                    {
-                        key: 'user_type.type',
-                        title: 'Tipo de Usuário',
-                    },
                     { key: 'address.uf', title: 'UF' },
                     { key: 'address.city', title: 'Cidade' },
                     {
@@ -57,4 +52,4 @@ function Agents() {
         </>
     )
 }
-export default Agents
+export default Clients

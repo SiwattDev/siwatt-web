@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom/client'
 import 'react-toastify/dist/ReactToastify.css'
 import Contexts from './contexts/contexts'
 import './main.css'
-import Routes from './routes'
+import Router from './router'
 
 const theme = createTheme({
     palette: {
@@ -23,7 +23,7 @@ const theme = createTheme({
 ReactDOM.createRoot(document.getElementById('root')).render(
     <Contexts>
         <ThemeProvider theme={theme}>
-            <Routes />
+            <Router />
         </ThemeProvider>
     </Contexts>
 )

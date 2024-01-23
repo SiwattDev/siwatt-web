@@ -6,7 +6,7 @@ import Sidebar from '../../template/Dashboard/Sidebar'
 const DashboardBox = styled.div`
     display: grid;
     height: 100vh;
-    grid-template-columns: 200px auto;
+    grid-template-columns: auto 1fr;
     grid-template-rows: auto 1fr;
     grid-template-areas:
         'header header'

@@ -25,6 +25,21 @@ function useUtilities() {
         })
     }
 
+    const replaceEntityType = (type) => {
+        switch (type) {
+            case 'user':
+                return 'Usuário'
+            case 'client':
+                return 'Cliente'
+            case 'supplier':
+                return 'Fornecedor'
+            case 'partner':
+                return 'Parceiros'
+            default:
+                return 'Unknown'
+        }
+    }
+
     const replaceUserType = (type) => {
         switch (type) {
             case 'administrative':
@@ -40,7 +55,7 @@ function useUtilities() {
         }
     }
 
-    const replaceUserProperties = (property) => {
+    const replaceEntityProperties = (property) => {
         switch (property.toLowerCase()) {
             case 'id':
                 return 'ID'
@@ -71,26 +86,28 @@ function useUtilities() {
         }
     }
 
-    const addressProperties = (property) => {
-        const addressProps = [
-            'uf',
-            'city',
-            'neighborhood',
-            'cep',
-            'road',
-            'number',
-            'reference',
-        ]
-        if (addressProps.includes(property)) return true
-        return false
+    function getWindowSizes() {
+        var width =
+            window.innerWidth ||
+            document.documentElement.clientWidth ||
+            document.body.clientWidth
+        var height =
+            window.innerHeight ||
+            document.documentElement.clientHeight ||
+            document.body.clientHeight
+        return {
+            width: width,
+            height: height,
+        }
     }
 
     return {
         generateCode,
         showToastMessage,
+        replaceEntityType,
         replaceUserType,
-        replaceUserProperties,
-        addressProperties,
+        replaceEntityProperties,
+        getWindowSizes,
     }
 }
 

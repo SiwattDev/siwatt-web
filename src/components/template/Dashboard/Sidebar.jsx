@@ -9,16 +9,54 @@ import {
     PeopleAltRounded,
     SolarPowerRounded,
 } from '@mui/icons-material'
-import { Button, Typography } from '@mui/material'
+import { Button, Typography, css } from '@mui/material'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-// import { useState } from 'react'
+import useUtilities from '../../../hooks/useUtilities'
 
 const SidebarContainer = styled.div`
-    grid-area: sidebar;
+    ${(props) => css`
+        grid-area: sidebar;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: max-width 0.5s;
+        position: relative;
+        width: 200px;
+        max-width: ${props.show ? '0px' : '200px'};
+        margin-right: ${props.show ? '10px' : '0px'};
+        & * {
+            transform: ${props.show ? 'scaleX(0)' : 'scaleX(1)'};
+        }
+        @media (max-width: 768px) {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            height: 579px;
+            background-color: white;
+        }
+    `}
+`
+
+const ToggleAside = styled.button`
+    position: absolute;
+    top: 50%;
+    right: -16px;
+    height: 76px;
+    width: 16px;
+    padding: 0px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
+    transform: scale(1) translateY(-50%) !important;
+    z-index: 1;
+    & * {
+        transform: scale(1) !important;
+    }
 `
 
 const Links = styled.div`
@@ -32,10 +70,47 @@ const Links = styled.div`
 `
 
 function Sidebar() {
-    // const [value, setValue] = useState(0)
+    const { getWindowSizes } = useUtilities()
+    const useMediaQuery = getWindowSizes().width > 800 ? false : true
+    const [show, setShow] = useState(useMediaQuery)
 
     return (
-        <SidebarContainer>
+        <SidebarContainer show={show}>
+            <ToggleAside onClick={() => setShow(!show)}>
+                <svg viewBox='0 0 14 60'>
+                    <path
+                        d=' M 0 0 A 7 7 0 0 0 7 7 A 7 7 0 0 1 14 14 V 46 A 7 7 0 0 1 7 53 A 7 7 0 0 0 0 60 Z'
+                        style={{
+                            transform: 'none',
+                            transformOrigin: 'center center',
+                        }}
+                        fill='#fff'
+                    ></path>
+                </svg>
+                <svg
+                    id='svg2'
+                    fill='currentColor'
+                    aria-hidden='true'
+                    width='12'
+                    height='12'
+                    viewBox='0 0 12 12'
+                    xmlns='http://www.w3.org/2000/svg'
+                    style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        marginLeft: '-6px',
+                        marginTop: '-6px',
+                        color: 'rgb(110, 110, 134)',
+                        transform: 'rotate(90deg)',
+                    }}
+                >
+                    <path
+                        d='M2.22 4.47c.3-.3.77-.3 1.06 0L6 7.19l2.72-2.72a.75.75 0 0 1 1.06 1.06L6.53 8.78c-.3.3-.77.3-1.06 0L2.22 5.53a.75.75 0 0 1 0-1.06Z'
+                        fill='#000'
+                    ></path>
+                </svg>
+            </ToggleAside>
             <Links>
                 <Link to='/dashboard/'>
                     <Button
@@ -92,7 +167,7 @@ function Sidebar() {
                         <Typography variant='h6'>Pós-venda</Typography>
                     </Button>
                 </Link>
-                <Link to='/dashboard/customers'>
+                <Link to='/dashboard/clients'>
                     <Button
                         variant='text'
                         color='black'

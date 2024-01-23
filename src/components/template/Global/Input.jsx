@@ -21,7 +21,10 @@ const InputComponent = styled.input`
 
 function Input(props) {
     return (
-        <div className={props.className}>
+        <div
+            className={props.className}
+            style={props.divStyle}
+        >
             {props.label && <Label>{props.label}</Label>}
             <InputComponent
                 type={props.type}
