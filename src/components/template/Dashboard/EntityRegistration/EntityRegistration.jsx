@@ -17,6 +17,7 @@ function EntityRegistration() {
         name: null,
         fantasy_name: null,
         email: null,
+        store_facade: null,
         phone: null,
         password: null,
         type_entity: null,
@@ -86,7 +87,14 @@ function EntityRegistration() {
     }
 
     const filterClientFields = (state) => {
-        let fields = ['name', 'email', 'phone', 'type_entity', 'address']
+        let fields = [
+            'name',
+            'email',
+            'phone',
+            'type_entity',
+            'address',
+            'store_facade',
+        ]
         if (state.type_entity === 'individual') {
             fields.splice(1, 0, 'cpf')
         } else {
@@ -194,12 +202,14 @@ function EntityRegistration() {
                             }}
                         >
                             <TabList
-                                centered
                                 onChange={(e, value) =>
                                     updateState('type', value)
                                 }
                                 textColor='black'
                                 indicatorColor='primary'
+                                variant='scrollable'
+                                scrollButtons
+                                allowScrollButtonsMobile
                             >
                                 <Tab
                                     label='Usuário'

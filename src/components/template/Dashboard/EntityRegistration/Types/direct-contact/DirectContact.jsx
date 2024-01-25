@@ -13,7 +13,7 @@ function DirectContact(props) {
                 >
                     Contato direto:
                 </Typography>
-                <div className='col-6'>
+                <div className='col-12 col-md-6'>
                     <TextField
                         className='w-100'
                         label='Nome: '
@@ -30,7 +30,7 @@ function DirectContact(props) {
                         }
                     />
                 </div>
-                <div className='col-6'>
+                <div className='col-12 col-md-6'>
                     <TextField
                         className='w-100'
                         label='Email: '
@@ -47,7 +47,7 @@ function DirectContact(props) {
                         }
                     />
                 </div>
-                <div className='col-6'>
+                <div className='col-12 col-md-6'>
                     <TextField
                         className='w-100'
                         label='Telefone: '
@@ -68,7 +68,7 @@ function DirectContact(props) {
                         }}
                     />
                 </div>
-                <div className='col-6'>
+                <div className='col-12 col-md-6'>
                     <TextField
                         className='w-100'
                         label='Data de nascimento: '
@@ -96,7 +96,7 @@ function DirectContact(props) {
                         }}
                     />
                 </div>
-                <div className='col-6'>
+                <div className='col-12 col-md-6'>
                     <TextField
                         className='w-100'
                         label='CPF: '

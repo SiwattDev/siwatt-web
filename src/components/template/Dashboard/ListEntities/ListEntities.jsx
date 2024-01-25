@@ -98,7 +98,7 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                             </div>
                         </AccordionSummary>
                         <AccordionDetails className='row g-3'>
-                            <FormGroup className='col-6'>
+                            <FormGroup className='col-12 col-md-6'>
                                 {filters.map((filter, index) => {
                                     if (index >= 0 && index < 6) {
                                         return (
@@ -123,7 +123,7 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                                     }
                                 })}
                             </FormGroup>
-                            <FormGroup className='col-6'>
+                            <FormGroup className='col-12 col-md-6'>
                                 {filters.map((filter, index) => {
                                     if (index >= 6) {
                                         return (

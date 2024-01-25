@@ -10,20 +10,51 @@ import {
     TableRow,
     Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import useCompareEffect from '../../../../hooks/useCompareEffect'
 import useFirebase from '../../../../hooks/useFirebase'
 import useUtilities from '../../../../hooks/useUtilities'
 
 function EntityDetails() {
     const { type, id } = useParams()
     const [entity, setEntity] = useState()
+    const [seller, setSeller] = useState()
     const { getDocumentById } = useFirebase()
     const { replaceUserType, replaceEntityType } = useUtilities()
+    const { useDeepCompareEffect } = useCompareEffect()
 
-    useEffect(() => {
+    useDeepCompareEffect(() => {
         getDocumentById(`${type}s`, id)
-            .then((doc) => setEntity(doc))
+            .then((doc) => {
+                setEntity(doc)
+                console.log(doc)
+                if (type === 'client') {
+                    if (doc && doc.seller) {
+                        console.log(doc.seller)
+                        getDocumentById('users', doc.seller)
+                            .then((doc) => {
+                                if (doc) {
+                                    setSeller(doc)
+                                }
+                            })
+                            .catch((err) => {
+                                console.log(err)
+                                console.log('loading: ', 'partners', doc.seller)
+                                getDocumentById('partners', doc.seller)
+                                    .then((doc) => {
+                                        console.log(doc)
+                                        if (doc) {
+                                            setSeller(doc)
+                                        } else {
+                                            setSeller(null)
+                                        }
+                                    })
+                                    .catch((err) => console.log('tentei', err))
+                            })
+                    }
+                }
+            })
             .catch((err) => console.error(err))
     })
 
@@ -97,6 +128,29 @@ function EntityDetails() {
                                             )
                                                 ? 'Física'
                                                 : 'Jurídica'}
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                                {type === 'client' && (
+                                    <TableRow>
+                                        <TableCell>Fachada:</TableCell>
+                                        <TableCell>
+                                            <img
+                                                src={entity.store_facade}
+                                                alt='Fachada do cliente'
+                                                style={{
+                                                    maxHeight: '100px',
+                                                    maxWidth: '100%',
+                                                }}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                                {type === 'client' && (
+                                    <TableRow>
+                                        <TableCell>Vendedor:</TableCell>
+                                        <TableCell>
+                                            {seller?.name || 'Carregando...'}
                                         </TableCell>
                                     </TableRow>
                                 )}

@@ -1,4 +1,6 @@
+import { PhotoCamera } from '@mui/icons-material'
 import {
+    Button,
     FormControl,
     InputLabel,
     MenuItem,
@@ -6,13 +8,38 @@ import {
     TextField,
 } from '@mui/material'
 import { maskBr, validateBr } from 'js-brasil'
+import { createRef, useState } from 'react'
 import useAPI from '../../../../../hooks/useAPI'
+import useCompareEffect from '../../../../../hooks/useCompareEffect'
+import useFirebase from '../../../../../hooks/useFirebase'
+import useStorage from '../../../../../hooks/useStorage'
 import Address from './address/Address'
 import DirectContact from './direct-contact/DirectContact'
 
 function Client(props) {
     const { state, updateState, updateStateSubObject } = props
+    const [sellers, setSellers] = useState([])
+    const [selectedFile, setSelectedFile] = useState(null)
+    const fileInputRef = createRef()
     const { APICNPJ } = useAPI()
+    const { uploadFile } = useStorage()
+    const { getDocumentsInCollection } = useFirebase()
+    const { useDeepCompareEffect } = useCompareEffect()
+
+    const treatImage = (file) => {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+            const base64String = reader.result
+            uploadFile('/clients', base64String, file.name)
+                .then((url) => {
+                    updateState('store_facade', url)
+                })
+                .catch((err) => {
+                    console.error('Upload falhou:', err)
+                })
+        }
+        reader.readAsDataURL(file)
+    }
 
     const cnpjAutoComplete = (e) => {
         let value = e.target.value
@@ -42,9 +69,23 @@ function Client(props) {
         updateState('cnpj', value)
     }
 
+    useDeepCompareEffect(() => {
+        let sellersArray = sellers.length > 0 ? sellers.map((x) => x) : []
+        getDocumentsInCollection('users').then((userDocs) => {
+            userDocs.forEach((doc) => sellersArray.push(doc))
+            console.log('Teste:', sellersArray)
+            getDocumentsInCollection('partners').then((partnerDocs) => {
+                partnerDocs.forEach((doc) => sellersArray.push(doc))
+                console.log(sellersArray)
+                setSellers(sellersArray)
+                console.log('Teste 2:', sellers)
+            })
+        })
+    })
+
     return (
         <form className='row g-3'>
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <FormControl fullWidth>
                     <InputLabel
                         id='type-entity'
@@ -54,7 +95,7 @@ function Client(props) {
                     </InputLabel>
                     <Select
                         labelId='type-entity'
-                        label='Tipo de pessoa: '
+                        label='Tipo de pessoa:'
                         size='small'
                         color='black'
                         value={state.type_entity || ''}
@@ -70,10 +111,10 @@ function Client(props) {
             {state.type_entity === 'individual' &&
                 state.type !== 'user' &&
                 state.type !== 'partner' && (
-                    <div className='col-6'>
+                    <div className='col-12 col-md-6'>
                         <TextField
                             className='w-100'
-                            label='CPF: '
+                            label='CPF:'
                             variant='outlined'
                             size='small'
                             color='black'
@@ -90,10 +131,10 @@ function Client(props) {
                 )}
             {state.type_entity === 'legal-entity' && (
                 <>
-                    <div className='col-6'>
+                    <div className='col-12 col-md-6'>
                         <TextField
                             className='w-100'
-                            label='CNPJ: '
+                            label='CNPJ:'
                             variant='outlined'
                             size='small'
                             color='black'
@@ -101,10 +142,10 @@ function Client(props) {
                             onChange={(e) => cnpjAutoComplete(e)}
                         />
                     </div>
-                    <div className='col-6'>
+                    <div className='col-12 col-md-6'>
                         <TextField
                             className='w-100'
-                            label='Inscrição estadual: '
+                            label='Inscrição estadual:'
                             variant='outlined'
                             size='small'
                             color='black'
@@ -117,10 +158,10 @@ function Client(props) {
                     </div>
                 </>
             )}
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
-                    label='Razão social: '
+                    label='Razão social:'
                     variant='outlined'
                     size='small'
                     color='black'
@@ -129,10 +170,10 @@ function Client(props) {
                 />
             </div>
             {state.type_entity === 'legal-entity' && (
-                <div className='col-6'>
+                <div className='col-12 col-md-6'>
                     <TextField
                         className='w-100'
-                        label='Nome fantasia: '
+                        label='Nome fantasia:'
                         variant='outlined'
                         size='small'
                         color='black'
@@ -143,10 +184,10 @@ function Client(props) {
                     />
                 </div>
             )}
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
-                    label='E-mail: '
+                    label='E-mail:'
                     variant='outlined'
                     size='small'
                     color='black'
@@ -154,10 +195,10 @@ function Client(props) {
                     onChange={(e) => updateState('email', e.target.value)}
                 />
             </div>
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
-                    label='Telefone: '
+                    label='Telefone:'
                     variant='outlined'
                     size='small'
                     color='black'
@@ -171,6 +212,51 @@ function Client(props) {
                     }}
                 />
             </div>
+            {state.type === 'client' && (
+                <div className='col-12'>
+                    <div className='w-100'>
+                        <input
+                            accept='image/*'
+                            style={{ display: 'none' }}
+                            id='icon-button-file'
+                            type='file'
+                            onChange={(e) => {
+                                setSelectedFile(
+                                    URL.createObjectURL(e.target.files[0])
+                                )
+                                treatImage(e.target.files[0])
+                            }}
+                            ref={fileInputRef}
+                        />
+                        <Button
+                            variant='outlined'
+                            startIcon={!selectedFile && <PhotoCamera />}
+                            color='black'
+                            className={`${
+                                selectedFile && 'd-flex flex-column gap-1'
+                            }w-100`}
+                            onClick={() => fileInputRef.current.click()}
+                        >
+                            {!selectedFile
+                                ? 'Carregar imagem'
+                                : 'Imagem selecionada:'}
+                            {selectedFile && (
+                                <div className='d-flex justify-content-center'>
+                                    <img
+                                        className='rounded'
+                                        src={selectedFile}
+                                        alt='preview'
+                                        style={{
+                                            maxWidth: '80%',
+                                            maxHeight: '200px',
+                                        }}
+                                    />
+                                </div>
+                            )}
+                        </Button>
+                    </div>
+                </div>
+            )}
             <Address
                 state={state}
                 updateStateSubObject={updateStateSubObject}
@@ -192,7 +278,7 @@ function Client(props) {
                         </InputLabel>
                         <Select
                             labelId='seller'
-                            label='Vendedor: '
+                            label='Vendedor:'
                             size='small'
                             color='black'
                             sx={{
@@ -204,9 +290,15 @@ function Client(props) {
                                 updateState('seller', e.target.value)
                             }
                         >
-                            <MenuItem value='gilvan'>Gilvan</MenuItem>
-                            <MenuItem value='vanortton'>Vanorton</MenuItem>
-                            <MenuItem value='people'>Pessoa</MenuItem>
+                            {sellers.length > 0 &&
+                                sellers.map((seller) => (
+                                    <MenuItem
+                                        key={seller.id}
+                                        value={seller.id}
+                                    >
+                                        {seller.name}
+                                    </MenuItem>
+                                ))}
                         </Select>
                     </FormControl>
                 </div>

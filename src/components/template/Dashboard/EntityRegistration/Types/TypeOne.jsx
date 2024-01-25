@@ -25,7 +25,7 @@ function TypeOne(props) {
 
     return (
         <form className='row g-3'>
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
                     label='Nome: '
@@ -36,7 +36,7 @@ function TypeOne(props) {
                     onChange={(e) => updateState('name', e.target.value)}
                 />
             </div>
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
                     label='E-mail: '
@@ -47,7 +47,7 @@ function TypeOne(props) {
                     onChange={(e) => updateState('email', e.target.value)}
                 />
             </div>
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
                     label='Telefone: '
@@ -65,7 +65,7 @@ function TypeOne(props) {
                 />
             </div>
             {type === 'user' && (
-                <div className='col-6'>
+                <div className='col-12 col-md-6'>
                     <TextField
                         label='Password'
                         variant='outlined'
@@ -103,7 +103,7 @@ function TypeOne(props) {
                 updateStateSubObject={updateStateSubObject}
             />
             {type === 'user' && (
-                <div className='col-6'>
+                <div className='col-12 col-md-6'>
                     <Typography
                         className='col-12'
                         variant='h6'

@@ -39,7 +39,7 @@ function Address(props) {
             >
                 Endereço
             </Typography>
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
                     label='Cep: '
@@ -50,7 +50,7 @@ function Address(props) {
                     onChange={(e) => handleCepChange(e.target.value)}
                 />
             </div>
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
                     label='Número: '
@@ -67,7 +67,7 @@ function Address(props) {
                     }
                 />
             </div>
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
                     label='Rua: '
@@ -80,7 +80,7 @@ function Address(props) {
                     }
                 />
             </div>
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
                     label='Bairro: '
@@ -97,7 +97,7 @@ function Address(props) {
                     }
                 />
             </div>
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
                     label='Cidade: '
@@ -110,7 +110,7 @@ function Address(props) {
                     }
                 />
             </div>
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
                     label='Referência: '
@@ -127,7 +127,7 @@ function Address(props) {
                     }
                 />
             </div>
-            <div className='col-6'>
+            <div className='col-12 col-md-6'>
                 <TextField
                     className='w-100'
                     label='UF: '

@@ -26,6 +26,7 @@ const SidebarContainer = styled.div`
         width: 200px;
         max-width: ${props.show ? '0px' : '200px'};
         margin-right: ${props.show ? '10px' : '0px'};
+        z-index: 1;
         & * {
             transform: ${props.show ? 'scaleX(0)' : 'scaleX(1)'};
         }
