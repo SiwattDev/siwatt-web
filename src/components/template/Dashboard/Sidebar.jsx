@@ -10,8 +10,8 @@ import {
     SolarPowerRounded,
 } from '@mui/icons-material'
 import { Button, Typography, css } from '@mui/material'
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 import useUtilities from '../../../hooks/useUtilities'
 
@@ -21,7 +21,7 @@ const SidebarContainer = styled.div`
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        transition: max-width 0.5s;
+        transition: max-width 0.3s;
         position: relative;
         width: 200px;
         max-width: ${props.show ? '0px' : '200px'};
@@ -34,12 +34,12 @@ const SidebarContainer = styled.div`
             position: fixed;
             left: 0;
             bottom: 0;
-            height: 579px;
+            height: calc(100% - 62px);
             background-color: white;
+            box-shadow: 2px 5px 5px #0000002e;
         }
     `}
 `
-
 const ToggleAside = styled.button`
     position: absolute;
     top: 50%;
@@ -59,28 +59,41 @@ const ToggleAside = styled.button`
         transform: scale(1) !important;
     }
 `
-
 const Links = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-
     & > a {
         width: 100%;
     }
 `
-
 function Sidebar() {
     const { getWindowSizes } = useUtilities()
-    const useMediaQuery = getWindowSizes().width > 800 ? false : true
-    const [show, setShow] = useState(useMediaQuery)
+    const [show, setShow] = useState(
+        getWindowSizes().width > 768 ? false : true
+    )
+    const location = useLocation()
+
+    useEffect(() => {
+        console.log('url changed')
+        if (getWindowSizes().width < 768) {
+            console.log('< 768')
+            setShow(true)
+            console.log('Show: ', show)
+        }
+    }, [location])
 
     return (
         <SidebarContainer show={show}>
             <ToggleAside onClick={() => setShow(!show)}>
-                <svg viewBox='0 0 14 60'>
+                <svg
+                    viewBox='0 0 14 60'
+                    style={{
+                        filter: 'drop-shadow(4px 0px 3px #0000002e)',
+                    }}
+                >
                     <path
-                        d=' M 0 0 A 7 7 0 0 0 7 7 A 7 7 0 0 1 14 14 V 46 A 7 7 0 0 1 7 53 A 7 7 0 0 0 0 60 Z'
+                        d='M 0 0 A 7 7 0 0 0 7 7 A 7 7 0 0 1 14 14 V 46 A 7 7 0 0 1 7 53 A 7 7 0 0 0 0 60 Z'
                         style={{
                             transform: 'none',
                             transformOrigin: 'center center',
@@ -102,8 +115,8 @@ function Sidebar() {
                         left: '50%',
                         marginLeft: '-6px',
                         marginTop: '-6px',
-                        color: 'rgb(110, 110, 134)',
-                        transform: 'rotate(90deg)',
+                        color: 'rgb(110,110,134)',
+                        rotate: show ? '-90deg' : '90deg',
                     }}
                 >
                     <path
@@ -214,7 +227,7 @@ function Sidebar() {
                 </Link>
             </Links>
             <div className='footer text-muted px-3'>
-                <p>&copy;{new Date().getFullYear()} - Luz do Sol</p>
+                <p>&copy;{new Date().getFullYear()}- Luz do Sol</p>
             </div>
         </SidebarContainer>
     )

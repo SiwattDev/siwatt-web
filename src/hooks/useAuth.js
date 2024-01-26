@@ -18,7 +18,7 @@ const useAuth = () => {
                     const user = userCredential.user
                     data.email = email
                     data.id = user.uid
-                    createDocument('users', user.uid, data).them(() =>
+                    createDocument('users', user.uid, data).then(() =>
                         resolve('Conta criada com sucesso.')
                     )
                 })
