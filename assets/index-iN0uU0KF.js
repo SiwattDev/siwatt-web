@@ -3575,7 +3575,7 @@ Content-Type: `+c.contentType+`\r
         width: 200px;
         max-width: ${e.show?"0px":"200px"};
         margin-right: ${e.show?"10px":"0px"};
-        z-index: 1;
+        z-index: 999;
         & * {
             transform: ${e.show?"scaleX(0)":"scaleX(1)"};
         }
