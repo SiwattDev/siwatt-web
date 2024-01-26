@@ -230,7 +230,19 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                                                         </Button>
                                                     </Tooltip>
                                                     <Tooltip title='Editar'>
-                                                        <Button>
+                                                        <Button
+                                                            onClick={() =>
+                                                                navigate(
+                                                                    '/dashboard/entity-registration/' +
+                                                                        type.slice(
+                                                                            0,
+                                                                            -1
+                                                                        ) +
+                                                                        '/edit/' +
+                                                                        entity.id
+                                                                )
+                                                            }
+                                                        >
                                                             <EditRounded fontSize='small' />
                                                         </Button>
                                                     </Tooltip>
