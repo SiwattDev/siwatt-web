@@ -87,7 +87,7 @@ function Header() {
                                     height: 30,
                                 }}
                             >
-                                V
+                                {user.name[0] || 'V'}
                             </Avatar>
                         )}
                     </IconButton>
