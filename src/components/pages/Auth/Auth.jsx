@@ -136,7 +136,7 @@ function Auth() {
                 </div>
                 <div className='w-100 mt-3 mt-md-5'>
                     <Input
-                        type='text'
+                        type='email'
                         placeholder='Digite seu e-mail'
                         label='E-mail:'
                         value={email}
@@ -144,7 +144,7 @@ function Auth() {
                     />
                     <div className='m-4'></div>
                     <Input
-                        type='text'
+                        type='password'
                         placeholder='Informe sua senha'
                         label='Senha:'
                         value={password}
