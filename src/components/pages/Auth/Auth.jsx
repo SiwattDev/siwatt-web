@@ -8,6 +8,7 @@ import TextLogo from '../../../assets/logo.png'
 import { UserContext } from '../../../contexts/userContext'
 import useAuth from '../../../hooks/useAuth'
 import useUtilities from '../../../hooks/useUtilities'
+import Loading from '../../template/Global/Loading'
 import Input from '../../template/global/Input'
 
 const AuthContainer = styled.div`
@@ -68,6 +69,7 @@ const Button = styled.button`
 function Auth() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
     const { user, setUser } = useContext(UserContext)
     const navigate = useNavigate()
     const params = useParams()
@@ -83,6 +85,7 @@ function Auth() {
     })
 
     const login = () => {
+        setIsLoading(true)
         loginInUser(email, password)
             .then((user) => {
                 showToastMessage('success', 'Usuário logado com sucesso')
@@ -90,7 +93,10 @@ function Auth() {
                 if (params.redirect_url) navigate(params.redirect_url)
                 else navigate('/dashboard')
             })
-            .catch((e) => showToastMessage('error', e))
+            .catch((e) => {
+                setIsLoading(false)
+                showToastMessage('error', e)
+            })
     }
 
     return (
@@ -159,6 +165,7 @@ function Auth() {
                 </div>
             </Card>
             <ToastContainer autoClose={5000} />
+            {isLoading && <Loading action='Tentando fazer login...' />}
         </AuthContainer>
     )
 }

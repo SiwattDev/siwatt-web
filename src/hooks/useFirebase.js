@@ -5,8 +5,10 @@ import {
     doc,
     getDoc,
     getDocs,
+    query,
     setDoc,
     updateDoc,
+    where,
 } from 'firebase/firestore'
 import { db } from '../firebase'
 
@@ -38,6 +40,21 @@ const useFirebase = () => {
                     console.error(error)
                     reject(error)
                 })
+        })
+    }
+
+    const getDocumentsInCollectionWithQuery = (path, key, value) => {
+        return new Promise((resolve, reject) => {
+            const q = query(collection(db, path), where(key, '==', value))
+            getDocs(q)
+                .then((querySnapshot) => {
+                    if (!querySnapshot.empty) {
+                        resolve(querySnapshot.docs.map((doc) => doc.data()))
+                    } else {
+                        reject('Nenhum usuário encontrado com esta chave/valor')
+                    }
+                })
+                .catch((err) => reject(err))
         })
     }
 
@@ -82,6 +99,7 @@ const useFirebase = () => {
     return {
         getDocumentById,
         getDocumentsInCollection,
+        getDocumentsInCollectionWithQuery,
         createDocument,
         updateDocument,
         deleteDocument,

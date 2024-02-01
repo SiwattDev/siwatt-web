@@ -131,7 +131,7 @@ function EntityDetails() {
                                         </TableCell>
                                     </TableRow>
                                 )}
-                                {type === 'client' && (
+                                {type === 'client' && entity.store_facade && (
                                     <TableRow>
                                         <TableCell>Fachada:</TableCell>
                                         <TableCell>

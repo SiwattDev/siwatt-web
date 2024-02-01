@@ -1,11 +1,27 @@
-import { NotificationsRounded, PersonAddRounded } from '@mui/icons-material'
-import { Avatar, Button, IconButton, Tooltip } from '@mui/material'
-import { useContext } from 'react'
+import {
+    Logout,
+    NotificationsRounded,
+    PersonAddRounded,
+    Settings,
+} from '@mui/icons-material'
+import {
+    Avatar,
+    Button,
+    Divider,
+    IconButton,
+    ListItemIcon,
+    Menu,
+    MenuItem,
+    Tooltip,
+} from '@mui/material'
+import { useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import IconLogo from '../../../assets/icon-logo.png'
 import TextLogo from '../../../assets/logo.png'
 import { UserContext } from '../../../contexts/userContext'
+import useAuth from '../../../hooks/useAuth'
+import useCompareEffect from '../../../hooks/useCompareEffect'
 import useUtilities from '../../../hooks/useUtilities'
 import Input from '../Global/Input'
 
@@ -19,6 +35,21 @@ const HeaderContainer = styled.div`
 function Header() {
     const { user } = useContext(UserContext)
     const { getWindowSizes } = useUtilities()
+    const { useDeepCompareEffect } = useCompareEffect()
+    const { logout } = useAuth()
+    const [anchorEl, setAnchorEl] = useState(null)
+    const open = Boolean(anchorEl)
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget)
+    }
+    const handleClose = () => {
+        setAnchorEl(null)
+    }
+
+    useDeepCompareEffect(() => {
+        console.log('User changed')
+        console.log(user)
+    }, [user])
 
     return (
         <HeaderContainer>
@@ -73,7 +104,12 @@ function Header() {
                     </IconButton>
                 </Tooltip>
                 <Tooltip title='Minha conta'>
-                    <IconButton>
+                    <IconButton
+                        onClick={handleClick}
+                        aria-controls={open ? 'account-menu' : undefined}
+                        aria-haspopup='true'
+                        aria-expanded={open ? 'true' : undefined}
+                    >
                         {user && user.photo ? (
                             <Avatar
                                 src={user.photo}
@@ -87,12 +123,74 @@ function Header() {
                                     height: 30,
                                 }}
                             >
-                                {user.name[0] || 'V'}
+                                {user?.name ? user?.name[0] : 'V'}
                             </Avatar>
                         )}
                     </IconButton>
                 </Tooltip>
             </div>
+            <Menu
+                anchorEl={anchorEl}
+                id='account-menu'
+                open={open}
+                onClose={handleClose}
+                onClick={handleClose}
+                PaperProps={{
+                    elevation: 0,
+                    sx: {
+                        width: 220,
+                        maxWidth: '100%',
+                        overflow: 'visible',
+                        filter: 'drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.18))',
+                        mt: 1,
+                        '&::before': {
+                            content: '""',
+                            display: 'block',
+                            position: 'absolute',
+                            top: 0,
+                            right: 18,
+                            width: 10,
+                            height: 10,
+                            bgcolor: 'background.paper',
+                            transform: 'translateY(-50%) rotate(45deg)',
+                            zIndex: 0,
+                        },
+                    },
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+                <MenuItem onClick={handleClose}>
+                    <Avatar
+                        src={user?.photo || null}
+                        sx={{
+                            width: 32,
+                            height: 32,
+                            ml: -0.5,
+                            mr: 1,
+                        }}
+                    />
+                    {user?.name || 'Usuário'}
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                        <Settings fontSize='small' />
+                    </ListItemIcon>
+                    Configurações
+                </MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        logout()
+                        handleClose()
+                    }}
+                >
+                    <ListItemIcon>
+                        <Logout fontSize='small' />
+                    </ListItemIcon>
+                    Sair dessa conta
+                </MenuItem>
+            </Menu>
         </HeaderContainer>
     )
 }

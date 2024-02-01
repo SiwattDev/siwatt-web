@@ -1,6 +1,7 @@
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    signOut,
 } from 'firebase/auth'
 import { auth } from '../firebase'
 import useFirebase from './useFirebase'
@@ -31,6 +32,17 @@ const useAuth = () => {
         })
     }
 
+    const loginErrors = (error) => {
+        switch (error) {
+            case 'auth/invalid-email':
+                return 'E-mail inválido'
+            case 'auth/invalid-credential':
+                return 'Senha inválida'
+            default:
+                return 'Erro inesperado ao fazer login'
+        }
+    }
+
     const loginInUser = (email, password) => {
         return new Promise((resolve, reject) => {
             signInWithEmailAndPassword(auth, email, password)
@@ -39,15 +51,24 @@ const useAuth = () => {
                     resolve(user)
                 })
                 .catch((error) => {
-                    console.error(error)
-                    const errorCode = error.code
-                    const errorMessage = error.message
-                    reject(errorCode, errorMessage)
+                    console.error(error.code)
+                    reject(loginErrors(error.code))
                 })
         })
     }
 
-    return { createUser, loginInUser }
+    const logout = () => {
+        return new Promise((resolve, reject) => {
+            signOut(auth)
+                .then(() => resolve())
+                .catch((err) => {
+                    console.error(err)
+                    reject(err)
+                })
+        })
+    }
+
+    return { createUser, loginInUser, logout }
 }
 
 export default useAuth

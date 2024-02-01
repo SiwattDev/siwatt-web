@@ -1,6 +1,7 @@
 import { PersonAddRounded } from '@mui/icons-material'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Button, Card, Paper, Tab, Typography } from '@mui/material'
+import { validateBr } from 'js-brasil'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
@@ -140,25 +141,53 @@ function EntityRegistration() {
         }
     }, [action, getDocumentById, id, state.type, type, isDataLoaded])
 
+    const showToast = (type, message) => {
+        showToastMessage(type, message)
+    }
+
     const registerEntity = async () => {
         const data = filterFields(state, state.type)
         const newId = generateCode()
         data.id = newId
-
-        const showToast = (type, message) => {
-            showToastMessage(type, message)
-        }
-
-        const handleError = (err) => {
-            console.error(err)
-            showToast('error', 'Error ao atualizar entidade')
-        }
 
         const handleSuccess = () => {
             showToast('success', 'Entidade atualizada com sucesso')
         }
 
         try {
+            if (!validateBr.email(state.email)) {
+                console.log('Problema: Email')
+                throw new Error('Email inválido')
+            } else console.log('Email válido!')
+
+            if (!validateBr.celular(state.phone)) {
+                console.log('Problema: Telefone')
+                throw new Error('Telefone inválido')
+            } else console.log('Telefone válido!')
+
+            if (!validateBr.cep(state.address.cep)) {
+                console.log('Problema: Cep')
+                throw new Error('Cep inválido')
+            } else console.log('Cep válido!')
+
+            if (
+                (state.type === 'client' || state.type === 'supplier') &&
+                state.type_entity === 'individual' &&
+                !validateBr.cpf(state.cpf)
+            ) {
+                console.log('Problema: CPF')
+                throw new Error('CPF inválido')
+            } else console.log('CPF válido!')
+
+            if (
+                (state.type === 'client' || state.type === 'supplier') &&
+                state.type_entity === 'legal-entity' &&
+                !validateBr.cnpj(state.cnpj)
+            ) {
+                console.log('Problema: CNPJ')
+                throw new Error('CNPJ inválido')
+            } else console.log('CNPJ válido!')
+
             if (action === 'edit' && id) {
                 await updateDocument(`${state.type}s`, id, data)
                 handleSuccess()
@@ -177,7 +206,7 @@ function EntityRegistration() {
                 }
             }
         } catch (err) {
-            handleError(err)
+            showToast('error', err.toString().replace('Error: ', ''))
         }
     }
 
@@ -245,6 +274,7 @@ function EntityRegistration() {
                             className='px-0'
                         >
                             <TypeTwo
+                                type='client'
                                 state={state}
                                 updateState={updateState}
                                 updateStateSubObject={updateStateSubObject}
@@ -255,6 +285,7 @@ function EntityRegistration() {
                             className='px-0'
                         >
                             <TypeTwo
+                                type='supplier'
                                 state={state}
                                 updateState={updateState}
                                 updateStateSubObject={updateStateSubObject}

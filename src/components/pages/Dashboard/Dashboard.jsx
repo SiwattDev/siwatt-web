@@ -1,4 +1,8 @@
+import { useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import { UserContext } from '../../../contexts/userContext'
+import useCompareEffect from '../../../hooks/useCompareEffect'
 import Content from '../../template/Dashboard/Content'
 import Header from '../../template/Dashboard/Header'
 import Sidebar from '../../template/Dashboard/Sidebar'
@@ -15,6 +19,15 @@ const DashboardBox = styled.div`
 `
 
 function Dashboard() {
+    const { user } = useContext(UserContext)
+    const navigate = useNavigate()
+    const { useDeepCompareEffect } = useCompareEffect()
+
+    useDeepCompareEffect(() => {
+        console.log('Checking...')
+        if (!user && user !== 'loading') navigate('/')
+    }, [user])
+
     return (
         <DashboardBox>
             <Header />

@@ -89,7 +89,7 @@ function Sidebar() {
                 <svg
                     viewBox='0 0 14 60'
                     style={{
-                        filter: 'drop-shadow(4px 0px 3px #0000002e)',
+                        filter: 'drop-shadow(4px 0px 2px #0000002e)',
                     }}
                 >
                     <path

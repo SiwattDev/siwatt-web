@@ -13,17 +13,20 @@ import useAPI from '../../../../../hooks/useAPI'
 import useCompareEffect from '../../../../../hooks/useCompareEffect'
 import useFirebase from '../../../../../hooks/useFirebase'
 import useStorage from '../../../../../hooks/useStorage'
+import useUtilities from '../../../../../hooks/useUtilities'
 import Address from './address/Address'
 import DirectContact from './direct-contact/DirectContact'
 
 function Client(props) {
-    const { state, updateState, updateStateSubObject } = props
+    const { type, state, updateState, updateStateSubObject } = props
     const [sellers, setSellers] = useState([])
     const [selectedFile, setSelectedFile] = useState(null)
     const fileInputRef = createRef()
+    const { getDocumentsInCollectionWithQuery } = useFirebase()
     const { APICNPJ } = useAPI()
     const { uploadFile } = useStorage()
     const { getDocumentsInCollection } = useFirebase()
+    const { showToastMessage } = useUtilities()
     const { useDeepCompareEffect } = useCompareEffect()
 
     const treatImage = (file) => {
@@ -41,10 +44,27 @@ function Client(props) {
         reader.readAsDataURL(file)
     }
 
+    const checkIfEntityExists = (value, property) => {
+        getDocumentsInCollectionWithQuery(`${type}s`, property, value)
+            .then((docs) => {
+                console.log(docs)
+                if (docs.length > 0) {
+                    showToastMessage(
+                        'error',
+                        `O ${property.toUpperCase()} já está em uso.`
+                    )
+                }
+            })
+            .catch((err) => {
+                console.error(err)
+            })
+    }
+
     const cnpjAutoComplete = (e) => {
         let value = e.target.value
         if (validateBr.cnpj(value)) {
             value = maskBr.cnpj(value)
+            checkIfEntityExists(value, 'cnpj')
             APICNPJ(e.target.value)
                 .then((result) => {
                     updateState('name', result.data.razao_social)
@@ -121,9 +141,10 @@ function Client(props) {
                             value={state.cpf || ''}
                             onChange={(e) => {
                                 let value = e.target.value
-                                if (validateBr.cpf(value))
+                                if (validateBr.cpf(value)) {
                                     value = maskBr.cpf(value)
-                                else value = value.replace(/\D/g, '')
+                                    checkIfEntityExists(value, 'cpf')
+                                } else value = value.replace(/\D/g, '')
                                 updateState('cpf', value)
                             }}
                         />

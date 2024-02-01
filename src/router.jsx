@@ -11,18 +11,26 @@ import Panel from './components/pages/Dashboard/Panel/Panel'
 import Partners from './components/pages/Dashboard/Partners/Partners'
 import Projects from './components/pages/Dashboard/Projects/Projects'
 import Sales from './components/pages/Dashboard/Sales/Sales'
+import BudgetData from './components/template/Dashboard/Budget/BudgetData'
 import EntityRegistration from './components/template/Dashboard/EntityRegistration/EntityRegistration'
 import EntityDetails from './components/template/Dashboard/ListEntities/EntityDetails'
 import { UserContext } from './contexts/userContext'
 import { auth } from './firebase'
+import useFirebase from './hooks/useFirebase'
 
 function AppRouter() {
-    const { setUser } = useContext(UserContext)
+    const { user, setUser } = useContext(UserContext)
+    const { getDocumentById } = useFirebase()
 
     onAuthStateChanged(auth, (userData) => {
-        if (userData) {
-            setUser(userData)
-        } else setUser(false)
+        console.log('Auth state changed', user)
+        if (userData && user?.id !== userData.uid) {
+            getDocumentById('users', userData.uid).then((data) => setUser(data))
+            window.localStorage.setItem('logged', true)
+        } else if (!user) {
+            window.localStorage.setItem('logged', false)
+            setUser(false)
+        }
     })
 
     return (
@@ -83,6 +91,10 @@ function AppRouter() {
                     <Route
                         path='entity-registration/:type/:action/:id'
                         element={<EntityRegistration />}
+                    />
+                    <Route
+                        path='budget/new/:id'
+                        element={<BudgetData />}
                     />
                 </Route>
             </Routes>

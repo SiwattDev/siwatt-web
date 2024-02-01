@@ -11,16 +11,34 @@ import {
 } from '@mui/material'
 import { maskBr, validateBr } from 'js-brasil'
 import { useState } from 'react'
+import { ToastContainer } from 'react-toastify'
+import useUtilities from '../../../../../hooks/useUtilities'
+import useFirebase from './../../../../../hooks/useFirebase'
 import Address from './address/Address'
 
 function TypeOne(props) {
     const { type, state, updateState, updateStateSubObject } = props
     const [showPassword, setShowPassword] = useState(false)
+    const { getDocumentsInCollectionWithQuery } = useFirebase()
+    const { showToastMessage } = useUtilities()
 
     const handleClickShowPassword = () => setShowPassword((show) => !show)
 
     const handleMouseDownPassword = (event) => {
         event.preventDefault()
+    }
+
+    const checkIfEntityExists = (value) => {
+        getDocumentsInCollectionWithQuery(`${type}s`, 'email', value)
+            .then((docs) => {
+                console.log(docs)
+                if (docs.length > 0) {
+                    showToastMessage('error', 'O e-mail já está em uso.')
+                }
+            })
+            .catch((err) => {
+                console.error(err)
+            })
     }
 
     return (
@@ -44,7 +62,11 @@ function TypeOne(props) {
                     size='small'
                     color='black'
                     value={state.email || ''}
-                    onChange={(e) => updateState('email', e.target.value)}
+                    onChange={(e) => {
+                        updateState('email', e.target.value)
+                        if (validateBr.email(e.target.value))
+                            checkIfEntityExists(e.target.value)
+                    }}
                 />
             </div>
             <div className='col-12 col-md-6'>
@@ -175,6 +197,7 @@ function TypeOne(props) {
                     </FormControl>
                 </div>
             )}
+            <ToastContainer autoClose={5000} />
         </form>
     )
 }

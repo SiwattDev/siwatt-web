@@ -3,7 +3,7 @@ import { createContext, useState } from 'react'
 const UserContext = createContext(null)
 
 function UserProvider(props) {
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState('loading')
 
     return (
         <UserContext.Provider value={{ user, setUser }}>

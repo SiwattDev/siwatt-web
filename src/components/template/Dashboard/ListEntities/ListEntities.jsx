@@ -72,7 +72,7 @@ function ListEntities({ type, entityFilters, entityColumns }) {
 
     return (
         <>
-            {entities ? (
+            {entities && entities.length ? (
                 <>
                     <Accordion
                         className='rounded-1 mb-3'
@@ -272,7 +272,7 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                         </>
                     ) : (
                         <Typography variant='h4'>
-                            Nenhuma entidade encontrado
+                            Nenhuma entidade encontrada
                         </Typography>
                     )}
                 </Paper>
