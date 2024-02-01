@@ -77,7 +77,7 @@ function Auth() {
     const { showToastMessage } = useUtilities()
 
     useEffect(() => {
-        if (user) {
+        if (user && user !== 'loading') {
             params.redirect_url
                 ? navigate(params.redirect_url)
                 : navigate('/dashboard')

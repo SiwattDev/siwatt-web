@@ -24,6 +24,10 @@ body {
     background: black !important;
 }
 
+.MuiTabs-indicator {
+    background: black !important;
+}
+
 ::-webkit-scrollbar {
     background: transparent;
     width: 20px;

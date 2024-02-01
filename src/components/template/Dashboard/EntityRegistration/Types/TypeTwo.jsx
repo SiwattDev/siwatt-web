@@ -1,4 +1,4 @@
-import { PhotoCamera } from '@mui/icons-material'
+import { DocumentScannerRounded, PhotoCamera } from '@mui/icons-material'
 import {
     Button,
     FormControl,
@@ -15,12 +15,14 @@ import useFirebase from '../../../../../hooks/useFirebase'
 import useStorage from '../../../../../hooks/useStorage'
 import useUtilities from '../../../../../hooks/useUtilities'
 import Address from './address/Address'
+import AttachDocuments from './attach-documents/AttachDocuments'
 import DirectContact from './direct-contact/DirectContact'
 
 function Client(props) {
     const { type, state, updateState, updateStateSubObject } = props
     const [sellers, setSellers] = useState([])
     const [selectedFile, setSelectedFile] = useState(null)
+    const [openDialog, setOpenDialog] = useState(false)
     const fileInputRef = createRef()
     const { getDocumentsInCollectionWithQuery } = useFirebase()
     const { APICNPJ } = useAPI()
@@ -235,48 +237,62 @@ function Client(props) {
                 />
             </div>
             {state.type === 'client' && (
-                <div className='col-12'>
-                    <div className='w-100'>
-                        <input
-                            accept='image/*'
-                            style={{ display: 'none' }}
-                            id='icon-button-file'
-                            type='file'
-                            onChange={(e) => {
-                                setSelectedFile(
-                                    URL.createObjectURL(e.target.files[0])
-                                )
-                                treatImage(e.target.files[0])
-                            }}
-                            ref={fileInputRef}
-                        />
-                        <Button
-                            variant='outlined'
-                            startIcon={!selectedFile && <PhotoCamera />}
-                            color='black'
-                            className={`${
-                                selectedFile && 'd-flex flex-column gap-1'
-                            }w-100`}
-                            onClick={() => fileInputRef.current.click()}
-                        >
-                            {!selectedFile
-                                ? 'Carregar imagem'
-                                : 'Imagem selecionada:'}
-                            {selectedFile && (
-                                <div className='d-flex justify-content-center'>
-                                    <img
-                                        className='rounded'
-                                        src={selectedFile}
-                                        alt='preview'
-                                        style={{
-                                            maxWidth: '80%',
-                                            maxHeight: '200px',
-                                        }}
-                                    />
-                                </div>
-                            )}
-                        </Button>
-                    </div>
+                <div className='col-6'>
+                    <input
+                        accept='image/*'
+                        style={{ display: 'none' }}
+                        id='icon-button-file'
+                        type='file'
+                        onChange={(e) => {
+                            setSelectedFile(
+                                URL.createObjectURL(e.target.files[0])
+                            )
+                            treatImage(e.target.files[0])
+                        }}
+                        ref={fileInputRef}
+                    />
+                    <Button
+                        variant='outlined'
+                        startIcon={!selectedFile && <PhotoCamera />}
+                        color='black'
+                        className={`${
+                            selectedFile && 'd-flex flex-column gap-1'
+                        } w-100`}
+                        onClick={() => fileInputRef.current.click()}
+                    >
+                        {!selectedFile
+                            ? 'Carregar Fachada'
+                            : 'Imagem selecionada:'}
+                        {selectedFile && (
+                            <div className='d-flex justify-content-center'>
+                                <img
+                                    className='rounded'
+                                    src={selectedFile}
+                                    alt='preview'
+                                    style={{
+                                        maxWidth: '80%',
+                                        maxHeight: '200px',
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </Button>
+                </div>
+            )}
+            {state.type === 'client' && (
+                <div className='col-6'>
+                    <Button
+                        variant='outlined'
+                        startIcon={!selectedFile && <DocumentScannerRounded />}
+                        color='black'
+                        className={`${
+                            selectedFile && 'd-flex flex-column gap-1'
+                        } w-100`}
+                        onClick={() => setOpenDialog(!openDialog)}
+                    >
+                        Documentos do cliente
+                        <AttachDocuments open={openDialog} />
+                    </Button>
                 </div>
             )}
             <Address
