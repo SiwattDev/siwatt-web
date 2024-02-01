@@ -7,6 +7,6 @@ export default defineConfig({
     build: {
         outDir: 'build',
         base: '/siwatt-web/',
-        build: { chunkSizeWarningLimit: 1600 },
+        build: { chunkSizeWarningLimit: 2600 },
     },
 })

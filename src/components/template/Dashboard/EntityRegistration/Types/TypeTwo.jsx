@@ -53,6 +53,7 @@ function Client(props) {
                         'error',
                         `O ${property.toUpperCase()} já está em uso.`
                     )
+                    updateState(property, '')
                 }
             })
             .catch((err) => {

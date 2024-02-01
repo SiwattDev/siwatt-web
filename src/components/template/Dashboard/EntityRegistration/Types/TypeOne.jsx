@@ -34,6 +34,7 @@ function TypeOne(props) {
                 console.log(docs)
                 if (docs.length > 0) {
                     showToastMessage('error', 'O e-mail já está em uso.')
+                    updateState('email', '')
                 }
             })
             .catch((err) => {
