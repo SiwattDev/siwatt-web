@@ -23,7 +23,6 @@ function AppRouter() {
     const { getDocumentById } = useFirebase()
 
     onAuthStateChanged(auth, (userData) => {
-        console.log('Auth state changed', user)
         if (userData && user?.id !== userData.uid) {
             getDocumentById('users', userData.uid).then((data) => setUser(data))
             window.localStorage.setItem('logged', true)

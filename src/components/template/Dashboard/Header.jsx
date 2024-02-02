@@ -21,7 +21,6 @@ import IconLogo from '../../../assets/icon-logo.png'
 import TextLogo from '../../../assets/logo.png'
 import { UserContext } from '../../../contexts/userContext'
 import useAuth from '../../../hooks/useAuth'
-import useCompareEffect from '../../../hooks/useCompareEffect'
 import useUtilities from '../../../hooks/useUtilities'
 import Input from '../Global/Input'
 
@@ -35,7 +34,6 @@ const HeaderContainer = styled.div`
 function Header() {
     const { user } = useContext(UserContext)
     const { getWindowSizes } = useUtilities()
-    const { useDeepCompareEffect } = useCompareEffect()
     const { logout } = useAuth()
     const [anchorEl, setAnchorEl] = useState(null)
     const open = Boolean(anchorEl)
@@ -45,11 +43,6 @@ function Header() {
     const handleClose = () => {
         setAnchorEl(null)
     }
-
-    useDeepCompareEffect(() => {
-        console.log('User changed')
-        console.log(user)
-    }, [user])
 
     return (
         <HeaderContainer>

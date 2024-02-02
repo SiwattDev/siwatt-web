@@ -28,10 +28,8 @@ function EntityDetails() {
         getDocumentById(`${type}s`, id)
             .then((doc) => {
                 setEntity(doc)
-                console.log(doc)
                 if (type === 'client') {
                     if (doc && doc.seller) {
-                        console.log(doc.seller)
                         getDocumentById('users', doc.seller)
                             .then((doc) => {
                                 if (doc) {
@@ -39,18 +37,16 @@ function EntityDetails() {
                                 }
                             })
                             .catch((err) => {
-                                console.log(err)
-                                console.log('loading: ', 'partners', doc.seller)
+                                console.error(err)
                                 getDocumentById('partners', doc.seller)
                                     .then((doc) => {
-                                        console.log(doc)
                                         if (doc) {
                                             setSeller(doc)
                                         } else {
                                             setSeller(null)
                                         }
                                     })
-                                    .catch((err) => console.log('tentei', err))
+                                    .catch((err) => console.error('Erro:', err))
                             })
                     }
                 }
@@ -143,6 +139,29 @@ function EntityDetails() {
                                                     maxWidth: '100%',
                                                 }}
                                             />
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                                {type === 'client' && entity.docs && (
+                                    <TableRow>
+                                        <TableCell>Documentos:</TableCell>
+                                        <TableCell>
+                                            {entity.docs.map((doc, index) => (
+                                                <>
+                                                    <a
+                                                        key={index}
+                                                        href={doc}
+                                                        target='_blank'
+                                                        rel='noreferrer'
+                                                    >
+                                                        Documento {index + 1}
+                                                    </a>
+                                                    {entity.docs.length ===
+                                                    index + 1
+                                                        ? ''
+                                                        : ', '}
+                                                </>
+                                            ))}
                                         </TableCell>
                                     </TableRow>
                                 )}

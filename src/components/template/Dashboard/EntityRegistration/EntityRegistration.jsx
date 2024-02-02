@@ -19,6 +19,7 @@ function EntityRegistration() {
         fantasy_name: null,
         email: null,
         store_facade: null,
+        docs: null,
         phone: null,
         password: null,
         type_entity: null,
@@ -95,6 +96,7 @@ function EntityRegistration() {
             'type_entity',
             'address',
             'store_facade',
+            'docs',
         ]
         if (state.type_entity === 'individual') {
             fields.splice(1, 0, 'cpf')
@@ -155,38 +157,25 @@ function EntityRegistration() {
         }
 
         try {
-            if (!validateBr.email(state.email)) {
-                console.log('Problema: Email')
+            if (!validateBr.email(state.email))
                 throw new Error('Email inválido')
-            } else console.log('Email válido!')
-
-            if (!validateBr.celular(state.phone)) {
-                console.log('Problema: Telefone')
+            if (!validateBr.celular(state.phone))
                 throw new Error('Telefone inválido')
-            } else console.log('Telefone válido!')
-
-            if (!validateBr.cep(state.address.cep)) {
-                console.log('Problema: Cep')
+            if (!validateBr.cep(state.address.cep))
                 throw new Error('Cep inválido')
-            } else console.log('Cep válido!')
-
             if (
                 (state.type === 'client' || state.type === 'supplier') &&
                 state.type_entity === 'individual' &&
                 !validateBr.cpf(state.cpf)
-            ) {
-                console.log('Problema: CPF')
+            )
                 throw new Error('CPF inválido')
-            } else console.log('CPF válido!')
 
             if (
                 (state.type === 'client' || state.type === 'supplier') &&
                 state.type_entity === 'legal-entity' &&
                 !validateBr.cnpj(state.cnpj)
-            ) {
-                console.log('Problema: CNPJ')
+            )
                 throw new Error('CNPJ inválido')
-            } else console.log('CNPJ válido!')
 
             if (action === 'edit' && id) {
                 await updateDocument(`${state.type}s`, id, data)
@@ -260,7 +249,7 @@ function EntityRegistration() {
                         </Box>
                         <TabPanel
                             value='user'
-                            className='px-0'
+                            className='p-0 pt-3'
                         >
                             <TypeOne
                                 type='user'
@@ -271,7 +260,7 @@ function EntityRegistration() {
                         </TabPanel>
                         <TabPanel
                             value='client'
-                            className='px-0'
+                            className='p-0 pt-3'
                         >
                             <TypeTwo
                                 type='client'
@@ -282,7 +271,7 @@ function EntityRegistration() {
                         </TabPanel>
                         <TabPanel
                             value='supplier'
-                            className='px-0'
+                            className='p-0 pt-3'
                         >
                             <TypeTwo
                                 type='supplier'
@@ -293,7 +282,7 @@ function EntityRegistration() {
                         </TabPanel>
                         <TabPanel
                             value='partner'
-                            className='px-0'
+                            className='p-0 pt-3'
                         >
                             <TypeOne
                                 type='partner'

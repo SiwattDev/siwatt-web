@@ -31,7 +31,6 @@ function TypeOne(props) {
     const checkIfEntityExists = (value) => {
         getDocumentsInCollectionWithQuery(`${type}s`, 'email', value)
             .then((docs) => {
-                console.log(docs)
                 if (docs.length > 0) {
                     showToastMessage('error', 'O e-mail já está em uso.')
                     updateState('email', '')

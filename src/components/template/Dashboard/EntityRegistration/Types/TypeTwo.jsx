@@ -49,7 +49,6 @@ function Client(props) {
     const checkIfEntityExists = (value, property) => {
         getDocumentsInCollectionWithQuery(`${type}s`, property, value)
             .then((docs) => {
-                console.log(docs)
                 if (docs.length > 0) {
                     showToastMessage(
                         'error',
@@ -96,12 +95,9 @@ function Client(props) {
         let sellersArray = sellers.length > 0 ? sellers.map((x) => x) : []
         getDocumentsInCollection('users').then((userDocs) => {
             userDocs.forEach((doc) => sellersArray.push(doc))
-            console.log('Teste:', sellersArray)
             getDocumentsInCollection('partners').then((partnerDocs) => {
                 partnerDocs.forEach((doc) => sellersArray.push(doc))
-                console.log(sellersArray)
                 setSellers(sellersArray)
-                console.log('Teste 2:', sellers)
             })
         })
     })
@@ -237,7 +233,7 @@ function Client(props) {
                 />
             </div>
             {state.type === 'client' && (
-                <div className='col-6'>
+                <div className='col-12'>
                     <input
                         accept='image/*'
                         style={{ display: 'none' }}
@@ -280,7 +276,7 @@ function Client(props) {
                 </div>
             )}
             {state.type === 'client' && (
-                <div className='col-6'>
+                <div className='col-12'>
                     <Button
                         variant='outlined'
                         startIcon={!selectedFile && <DocumentScannerRounded />}
@@ -291,8 +287,17 @@ function Client(props) {
                         onClick={() => setOpenDialog(!openDialog)}
                     >
                         Documentos do cliente
-                        <AttachDocuments open={openDialog} />
                     </Button>
+                    <AttachDocuments
+                        open={openDialog}
+                        onClose={(urls) => {
+                            setOpenDialog(false)
+                            if (urls) {
+                                updateState('docs', urls)
+                                console.log(urls)
+                            }
+                        }}
+                    />
                 </div>
             )}
             <Address

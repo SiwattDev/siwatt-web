@@ -13,6 +13,11 @@ import {
     ButtonGroup,
     Checkbox,
     CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
     FormControlLabel,
     FormGroup,
     Paper,
@@ -30,22 +35,21 @@ import { useNavigate } from 'react-router-dom'
 import useCompareEffect from '../../../../hooks/useCompareEffect'
 import useUtilities from '../../../../hooks/useUtilities'
 import useFirebase from './../../../../hooks/useFirebase'
-
 function ListEntities({ type, entityFilters, entityColumns }) {
     const [entities, setEntities] = useState()
     const [filters, setFilters] = useState(entityFilters)
     const columns = entityColumns
     const [loading, setLoading] = useState(true)
-    const { getDocumentsInCollection } = useFirebase()
+    const { getDocumentsInCollection, updateDocument } = useFirebase()
     const navigate = useNavigate()
     const { replaceEntityProperties } = useUtilities()
     const { useDeepCompareEffect } = useCompareEffect()
+    const [open, setOpen] = useState(false)
+    const [toBeDeleted, setToBeDeleted] = useState(null)
 
     useDeepCompareEffect(() => {
         getDocumentsInCollection(type).then((data) => {
-            console.log(data)
             setEntities(data)
-            console.log(entities)
             setLoading(false)
         })
     })
@@ -70,17 +74,28 @@ function ListEntities({ type, entityFilters, entityColumns }) {
         return key.split('.').reduce((o, p) => (o ? o[p] : null), obj)
     }
 
+    const handleClickOpen = (id) => {
+        setToBeDeleted(id)
+        setOpen(true)
+    }
+
+    const handleClose = () => {
+        setOpen(false)
+    }
+
+    const handleDelete = async () => {
+        await updateDocument(type, toBeDeleted, { delete: true })
+        setEntities(entities.filter((entity) => entity.id !== toBeDeleted))
+        handleClose()
+    }
+
     return (
         <>
             {entities && entities.length ? (
                 <>
                     <Accordion
                         className='rounded-1 mb-3'
-                        sx={{
-                            '&::before': {
-                                display: 'none',
-                            },
-                        }}
+                        sx={{ '&::before': { display: 'none' } }}
                     >
                         <AccordionSummary
                             expandIcon={<ExpandMoreRounded />}
@@ -175,11 +190,12 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                             </TableHead>
                             <TableBody>
                                 {entities?.map((entity) => {
+                                    if (entity.delete) return null
                                     return (
                                         <TableRow
                                             key={entity.id}
                                             sx={{
-                                                '&:last-child td, &:last-child th':
+                                                '&:last-child td,&:last-child th':
                                                     { border: 0 },
                                             }}
                                         >
@@ -205,7 +221,6 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                                                     )
                                                 }
                                             })}
-
                                             <TableCell>
                                                 <ButtonGroup
                                                     variant='contained'
@@ -247,7 +262,13 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                                                         </Button>
                                                     </Tooltip>
                                                     <Tooltip title='Excluir'>
-                                                        <Button>
+                                                        <Button
+                                                            onClick={() =>
+                                                                handleClickOpen(
+                                                                    entity.id
+                                                                )
+                                                            }
+                                                        >
                                                             <DeleteRounded fontSize='small' />
                                                         </Button>
                                                     </Tooltip>
@@ -257,6 +278,37 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                                     )
                                 })}
                             </TableBody>
+                            <Dialog
+                                open={open}
+                                onClose={handleClose}
+                            >
+                                <DialogTitle>
+                                    {'Confirmação de Exclusão'}
+                                </DialogTitle>
+                                <DialogContent>
+                                    <DialogContentText color='black'>
+                                        Tem certeza de que deseja excluir esta
+                                        entidade? Essa ação{' '}
+                                        <strong>pode</strong> ser desfeita.
+                                    </DialogContentText>
+                                </DialogContent>
+                                <DialogActions>
+                                    <Button
+                                        onClick={handleClose}
+                                        color='black'
+                                    >
+                                        Cancelar
+                                    </Button>
+                                    <Button
+                                        onClick={handleDelete}
+                                        autoFocus
+                                        color='error'
+                                        variant='contained'
+                                    >
+                                        Excluir
+                                    </Button>
+                                </DialogActions>
+                            </Dialog>
                         </Table>
                     </TableContainer>
                 </>
@@ -280,5 +332,4 @@ function ListEntities({ type, entityFilters, entityColumns }) {
         </>
     )
 }
-
 export default ListEntities

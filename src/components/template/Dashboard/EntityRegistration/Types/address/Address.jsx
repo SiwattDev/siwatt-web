@@ -32,7 +32,7 @@ function Address(props) {
     }
 
     return (
-        <form className='row g-3'>
+        <form className='row g-3 p-0'>
             <Typography
                 className='col-12'
                 variant='h6'

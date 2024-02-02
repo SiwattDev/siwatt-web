@@ -1,8 +1,8 @@
 import {
     AssessmentRounded,
-    AutoAwesomeRounded,
     BadgeRounded,
     ConstructionRounded,
+    DescriptionRounded,
     HandshakeRounded,
     ManageHistoryRounded,
     MonetizationOnRounded,
@@ -75,12 +75,7 @@ function Sidebar() {
     const location = useLocation()
 
     useEffect(() => {
-        console.log('url changed')
-        if (getWindowSizes().width < 768) {
-            console.log('< 768')
-            setShow(true)
-            console.log('Show: ', show)
-        }
+        if (getWindowSizes().width < 768) setShow(true)
     }, [location])
 
     return (
@@ -153,7 +148,7 @@ function Sidebar() {
                         variant='text'
                         color='black'
                         className='rounded-0 text-capitalize px-4 w-100 justify-content-start'
-                        startIcon={<AutoAwesomeRounded />}
+                        startIcon={<DescriptionRounded />}
                         size='large'
                     >
                         <Typography variant='h6'>Documentos</Typography>

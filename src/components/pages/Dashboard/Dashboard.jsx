@@ -24,7 +24,6 @@ function Dashboard() {
     const { useDeepCompareEffect } = useCompareEffect()
 
     useDeepCompareEffect(() => {
-        console.log('Checking...')
         if (!user && user !== 'loading') navigate('/')
     }, [user])
 
