@@ -3,6 +3,7 @@ import {
     EditRounded,
     ExpandMoreRounded,
     FilterListRounded,
+    MoreHorizRounded,
     VisibilityRounded,
 } from '@mui/icons-material'
 import {
@@ -272,6 +273,13 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                                                             <DeleteRounded fontSize='small' />
                                                         </Button>
                                                     </Tooltip>
+                                                    {type === 'clients' && (
+                                                        <Tooltip title='Mais'>
+                                                            <Button>
+                                                                <MoreHorizRounded fontSize='small' />
+                                                            </Button>
+                                                        </Tooltip>
+                                                    )}
                                                 </ButtonGroup>
                                             </TableCell>
                                         </TableRow>

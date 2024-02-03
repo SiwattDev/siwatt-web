@@ -6,6 +6,7 @@ import useCompareEffect from '../../../hooks/useCompareEffect'
 import Content from '../../template/Dashboard/Content'
 import Header from '../../template/Dashboard/Header'
 import Sidebar from '../../template/Dashboard/Sidebar'
+import Loading from '../../template/Global/Loading'
 
 const DashboardBox = styled.div`
     display: grid;
@@ -24,14 +25,21 @@ function Dashboard() {
     const { useDeepCompareEffect } = useCompareEffect()
 
     useDeepCompareEffect(() => {
-        if (!user && user !== 'loading') navigate('/')
+        console.log(user)
+        if (user !== 'loading' && !user) navigate('/')
     }, [user])
 
     return (
         <DashboardBox>
-            <Header />
-            <Sidebar />
-            <Content />
+            {user !== 'loading' && user ? (
+                <>
+                    <Header />
+                    <Sidebar />
+                    <Content />
+                </>
+            ) : (
+                <Loading action='Verificando usuário...' />
+            )}
         </DashboardBox>
     )
 }
