@@ -17,41 +17,66 @@ import {
     ListItem,
     Typography,
 } from '@mui/material'
-import { createRef, useState } from 'react'
+import { createRef, useEffect, useState } from 'react'
 import useStorage from '../../../../../../hooks/useStorage'
 
-function AttachDocuments({ open, onClose }) {
+function AttachDocuments({ open, onClose, urls }) {
     const [filesList, setFilesList] = useState([])
     const [uploading, setUploading] = useState(false)
     const [progress, setProgress] = useState(0)
     const fileInputRef = createRef()
     const { uploadFile } = useStorage()
 
+    useEffect(() => {
+        if (urls && urls.length > 0) {
+            setFilesList(
+                urls.map((url, index) => {
+                    if (typeof url === 'string')
+                        return {
+                            type: 'URL',
+                            name: url.split('%2F').pop().split('?')[0],
+                            url,
+                        }
+                    else if (urls.hasOwnProperty('url'))
+                        return {
+                            type: 'URL',
+                            name: url.url.split('%2F').pop().split('?')[0],
+                            url,
+                        }
+                })
+            )
+        }
+    }, [urls])
+
     const handleSave = async () => {
         setUploading(true)
         if (filesList && filesList.length > 0) {
             const urls = await Promise.all(
                 filesList.map((file, index) => {
-                    return new Promise((resolve, reject) => {
-                        const reader = new FileReader()
-                        reader.onloadend = async () => {
-                            try {
-                                const url = await uploadFile(
-                                    'your/path/here',
-                                    reader.result,
-                                    file.name
-                                )
-                                resolve(url)
-                                setProgress(
-                                    ((index + 1) / filesList.length) * 100
-                                )
-                            } catch (err) {
-                                reject(err)
+                    if (file.type === 'URL') {
+                        return file.url
+                    } else {
+                        return new Promise((resolve, reject) => {
+                            const reader = new FileReader()
+                            reader.onloadend = async () => {
+                                try {
+                                    const url = await uploadFile(
+                                        'client_docs',
+                                        reader.result,
+                                        file.name
+                                    )
+                                    resolve(url)
+                                    setProgress(
+                                        ((index + 1) / filesList.length) * 100
+                                    )
+                                } catch (err) {
+                                    reject(err)
+                                }
                             }
-                        }
-                        reader.onerror = reject
-                        reader.readAsDataURL(file)
-                    })
+                            reader.onerror = reject
+                            reader.readAsDataURL(file)
+                        })
+                    }
                 })
             )
             onClose(urls)
@@ -100,7 +125,6 @@ function AttachDocuments({ open, onClose }) {
                 }}
                 ref={fileInputRef}
             />
-
             {uploading ? (
                 <Box
                     display='flex'
@@ -126,7 +150,7 @@ function AttachDocuments({ open, onClose }) {
                     >
                         {filesList.map((file, index) => (
                             <ListItem
-                                key={file.name}
+                                key={file?.name || file}
                                 secondaryAction={
                                     <IconButton
                                         aria-label='comment'
@@ -140,7 +164,13 @@ function AttachDocuments({ open, onClose }) {
                                     </IconButton>
                                 }
                             >
-                                {file.name}
+                                <a
+                                    href={file?.url || file}
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                >
+                                    {file?.name || file}
+                                </a>
                             </ListItem>
                         ))}
                     </List>
@@ -189,4 +219,5 @@ function AttachDocuments({ open, onClose }) {
         </Dialog>
     )
 }
+
 export default AttachDocuments

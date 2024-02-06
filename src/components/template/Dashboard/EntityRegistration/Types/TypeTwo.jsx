@@ -289,6 +289,7 @@ function Client(props) {
                         Documentos do cliente
                     </Button>
                     <AttachDocuments
+                        urls={state.docs}
                         open={openDialog}
                         onClose={(urls) => {
                             setOpenDialog(false)

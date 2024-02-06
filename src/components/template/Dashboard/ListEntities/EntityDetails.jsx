@@ -70,6 +70,15 @@ function EntityDetails() {
                     </Typography>
                 </Link>
             </Paper>
+            <Typography
+                variant='body1'
+                color='red'
+                className='bg-dark rounded-2 px-2 mb-3'
+            >
+                Siwatt em fase de teste. Algumas informações só poderão ser
+                cadastradas corretamente em fase de produção para a segurança
+                dos dados do cliente.
+            </Typography>
             {entity && (
                 <Card>
                     <CardContent>
