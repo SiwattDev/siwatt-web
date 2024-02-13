@@ -7,6 +7,7 @@ import Agents from './components/pages/Dashboard/Agents/Agents'
 import Clients from './components/pages/Dashboard/Clients/Clients'
 import Dashboard from './components/pages/Dashboard/Dashboard'
 import Kits from './components/pages/Dashboard/Kits/Kits'
+import RegisterKit from './components/pages/Dashboard/Kits/RegisterKit/RegisterKit'
 import Panel from './components/pages/Dashboard/Panel/Panel'
 import Partners from './components/pages/Dashboard/Partners/Partners'
 import Projects from './components/pages/Dashboard/Projects/Projects'
@@ -95,6 +96,10 @@ function AppRouter() {
                     <Route
                         path='budget/new/:id'
                         element={<BudgetData />}
+                    />
+                    <Route
+                        path='kits/new'
+                        element={<RegisterKit />}
                     />
                 </Route>
             </Routes>

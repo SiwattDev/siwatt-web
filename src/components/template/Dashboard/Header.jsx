@@ -62,7 +62,7 @@ function Header() {
             <div className='d-flex w-100 mx-3'>
                 <Input
                     type='text'
-                    placeholder='Pesquisar entidade'
+                    placeholder='Executar ação ou pesquisar entidades ou kit'
                     divStyle={{
                         width: '100%',
                         display: 'flex',

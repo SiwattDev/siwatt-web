@@ -105,7 +105,10 @@ function Client(props) {
     return (
         <form className='row g-3'>
             <div className='col-12 col-md-6'>
-                <FormControl fullWidth>
+                <FormControl
+                    fullWidth
+                    size='small'
+                >
                     <InputLabel
                         id='type-entity'
                         color='black'
@@ -313,7 +316,10 @@ function Client(props) {
             )}
             {state.type === 'client' && (
                 <div className='col-12'>
-                    <FormControl fullWidth>
+                    <FormControl
+                        fullWidth
+                        size='small'
+                    >
                         <InputLabel
                             id='seller'
                             color='black'

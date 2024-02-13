@@ -8,8 +8,8 @@ import TextLogo from '../../../assets/logo.png'
 import { UserContext } from '../../../contexts/userContext'
 import useAuth from '../../../hooks/useAuth'
 import useUtilities from '../../../hooks/useUtilities'
+import Input from '../../template/Global/Input'
 import Loading from '../../template/Global/Loading'
-import Input from '../../template/global/Input'
 
 const AuthContainer = styled.div`
     display: flex;

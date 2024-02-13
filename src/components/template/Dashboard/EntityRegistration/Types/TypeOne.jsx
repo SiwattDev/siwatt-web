@@ -132,7 +132,10 @@ function TypeOne(props) {
                     >
                         Tipo de usuário
                     </Typography>
-                    <FormControl fullWidth>
+                    <FormControl
+                        fullWidth
+                        size='small'
+                    >
                         <InputLabel
                             id='user-type'
                             color='black'
