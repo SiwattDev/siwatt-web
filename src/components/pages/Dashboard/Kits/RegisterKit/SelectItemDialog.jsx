@@ -157,15 +157,15 @@ const SelectItemDialog = ({ open, onClose }) => {
                                             <ListItemText>
                                                 <div>
                                                     <Typography variant='body1'>
-                                                        Modelo: {item.modelo}
+                                                        Modelo: {item.model}
                                                     </Typography>
                                                     <Typography variant='caption'>
                                                         Fabricante:{' '}
-                                                        {item.fabricante}
+                                                        {item.manufacturer}
                                                     </Typography>
                                                     <br />
                                                     <Typography variant='caption'>
-                                                        Tipo: {item.tipo}
+                                                        Tipo: {item.type}
                                                     </Typography>
                                                 </div>
                                             </ListItemText>

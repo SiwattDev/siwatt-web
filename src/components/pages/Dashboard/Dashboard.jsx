@@ -6,7 +6,7 @@ import useCompareEffect from '../../../hooks/useCompareEffect'
 import Content from '../../template/Dashboard/Content'
 import Header from '../../template/Dashboard/Header'
 import Sidebar from '../../template/Dashboard/Sidebar'
-import Loading from '../../template/Global/Loading'
+import Loading from './../../template/Global/Loading'
 
 const DashboardBox = styled.div`
     display: grid;

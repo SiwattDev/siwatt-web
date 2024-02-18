@@ -10,6 +10,7 @@ import Kits from './components/pages/Dashboard/Kits/Kits'
 import RegisterKit from './components/pages/Dashboard/Kits/RegisterKit/RegisterKit'
 import Panel from './components/pages/Dashboard/Panel/Panel'
 import Partners from './components/pages/Dashboard/Partners/Partners'
+import Products from './components/pages/Dashboard/Products/Products'
 import Projects from './components/pages/Dashboard/Projects/Projects'
 import Sales from './components/pages/Dashboard/Sales/Sales'
 import BudgetData from './components/template/Dashboard/Budget/BudgetData'
@@ -70,8 +71,16 @@ function AppRouter() {
                         element={<Clients />}
                     />
                     <Route
+                        path='products'
+                        element={<Products />}
+                    />
+                    <Route
                         path='kits'
                         element={<Kits />}
+                    />
+                    <Route
+                        path='kits/new'
+                        element={<RegisterKit />}
                     />
                     <Route
                         path='agents'
@@ -96,10 +105,6 @@ function AppRouter() {
                     <Route
                         path='budget/new/:id'
                         element={<BudgetData />}
-                    />
-                    <Route
-                        path='kits/new'
-                        element={<RegisterKit />}
                     />
                 </Route>
             </Routes>

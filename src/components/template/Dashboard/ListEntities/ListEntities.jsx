@@ -191,6 +191,7 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                             </TableHead>
                             <TableBody>
                                 {entities?.map((entity) => {
+                                    if (entity.id === 'user_types') return null
                                     if (entity.delete) return null
                                     return (
                                         <TableRow
@@ -228,23 +229,26 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                                                     color='black'
                                                     size='small'
                                                 >
-                                                    <Tooltip title='Ver detalhes'>
-                                                        <Button
-                                                            onClick={() =>
-                                                                navigate(
-                                                                    '/dashboard/entities/' +
-                                                                        type.slice(
-                                                                            0,
-                                                                            -1
-                                                                        ) +
-                                                                        '/' +
-                                                                        entity.id
-                                                                )
-                                                            }
-                                                        >
-                                                            <VisibilityRounded fontSize='small' />
-                                                        </Button>
-                                                    </Tooltip>
+                                                    {type !==
+                                                        'kits/itens/itens' && (
+                                                        <Tooltip title='Ver detalhes'>
+                                                            <Button
+                                                                onClick={() =>
+                                                                    navigate(
+                                                                        '/dashboard/entities/' +
+                                                                            type.slice(
+                                                                                0,
+                                                                                -1
+                                                                            ) +
+                                                                            '/' +
+                                                                            entity.id
+                                                                    )
+                                                                }
+                                                            >
+                                                                <VisibilityRounded fontSize='small' />
+                                                            </Button>
+                                                        </Tooltip>
+                                                    )}
                                                     <Tooltip title='Editar'>
                                                         <Button
                                                             onClick={() =>

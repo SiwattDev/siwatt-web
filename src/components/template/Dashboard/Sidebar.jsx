@@ -1,6 +1,6 @@
 import {
-    AssessmentRounded,
     BadgeRounded,
+    BentoRounded,
     ConstructionRounded,
     DescriptionRounded,
     HandshakeRounded,
@@ -121,17 +121,6 @@ function Sidebar() {
                 </svg>
             </ToggleAside>
             <Links>
-                <Link to='/dashboard/'>
-                    <Button
-                        variant='text'
-                        color='black'
-                        className='rounded-0 text-capitalize px-4 w-100 justify-content-start'
-                        startIcon={<AssessmentRounded />}
-                        size='large'
-                    >
-                        <Typography variant='h6'>Painel</Typography>
-                    </Button>
-                </Link>
                 <Link to='/dashboard/sales'>
                     <Button
                         variant='text'
@@ -140,7 +129,7 @@ function Sidebar() {
                         startIcon={<MonetizationOnRounded />}
                         size='large'
                     >
-                        <Typography variant='h6'>Vendas</Typography>
+                        <Typography variant='h6'>Funil</Typography>
                     </Button>
                 </Link>
                 <Link to='/dashboard/documents'>
@@ -151,7 +140,7 @@ function Sidebar() {
                         startIcon={<DescriptionRounded />}
                         size='large'
                     >
-                        <Typography variant='h6'>Documentos</Typography>
+                        <Typography variant='h6'>Orçamentos</Typography>
                     </Button>
                 </Link>
                 <Link to='/dashboard/projects'>
@@ -185,6 +174,17 @@ function Sidebar() {
                         size='large'
                     >
                         <Typography variant='h6'>Clientes</Typography>
+                    </Button>
+                </Link>
+                <Link to='/dashboard/products'>
+                    <Button
+                        variant='text'
+                        color='black'
+                        className='rounded-0 text-capitalize px-4 w-100 justify-content-start'
+                        startIcon={<BentoRounded />}
+                        size='large'
+                    >
+                        <Typography variant='h6'>Produtos</Typography>
                     </Button>
                 </Link>
                 <Link to='/dashboard/kits'>

@@ -14,7 +14,6 @@ import { useEffect, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import useUtilities from '../../../../../hooks/useUtilities'
 import useFirebase from './../../../../../hooks/useFirebase'
-import CreateItemDialog from './CreateItemDialog'
 import SelectItemDialog from './SelectItemDialog'
 
 const RegisterKit = () => {
@@ -23,7 +22,6 @@ const RegisterKit = () => {
     const [items, setItems] = useState([])
     const [itemsData, setItemsData] = useState([])
     const [openSelect, setOpenSelect] = useState(false)
-    const [openCreate, setOpenCreate] = useState(false)
     const { generateCode, showToastMessage } = useUtilities()
     const { createDocument, getDocumentById } = useFirebase()
 
@@ -127,13 +125,13 @@ const RegisterKit = () => {
                                 return (
                                     <div key={item.id}>
                                         <Typography variant='h6'>
-                                            {item.modelo}
+                                            {item.model}
                                         </Typography>
                                         <Typography variant='body2'>
-                                            {item.tipo}
+                                            {item.type}
                                         </Typography>
                                         <Typography variant='body2'>
-                                            {item.fabricante}
+                                            {item.manufacturer}
                                         </Typography>
                                     </div>
                                 )
@@ -170,10 +168,6 @@ const RegisterKit = () => {
                         setItems([...items, item])
                     else showToastMessage('error', 'Item já selecionado')
                 }}
-            />
-            <CreateItemDialog
-                open={openCreate}
-                onClose={() => setOpenCreate(false)}
             />
             <ToastContainer autoClose={5000} />
         </>

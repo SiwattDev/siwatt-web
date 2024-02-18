@@ -7,6 +7,7 @@ import {
 } from '@mui/icons-material'
 import { Masonry } from '@mui/lab'
 import {
+    Button,
     Card,
     CardContent,
     Collapse,
@@ -85,25 +86,54 @@ function Kits() {
                                             variant='h6'
                                             className='fw-bold'
                                         >
-                                            Componentes:
+                                            Produtos:
                                         </Typography>
-                                        {kit.items.map((item, index) => (
+                                        {kit.items
+                                            .slice(0, 2)
+                                            .map((item, index) => (
+                                                <>
+                                                    <Typography>
+                                                        Modelo: {item.model}
+                                                    </Typography>
+                                                    <Typography>
+                                                        Fabricante:{' '}
+                                                        {item.manufacturer}
+                                                    </Typography>
+                                                    <Typography>
+                                                        Tipo: {item.type}
+                                                    </Typography>
+                                                    {index < 1 && (
+                                                        <Divider
+                                                            color='black'
+                                                            className='my-2'
+                                                        />
+                                                    )}
+                                                </>
+                                            ))}
+                                        {kit.items.length > 2 && (
                                             <>
-                                                <Typography>
-                                                    Modelo: {item.modelo}
+                                                <Typography variant='overline'>
+                                                    Existem mais Produtos...
                                                 </Typography>
-                                                <Typography>
-                                                    Fabricante:{' '}
-                                                    {item.fabricante}
-                                                </Typography>
-                                                <Typography>
-                                                    Tipo: {item.tipo}
-                                                </Typography>
-                                                {index === kit.items.length && (
-                                                    <Divider color='black' />
-                                                )}
+                                                <br />
                                             </>
-                                        ))}
+                                        )}
+                                        {kit.items.length > 2 && (
+                                            <>
+                                                <Typography variant='overline'>
+                                                    Existem mais Produtos...
+                                                </Typography>
+                                                <br />
+                                            </>
+                                        )}
+                                        <Button
+                                            variant='contained'
+                                            color='black'
+                                            size='small'
+                                            className='mt-3'
+                                        >
+                                            Ver Detalhes
+                                        </Button>
                                     </Collapse>
                                 </>
                             )}

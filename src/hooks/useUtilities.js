@@ -81,6 +81,25 @@ function useUtilities() {
                 return 'Número'
             case 'reference':
                 return 'Referência'
+            case 'model':
+                return 'Modelo'
+            case 'description':
+                return 'Descrição'
+            case 'manufacturer':
+                return 'Fabricante'
+            case 'unit':
+                return 'Medida'
+            case 'supplier':
+                return 'Fornecedor'
+            case 'power':
+                return 'Potência'
+            case 'barcode':
+                return 'Código de Barrar'
+            case 'purchase_price':
+                return 'Preço de Compra'
+            case 'sale_price':
+                return 'Preço de Venda'
+
             default:
                 return 'Unknown'
         }
