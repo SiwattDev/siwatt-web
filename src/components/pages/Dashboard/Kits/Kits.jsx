@@ -20,6 +20,7 @@ import {
     SpeedDial,
     SpeedDialAction,
     SpeedDialIcon,
+    Tooltip,
     Typography,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
@@ -54,21 +55,19 @@ function Kits() {
         setExpanded(expanded !== id ? id : null)
     }
 
+    const handleEditKit = (kitId) => {
+        navigate(`edit/${kitId}`)
+    }
+
     return (
         <>
             <Paper className='d-flex gap-2 align-items-center px-3 py-2 mb-3'>
                 <SolarPowerRounded color='black' />
-                <Typography
-                    variant='h6'
-                    sx={{ color: 'black' }}
-                >
+                <Typography variant='h6' sx={{ color: 'black' }}>
                     Kits
                 </Typography>
             </Paper>
-            <Masonry
-                columns={3}
-                spacing={2}
-            >
+            <Masonry columns={3} spacing={2}>
                 {kits.map((kit) => (
                     <Card
                         key={kit.id}
@@ -134,15 +133,23 @@ function Kits() {
                                 size='small'
                                 className='mt-3'
                             >
-                                <Button>
-                                    <VisibilityRounded fontSize='small' />
-                                </Button>
-                                <Button>
-                                    <EditRounded fontSize='small' />
-                                </Button>
-                                <Button>
-                                    <DeleteRounded fontSize='small' />
-                                </Button>
+                                <Tooltip title='Ver Detalhes'>
+                                    <Button>
+                                        <VisibilityRounded fontSize='small' />
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip title='Editar'>
+                                    <Button
+                                        onClick={() => handleEditKit(kit.id)}
+                                    >
+                                        <EditRounded fontSize='small' />
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip title='Excluir'>
+                                    <Button>
+                                        <DeleteRounded fontSize='small' />
+                                    </Button>
+                                </Tooltip>
                             </ButtonGroup>
                         </CardContent>
                     </Card>

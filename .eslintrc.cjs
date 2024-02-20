@@ -18,5 +18,11 @@ module.exports = {
             { allowConstantExport: true },
         ],
         'react-hooks/exhaustive-deps': 'off',
+        'react/jsx-filename-extension': [
+            'warn',
+            { extensions: ['.js', '.jsx'] },
+        ],
+        'import/prefer-default-export': 'off',
+        'jsx-quotes': ['error', 'prefer-single'],
     },
 }

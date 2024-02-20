@@ -7,7 +7,7 @@ import Agents from './components/pages/Dashboard/Agents/Agents'
 import Clients from './components/pages/Dashboard/Clients/Clients'
 import Dashboard from './components/pages/Dashboard/Dashboard'
 import Kits from './components/pages/Dashboard/Kits/Kits'
-import RegisterKit from './components/pages/Dashboard/Kits/RegisterKit/RegisterKit'
+import KitForm from './components/pages/Dashboard/Kits/RegisterKit/KitForm'
 import Panel from './components/pages/Dashboard/Panel/Panel'
 import Partners from './components/pages/Dashboard/Partners/Partners'
 import Products from './components/pages/Dashboard/Products/Products'
@@ -38,62 +38,24 @@ function AppRouter() {
     return (
         <Router>
             <Routes>
-                <Route
-                    path='/'
-                    element={<Auth />}
-                />
-                <Route
-                    path='/dashboard'
-                    element={<Dashboard />}
-                >
-                    <Route
-                        index
-                        element={<Panel />}
-                    />
-                    <Route
-                        path='panel'
-                        element={<Panel />}
-                    />
-                    <Route
-                        path='sales'
-                        element={<Sales />}
-                    />
-                    <Route
-                        path='projects'
-                        element={<Projects />}
-                    />
-                    <Route
-                        path='aftersales'
-                        element={<AfterSales />}
-                    />
-                    <Route
-                        path='clients'
-                        element={<Clients />}
-                    />
-                    <Route
-                        path='products'
-                        element={<Products />}
-                    />
-                    <Route
-                        path='kits'
-                        element={<Kits />}
-                    />
-                    <Route
-                        path='kits/new'
-                        element={<RegisterKit />}
-                    />
-                    <Route
-                        path='agents'
-                        element={<Agents />}
-                    />
+                <Route path='/' element={<Auth />} />
+                <Route path='/dashboard' element={<Dashboard />}>
+                    <Route index element={<Panel />} />
+                    <Route path='panel' element={<Panel />} />
+                    <Route path='sales' element={<Sales />} />
+                    <Route path='projects' element={<Projects />} />
+                    <Route path='aftersales' element={<AfterSales />} />
+                    <Route path='clients' element={<Clients />} />
+                    <Route path='products' element={<Products />} />
+                    <Route path='kits' element={<Kits />} />
+                    <Route path='kits/new' element={<KitForm />} />
+                    <Route path='kits/edit/:id' element={<KitForm />} />
+                    <Route path='agents' element={<Agents />} />
                     <Route
                         path='entities/:type/:id'
                         element={<EntityDetails />}
                     />
-                    <Route
-                        path='partners'
-                        element={<Partners />}
-                    />
+                    <Route path='partners' element={<Partners />} />
                     <Route
                         path='entity-registration'
                         element={<EntityRegistration />}
@@ -102,10 +64,7 @@ function AppRouter() {
                         path='entity-registration/:type/:action/:id'
                         element={<EntityRegistration />}
                     />
-                    <Route
-                        path='budget/new/:id'
-                        element={<BudgetData />}
-                    />
+                    <Route path='budget/new/:id' element={<BudgetData />} />
                 </Route>
             </Routes>
         </Router>

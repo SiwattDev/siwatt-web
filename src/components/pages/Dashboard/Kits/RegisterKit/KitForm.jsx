@@ -13,54 +13,84 @@ import {
 import { useEffect, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import useUtilities from '../../../../../hooks/useUtilities'
-import useFirebase from './../../../../../hooks/useFirebase'
+import useFirebase from '../../../../../hooks/useFirebase'
 import SelectItemDialog from './SelectItemDialog'
+import { useParams } from 'react-router-dom'
 
-const RegisterKit = () => {
+const KitForm = () => {
+    const [kit, setKit] = useState(null)
     const [kitName, setKitName] = useState('')
     const [fixationType, setFixationType] = useState('')
     const [items, setItems] = useState([])
     const [itemsData, setItemsData] = useState([])
     const [openSelect, setOpenSelect] = useState(false)
     const { generateCode, showToastMessage } = useUtilities()
-    const { createDocument, getDocumentById } = useFirebase()
+    const { createDocument, getDocumentById, updateDocument } = useFirebase()
+    const { id } = useParams()
 
     const handleAddItem = async () => {
         setOpenSelect(true)
     }
 
-    const handleRegisterKit = () => {
-        const id = generateCode()
-        createDocument('kits/kits/kits', id, {
-            id,
-            name: kitName,
-            fixationType,
-            items,
-        })
-            .then(() => {
-                showToastMessage('success', 'Kit cadastrado com sucesso')
-            })
-            .catch(() => {
-                showToastMessage(
-                    'error',
-                    'Error inesperado ao tentar cadastrar'
-                )
-            })
+    const handleRegisterKit = async () => {
+        const id = kit ? kit.id : generateCode()
+
+        try {
+            if (kit) {
+                await updateDocument('kits/kits/kits', id, {
+                    id,
+                    name: kitName,
+                    fixationType,
+                    items,
+                })
+            } else {
+                await createDocument('kits/kits/kits', id, {
+                    id,
+                    name: kitName,
+                    fixationType,
+                    items,
+                })
+            }
+
+            showToastMessage('success', 'Kit cadastrado com sucesso')
+        } catch (e) {
+            showToastMessage('error', 'Error inesperado ao tentar cadastrar')
+        }
     }
 
-    useEffect(() => {
-        console.log({
-            name: kitName,
-            fixationType,
-            items,
+    const handleRemoveItem = (itemIndex) => {
+        setItemsData((prevItemsData) => {
+            return prevItemsData.filter((item, index) => index !== itemIndex)
         })
-    }, [kitName, fixationType, items])
+        setItems((prevItems) => {
+            return prevItems.filter((item, index) => index !== itemIndex)
+        })
+    }
+
+    useEffect(async () => {
+        if (id) {
+            const kit = await getDocumentById('kits/kits/kits', id)
+            if (kit) {
+                setKitName(kit.name)
+                setFixationType(kit.fixationType)
+                setItems(kit.items)
+                setKit({
+                    id,
+                    name: kit.name,
+                    fixationType: kit.fixationType,
+                    items: kit.items,
+                })
+            }
+        }
+    }, [id])
 
     useEffect(() => {
+        console.log('items', items)
+        console.log('itemsData', itemsData)
         if (items.length > 0) {
             items.map((item) => {
                 getDocumentById('kits/itens/itens', item).then((result) => {
-                    setItemsData([...itemsData, result])
+                    setItemsData((prevItemsData) => [...prevItemsData, result])
                 })
             })
         }
@@ -70,10 +100,7 @@ const RegisterKit = () => {
         <>
             <Paper className='d-flex gap-2 align-items-center px-3 py-2 mb-3'>
                 <SolarPowerRounded color='black' />
-                <Typography
-                    variant='h6'
-                    sx={{ color: 'black' }}
-                >
+                <Typography variant='h6' sx={{ color: 'black' }}>
                     Kits
                 </Typography>
             </Paper>
@@ -90,10 +117,7 @@ const RegisterKit = () => {
                         />
                     </div>
                     <div className='col-12'>
-                        <FormControl
-                            fullWidth
-                            size='small'
-                        >
+                        <FormControl fullWidth size='small'>
                             <InputLabel color='black'>
                                 Tipo de fixação:
                             </InputLabel>
@@ -121,7 +145,7 @@ const RegisterKit = () => {
                     </div>
                     {items.length > 0 && (
                         <>
-                            {itemsData.map((item) => {
+                            {itemsData.map((item, index) => {
                                 return (
                                     <div key={item.id}>
                                         <Typography variant='h6'>
@@ -133,6 +157,16 @@ const RegisterKit = () => {
                                         <Typography variant='body2'>
                                             {item.manufacturer}
                                         </Typography>
+                                        <Button
+                                            variant='contained'
+                                            color='black'
+                                            size='small'
+                                            onClick={() =>
+                                                handleRemoveItem(index)
+                                            }
+                                        >
+                                            Remover
+                                        </Button>
                                     </div>
                                 )
                             })}
@@ -174,4 +208,4 @@ const RegisterKit = () => {
     )
 }
 
-export default RegisterKit
+export default KitForm
