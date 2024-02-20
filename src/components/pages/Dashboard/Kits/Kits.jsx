@@ -1,13 +1,17 @@
 import {
     AddRounded,
     CloseRounded,
+    DeleteRounded,
+    EditRounded,
     GridViewRounded,
     MenuRounded,
     SolarPowerRounded,
+    VisibilityRounded,
 } from '@mui/icons-material'
 import { Masonry } from '@mui/lab'
 import {
     Button,
+    ButtonGroup,
     Card,
     CardContent,
     Collapse,
@@ -44,7 +48,7 @@ function Kits() {
             setKits(kitsWithItems)
         }
         fetchKits()
-    }, [getDocumentById])
+    }, [])
 
     const handleExpandClick = (id) => {
         setExpanded(expanded !== id ? id : null)
@@ -81,6 +85,7 @@ function Kits() {
                                         in={expanded === kit.id}
                                         timeout='auto'
                                         unmountOnExit
+                                        collapsedSize={20}
                                     >
                                         <Typography
                                             variant='h6'
@@ -102,12 +107,14 @@ function Kits() {
                                                     <Typography>
                                                         Tipo: {item.type}
                                                     </Typography>
-                                                    {index < 1 && (
-                                                        <Divider
-                                                            color='black'
-                                                            className='my-2'
-                                                        />
-                                                    )}
+                                                    {index < 1 &&
+                                                        kit.items.length >
+                                                            1 && (
+                                                            <Divider
+                                                                color='black'
+                                                                className='my-2'
+                                                            />
+                                                        )}
                                                 </>
                                             ))}
                                         {kit.items.length > 2 && (
@@ -118,25 +125,25 @@ function Kits() {
                                                 <br />
                                             </>
                                         )}
-                                        {kit.items.length > 2 && (
-                                            <>
-                                                <Typography variant='overline'>
-                                                    Existem mais Produtos...
-                                                </Typography>
-                                                <br />
-                                            </>
-                                        )}
-                                        <Button
-                                            variant='contained'
-                                            color='black'
-                                            size='small'
-                                            className='mt-3'
-                                        >
-                                            Ver Detalhes
-                                        </Button>
                                     </Collapse>
                                 </>
                             )}
+                            <ButtonGroup
+                                variant='contained'
+                                color='black'
+                                size='small'
+                                className='mt-3'
+                            >
+                                <Button>
+                                    <VisibilityRounded fontSize='small' />
+                                </Button>
+                                <Button>
+                                    <EditRounded fontSize='small' />
+                                </Button>
+                                <Button>
+                                    <DeleteRounded fontSize='small' />
+                                </Button>
+                            </ButtonGroup>
                         </CardContent>
                     </Card>
                 ))}
