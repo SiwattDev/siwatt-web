@@ -11,14 +11,14 @@ import {
     Typography,
 } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { ToastContainer } from 'react-toastify'
-import useUtilities from '../../../../../hooks/useUtilities'
-import useFirebase from '../../../../../hooks/useFirebase'
-import SelectItemDialog from './SelectItemDialog'
 import { useParams } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import useFirebase from '../../../../../hooks/useFirebase'
+import useUtilities from '../../../../../hooks/useUtilities'
+import SelectItemDialog from './SelectItemDialog'
 
 const KitForm = () => {
-    const [kit, setKit] = useState(null)
+    const [kit, setKit] = useState({})
     const [kitName, setKitName] = useState('')
     const [fixationType, setFixationType] = useState('')
     const [items, setItems] = useState([])
@@ -67,21 +67,25 @@ const KitForm = () => {
         })
     }
 
-    useEffect(async () => {
-        if (id) {
-            const kit = await getDocumentById('kits/kits/kits', id)
-            if (kit) {
-                setKitName(kit.name)
-                setFixationType(kit.fixationType)
-                setItems(kit.items)
-                setKit({
-                    id,
-                    name: kit.name,
-                    fixationType: kit.fixationType,
-                    items: kit.items,
-                })
+    useEffect(() => {
+        const fetchKit = async () => {
+            if (id) {
+                const kit = await getDocumentById('kits/kits/kits', id)
+                if (kit) {
+                    setKitName(kit.name)
+                    setFixationType(kit.fixationType)
+                    setItems(kit.items)
+                    setKit({
+                        id,
+                        name: kit.name,
+                        fixationType: kit.fixationType,
+                        items: kit.items,
+                    })
+                }
             }
         }
+
+        fetchKit()
     }, [id])
 
     useEffect(() => {
@@ -90,7 +94,16 @@ const KitForm = () => {
         if (items.length > 0) {
             items.map((item) => {
                 getDocumentById('kits/itens/itens', item).then((result) => {
-                    setItemsData((prevItemsData) => [...prevItemsData, result])
+                    setItemsData((prevItemsData) => {
+                        const itemExists = prevItemsData.some(
+                            (data) => data.id === result.id
+                        )
+                        if (!itemExists) {
+                            return [...prevItemsData, result]
+                        } else {
+                            return prevItemsData
+                        }
+                    })
                 })
             })
         }
@@ -147,7 +160,7 @@ const KitForm = () => {
                         <>
                             {itemsData.map((item, index) => {
                                 return (
-                                    <div key={item.id}>
+                                    <div key={item.id + index}>
                                         <Typography variant='h6'>
                                             {item.model}
                                         </Typography>

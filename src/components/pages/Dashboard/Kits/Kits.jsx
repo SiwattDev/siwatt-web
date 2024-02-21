@@ -30,7 +30,8 @@ import useFirebase from '../../../../hooks/useFirebase'
 function Kits() {
     const [kits, setKits] = useState([])
     const [expanded, setExpanded] = useState(null)
-    const { getDocumentById, getDocumentsInCollection } = useFirebase()
+    const { getDocumentById, getDocumentsInCollection, updateDocument } =
+        useFirebase()
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -53,10 +54,6 @@ function Kits() {
 
     const handleExpandClick = (id) => {
         setExpanded(expanded !== id ? id : null)
-    }
-
-    const handleEditKit = (kitId) => {
-        navigate(`edit/${kitId}`)
     }
 
     return (
@@ -134,19 +131,36 @@ function Kits() {
                                 className='mt-3'
                             >
                                 <Tooltip title='Ver Detalhes'>
-                                    <Button>
+                                    <Button
+                                        onClick={() =>
+                                            navigate(`view/${kit.id}`)
+                                        }
+                                    >
                                         <VisibilityRounded fontSize='small' />
                                     </Button>
                                 </Tooltip>
                                 <Tooltip title='Editar'>
                                     <Button
-                                        onClick={() => handleEditKit(kit.id)}
+                                        onClick={() =>
+                                            navigate(`edit/${kit.id}`)
+                                        }
                                     >
                                         <EditRounded fontSize='small' />
                                     </Button>
                                 </Tooltip>
                                 <Tooltip title='Excluir'>
-                                    <Button>
+                                    <Button
+                                        onClick={() => {
+                                            updateDocument(
+                                                'kits/kits/kits',
+                                                kit.id,
+                                                {
+                                                    ...kit,
+                                                    delete: true,
+                                                }
+                                            )
+                                        }}
+                                    >
                                         <DeleteRounded fontSize='small' />
                                     </Button>
                                 </Tooltip>
