@@ -7,7 +7,6 @@ import {
     ManageHistoryRounded,
     MonetizationOnRounded,
     PeopleAltRounded,
-    SolarPowerRounded,
 } from '@mui/icons-material'
 import { Button, Typography, css } from '@mui/material'
 import { useEffect, useState } from 'react'
@@ -185,17 +184,6 @@ function Sidebar() {
                         size='large'
                     >
                         <Typography variant='h6'>Produtos</Typography>
-                    </Button>
-                </Link>
-                <Link to='/dashboard/kits'>
-                    <Button
-                        variant='text'
-                        color='black'
-                        className='rounded-0 text-capitalize px-4 w-100 justify-content-start'
-                        startIcon={<SolarPowerRounded />}
-                        size='large'
-                    >
-                        <Typography variant='h6'>Kits</Typography>
                     </Button>
                 </Link>
                 <Link to='/dashboard/agents'>

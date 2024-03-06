@@ -1,11 +1,9 @@
 import {
     AddRounded,
-    CloseRounded,
     DeleteRounded,
     EditRounded,
     FilterListOffRounded,
     FilterListRounded,
-    VisibilityRounded,
 } from '@mui/icons-material'
 import {
     Box,
@@ -20,11 +18,8 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    Divider,
-    Drawer,
     Fab,
     FormControl,
-    IconButton,
     InputLabel,
     MenuItem,
     Select,
@@ -39,9 +34,7 @@ const ProductList = () => {
     const [products, setProducts] = useState([])
     const [filteredProducts, setFilteredProducts] = useState([])
     const [filter, setFilter] = useState({ type: '', supplier: '' })
-    const [suppliers, setSuppliers] = useState([])
     const [openDialog, setOpenDialog] = useState(false)
-    const [openDrawer, setOpenDrawer] = useState(false)
     const [selectedProduct, setSelectedProduct] = useState(null)
     const [loading, setLoading] = useState(true)
     const [filtersApplied, setFiltersApplied] = useState(false)
@@ -53,52 +46,18 @@ const ProductList = () => {
     const types = [
         { value: 'module', label: 'Módulo' },
         { value: 'inverter', label: 'Inversor' },
-        { value: 'structure', label: 'Estrutura' },
-        { value: 'solar_cable', label: 'Cabo Solar' },
-        { value: 'staubli_connector', label: 'Conector Staubli' },
-        { value: 'fixation', label: 'Fixação' },
-        { value: 'surge_protectors', label: 'Protetores de Surto' },
-        { value: 'charge_controller', label: 'Controlador de Carga' },
-        { value: 'batteries', label: 'Baterias' },
-        { value: 'monitoring', label: 'Monitoramento' },
-        { value: 'circuit_breaker', label: 'Disjuntor' },
-        { value: 'bidirectional_meter', label: 'Medidor Bidirecional' },
-        {
-            value: 'automatic_transfer_switch',
-            label: 'Chave de Transferência Automática',
-        },
     ]
 
     const getProducts = () => {
         firebase
             .getDocumentsInCollection('kits/itens/itens')
             .then((data) => {
-                const promises = data.map(async (product) => {
-                    const supplier = await firebase.getDocumentById(
-                        'suppliers',
-                        product.supplier
-                    )
-                    return { ...product, supplierName: supplier.name }
-                })
-                return Promise.all(promises)
-            })
-            .then((dataWithSupplierName) => {
-                setProducts(dataWithSupplierName)
-                setFilteredProducts(dataWithSupplierName)
+                setLoading(false)
+                setProducts(data)
+                setFilteredProducts(data) // Adicionado para atualizar os produtos filtrados
+                console.log(data) // Adicionado para verificar os dados obtidos do Firebase
             })
             .catch((error) => console.error(error))
-
-        firebase
-            .getDocumentsInCollection('suppliers')
-            .then((data) => {
-                const supplierOptions = data.map((supplier) => ({
-                    value: supplier.id,
-                    label: supplier.name,
-                }))
-                setSuppliers(supplierOptions)
-            })
-            .catch((error) => console.error(error))
-            .finally(() => setLoading(false))
     }
 
     useEffect(() => {
@@ -115,11 +74,7 @@ const ProductList = () => {
     const applyFilter = () => {
         setFilteredProducts(
             products.filter(
-                (product) =>
-                    (filter.type === '' ||
-                        product.type.includes(filter.type)) &&
-                    (filter.supplier === '' ||
-                        product.supplierName.includes(filter.supplier))
+                (product) => filter.type === '' || product.type === filter.type
             )
         )
         setOpenDialog(false)
@@ -130,11 +85,6 @@ const ProductList = () => {
         setFilter({ type: '', supplier: '' })
         setFilteredProducts(products)
         setFiltersApplied(false)
-    }
-
-    const handleViewDetails = (product) => {
-        setSelectedProduct(product)
-        setOpenDrawer(true)
     }
 
     const handleClickOpen = (id) => {
@@ -225,34 +175,6 @@ const ProductList = () => {
                             </Select>
                         </FormControl>
                     </div>
-                    <div className='col-12'>
-                        <FormControl
-                            variant='outlined'
-                            color='black'
-                            size='small'
-                            className='w-100'
-                        >
-                            <InputLabel id='supplier-label'>
-                                Fornecedor
-                            </InputLabel>
-                            <Select
-                                labelId='supplier-label'
-                                name='supplier'
-                                value={filter.supplier}
-                                onChange={handleFilterChange}
-                                label='Fornecedor'
-                            >
-                                {suppliers.map((supplier) => (
-                                    <MenuItem
-                                        key={supplier.value}
-                                        value={supplier.label}
-                                    >
-                                        {supplier.label}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </div>
                 </DialogContent>
                 <DialogActions>
                     <Button
@@ -279,102 +201,23 @@ const ProductList = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Drawer
-                anchor='right'
-                open={openDrawer}
-                onClose={() => setOpenDrawer(false)}
-                variant={window.innerWidth < 600 ? 'temporary' : 'persistent'}
-                PaperProps={{
-                    style: {
-                        boxShadow: '-3px 0 10px rgba(0, 0, 0, 0.1)',
-                        borderRadius: '20px 0px 0px 20px',
-                        border: 'none',
-                    },
-                }}
-            >
-                <div className='d-flex justify-content-between align-items-center pt-2 px-4'>
-                    <Typography variant='h6'>Detalhes do Produto</Typography>
-                    <IconButton
-                        variant='contained'
-                        color='black'
-                        onClick={() => setOpenDrawer(false)}
-                        size='small'
-                    >
-                        <CloseRounded fontSize='small' />
-                    </IconButton>
-                </div>
-                <Divider
-                    className='mt-2 mb-3'
-                    sx={{ borderColor: 'rgba(0, 0, 0, 0.3)' }}
-                />
-                {selectedProduct && (
-                    <div
-                        style={{ width: 300 }}
-                        className='pb-2 px-4'
-                    >
-                        <Typography className='mb-2'>
-                            <strong>ID</strong>: {selectedProduct.id}
-                        </Typography>
-                        <Typography className='mb-2'>
-                            <strong>Modelo:</strong> {selectedProduct.model}
-                        </Typography>
-                        <Typography className='mb-2'>
-                            <strong>Descrição:</strong>{' '}
-                            {selectedProduct.description}
-                        </Typography>
-                        <Typography className='mb-2'>
-                            <strong>Tipo</strong>: {selectedProduct.type}
-                        </Typography>
-                        <Typography className='mb-2'>
-                            <strong>Fabricante</strong>:{' '}
-                            {selectedProduct.manufacturer}
-                        </Typography>
-                        <Typography className='mb-2'>
-                            <strong>Unidade</strong>: {selectedProduct.unit}
-                        </Typography>
-                        <Typography className='mb-2'>
-                            <strong>Fornecedor</strong>:{' '}
-                            {selectedProduct.supplierName}
-                        </Typography>
-                        <Typography className='mb-2'>
-                            <strong>Potência</strong>:{' '}
-                            {selectedProduct.power + ' KWp'}
-                        </Typography>
-                        <Typography className='mb-2'>
-                            <strong>Código de Barras</strong>:{' '}
-                            {selectedProduct.barcode}
-                        </Typography>
-                        <Typography className='mb-2'>
-                            <strong>Preço de Compra</strong>:{' R$ '}
-                            {selectedProduct.purchase_price}
-                        </Typography>
-                        <Typography className='mb-2'>
-                            <strong>Preço de Venda</strong>:{' R$ '}
-                            {selectedProduct.sale_price}
-                        </Typography>
-                    </div>
-                )}
-            </Drawer>
             <div className='row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mt-0'>
                 {filteredProducts.map((product) =>
                     product.delete ? null : (
-                        <div
-                            className='col'
-                            key={product.id}
-                        >
+                        <div className='col' key={product.id}>
                             <Card>
                                 <CardContent>
-                                    <Typography
-                                        variant='h5'
-                                        component='div'
-                                    >
+                                    <Typography variant='h5' component='div'>
                                         {product.model}
                                     </Typography>
-                                    <Typography
-                                        variant='body2'
-                                        color='text.secondary'
-                                    >
-                                        {product.description}
+                                    <Typography variant='body2'>
+                                        ID: {product.id}
+                                    </Typography>
+                                    <Typography variant='body2'>
+                                        Potência: {product.power}
+                                    </Typography>
+                                    <Typography variant='body2'>
+                                        Preço: {product.price}
                                     </Typography>
                                 </CardContent>
                                 <CardActions className='d-flex justify-content-end'>
@@ -383,15 +226,6 @@ const ProductList = () => {
                                         color='black'
                                         size='small'
                                     >
-                                        <Tooltip title='Ver detalhes'>
-                                            <Button
-                                                onClick={() =>
-                                                    handleViewDetails(product)
-                                                }
-                                            >
-                                                <VisibilityRounded fontSize='small' />
-                                            </Button>
-                                        </Tooltip>
                                         <Tooltip title='Editar'>
                                             <Button
                                                 onClick={() =>
@@ -413,10 +247,7 @@ const ProductList = () => {
                                     </ButtonGroup>
                                 </CardActions>
                             </Card>
-                            <Dialog
-                                open={open}
-                                onClose={handleClose}
-                            >
+                            <Dialog open={open} onClose={handleClose}>
                                 <DialogTitle>
                                     {'Confirmação de Exclusão'}
                                 </DialogTitle>
@@ -428,10 +259,7 @@ const ProductList = () => {
                                     </DialogContentText>
                                 </DialogContent>
                                 <DialogActions>
-                                    <Button
-                                        onClick={handleClose}
-                                        color='black'
-                                    >
+                                    <Button onClick={handleClose} color='black'>
                                         Cancelar
                                     </Button>
                                     <Button

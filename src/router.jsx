@@ -6,9 +6,6 @@ import AfterSales from './components/pages/Dashboard/AfterSales/AfterSales'
 import Agents from './components/pages/Dashboard/Agents/Agents'
 import Clients from './components/pages/Dashboard/Clients/Clients'
 import Dashboard from './components/pages/Dashboard/Dashboard'
-import DetailsKit from './components/pages/Dashboard/Kits/DetailsKit/DetailsKit'
-import Kits from './components/pages/Dashboard/Kits/Kits'
-import KitForm from './components/pages/Dashboard/Kits/RegisterKit/KitForm'
 import Panel from './components/pages/Dashboard/Panel/Panel'
 import Partners from './components/pages/Dashboard/Partners/Partners'
 import Products from './components/pages/Dashboard/Products/Products'
@@ -48,10 +45,6 @@ function AppRouter() {
                     <Route path='aftersales' element={<AfterSales />} />
                     <Route path='clients' element={<Clients />} />
                     <Route path='products' element={<Products />} />
-                    <Route path='kits' element={<Kits />} />
-                    <Route path='kits/new' element={<KitForm />} />
-                    <Route path='kits/edit/:id' element={<KitForm />} />
-                    <Route path='kits/view/:id' element={<DetailsKit />} />
                     <Route path='agents' element={<Agents />} />
                     <Route
                         path='entities/:type/:id'

@@ -30,8 +30,7 @@ import useFirebase from '../../../../hooks/useFirebase'
 function Kits() {
     const [kits, setKits] = useState([])
     const [expanded, setExpanded] = useState(null)
-    const { getDocumentById, getDocumentsInCollection, updateDocument } =
-        useFirebase()
+    const { getDocumentById, getDocumentsInCollection } = useFirebase()
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -149,18 +148,7 @@ function Kits() {
                                     </Button>
                                 </Tooltip>
                                 <Tooltip title='Excluir'>
-                                    <Button
-                                        onClick={() => {
-                                            updateDocument(
-                                                'kits/kits/kits',
-                                                kit.id,
-                                                {
-                                                    ...kit,
-                                                    delete: true,
-                                                }
-                                            )
-                                        }}
-                                    >
+                                    <Button>
                                         <DeleteRounded fontSize='small' />
                                     </Button>
                                 </Tooltip>
