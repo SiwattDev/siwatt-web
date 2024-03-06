@@ -23,6 +23,7 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    Switch,
     Tooltip,
     Typography,
 } from '@mui/material'
@@ -58,6 +59,17 @@ const ProductList = () => {
                 console.log(data) // Adicionado para verificar os dados obtidos do Firebase
             })
             .catch((error) => console.error(error))
+    }
+
+    const enableDisableProduct = (id, disabled) => {
+        console.log(disabled)
+        const product = products.find((p) => p.id === id)
+        firebase
+            .updateDocument('kits/itens/itens', id, {
+                ...product,
+                disabled: disabled,
+            })
+            .then(getProducts)
     }
 
     useEffect(() => {
@@ -220,31 +232,46 @@ const ProductList = () => {
                                         Preço: {product.price}
                                     </Typography>
                                 </CardContent>
-                                <CardActions className='d-flex justify-content-end'>
-                                    <ButtonGroup
-                                        variant='contained'
+                                <CardActions>
+                                    <Switch
+                                        checked={!product.disabled}
+                                        onChange={() =>
+                                            enableDisableProduct(
+                                                product.id,
+                                                !product.disabled
+                                            )
+                                        } // Mudança aqui
                                         color='black'
-                                        size='small'
-                                    >
-                                        <Tooltip title='Editar'>
-                                            <Button
-                                                onClick={() =>
-                                                    handleEdit(product)
-                                                }
-                                            >
-                                                <EditRounded fontSize='small' />
-                                            </Button>
-                                        </Tooltip>
-                                        <Tooltip title='Excluir'>
-                                            <Button
-                                                onClick={() =>
-                                                    handleClickOpen(product.id)
-                                                }
-                                            >
-                                                <DeleteRounded fontSize='small' />
-                                            </Button>
-                                        </Tooltip>
-                                    </ButtonGroup>
+                                    />
+
+                                    <div className='d-flex justify-content-end w-100'>
+                                        <ButtonGroup
+                                            variant='contained'
+                                            color='black'
+                                            size='small'
+                                        >
+                                            <Tooltip title='Editar'>
+                                                <Button
+                                                    onClick={() =>
+                                                        handleEdit(product)
+                                                    }
+                                                >
+                                                    <EditRounded fontSize='small' />
+                                                </Button>
+                                            </Tooltip>
+                                            <Tooltip title='Excluir'>
+                                                <Button
+                                                    onClick={() =>
+                                                        handleClickOpen(
+                                                            product.id
+                                                        )
+                                                    }
+                                                >
+                                                    <DeleteRounded fontSize='small' />
+                                                </Button>
+                                            </Tooltip>
+                                        </ButtonGroup>
+                                    </div>
                                 </CardActions>
                             </Card>
                             <Dialog open={open} onClose={handleClose}>
