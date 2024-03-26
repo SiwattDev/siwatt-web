@@ -1,10 +1,13 @@
+import { BudgetProvider } from './budgetContext'
 import { ThemeProvider } from './themeContext'
 import { UserProvider } from './userContext'
 
 function Contexts(props) {
     return (
         <ThemeProvider>
-            <UserProvider>{props.children}</UserProvider>
+            <UserProvider>
+                <BudgetProvider>{props.children}</BudgetProvider>
+            </UserProvider>
         </ThemeProvider>
     )
 }
