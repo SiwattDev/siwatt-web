@@ -81,6 +81,7 @@ function StepKits({ supplyType = 'Three-phase' }) {
     }
 
     function chooseModulesAndInverters(products, neededPower) {
+        console.log(neededPower)
         const modules = products.filter((prod) => prod.type === 'module')
 
         const modulesWithPrice = modules.map((mod) => {
@@ -95,6 +96,7 @@ function StepKits({ supplyType = 'Three-phase' }) {
             const quantityNeeded = neededPower / modPower
             const totalPrice = modPrice * quantityNeeded
             return {
+                id: mod.id,
                 model: mod.model,
                 quantityNeeded,
                 totalPrice,
@@ -118,7 +120,26 @@ function StepKits({ supplyType = 'Three-phase' }) {
         let bestInverter = null
         if (compatibleInverters.length > 0) {
             compatibleInverters.sort((a, b) => a.price - b.price)
-            bestInverter = compatibleInverters[0]
+            bestInverter = {
+                id: compatibleInverters[0].id,
+                model: compatibleInverters[0].model,
+                amount: 1,
+                power: compatibleInverters[0].power,
+                pricePerUnit: parseFloat(
+                    compatibleInverters[0].price
+                        .split(',')[0]
+                        .replace('R$', '')
+                        .replace(',', '')
+                        .replace('.', '')
+                ),
+                totalPrice: parseFloat(
+                    compatibleInverters[0].price
+                        .split(',')[0]
+                        .replace('R$', '')
+                        .replace(',', '')
+                        .replace('.', '')
+                ),
+            }
         } else {
             const identicalInverters = inverters.filter(
                 (inverter) =>
@@ -126,6 +147,7 @@ function StepKits({ supplyType = 'Three-phase' }) {
                     inverter.power * 2 <= neededPower * 1.2
             )
             bestInverter = {
+                id: identicalInverters[0].id,
                 model: identicalInverters[0].model,
                 amount: 2,
                 power: identicalInverters[0].power * 2,
@@ -164,6 +186,7 @@ function StepKits({ supplyType = 'Three-phase' }) {
                 combinations.push({
                     id: generateCode(),
                     modules: {
+                        id: module.id,
                         model: module.model,
                         unitPrice: module.pricePerUnit,
                         totalPrice: module.totalPrice,
@@ -171,6 +194,7 @@ function StepKits({ supplyType = 'Three-phase' }) {
                         power: module.power,
                     },
                     inverter: {
+                        id: inverter.id,
                         model: inverter.model,
                         unitPrice: inverter.pricePerUnit,
                         totalPrice: inverter.totalPrice,
@@ -215,7 +239,9 @@ function StepKits({ supplyType = 'Three-phase' }) {
                     cityName: budget.solarPlantSite.city,
                 }
             )
-            const solarIrradiation = solarIrradiationResponse.data
+            const solarIrradiation =
+                solarIrradiationResponse.data.reduce((a, b) => a + b, 0) /
+                solarIrradiationResponse.data.length
 
             const products = await getProducts()
             const modules = products.filter((prod) => prod.type === 'module')

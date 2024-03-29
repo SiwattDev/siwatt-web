@@ -24,7 +24,6 @@ import { BudgetContext } from '../../../../../contexts/budgetContext'
 import useUtilities from './../../../../../hooks/useUtilities'
 
 function AddEnergyBill({ open, onClose }) {
-    const { generateCode } = useUtilities()
     const [energyBill, setEnergyBill] = useState({
         name: '',
         months: {
@@ -53,7 +52,6 @@ function AddEnergyBill({ open, onClose }) {
 
     const handleAdd = () => {
         if (isFormComplete()) {
-            setEnergyBill({ ...energyBill, id: generateCode() })
             onClose(energyBill)
         } else {
             alert('Por favor, preencha todos os campos.')
@@ -314,6 +312,7 @@ function StepConsumptionData() {
     const [city, setCity] = useState()
     const [states, setStates] = useState([])
     const [cities, setCities] = useState([])
+    const { generateCode } = useUtilities()
     const { budget, setBudget } = useContext(BudgetContext)
 
     const months = [
@@ -487,6 +486,7 @@ function StepConsumptionData() {
                     <MenuItem value='fiber-cement'>Fibrocimento</MenuItem>
                     <MenuItem value='ceramics'>Cerâmica</MenuItem>
                     <MenuItem value='metallic'>Metálico</MenuItem>
+                    <MenuItem value='slab'>Laje</MenuItem>
                 </Select>
             </FormControl>
             <FormControl size='small' color='black' fullWidth className='mt-3'>
@@ -504,7 +504,7 @@ function StepConsumptionData() {
             <AddEnergyBill
                 open={open}
                 onClose={(energyBill) => {
-                    pushNewEnergyBill(energyBill)
+                    pushNewEnergyBill({ ...energyBill, id: generateCode() })
                     setOpen(false)
                 }}
             />

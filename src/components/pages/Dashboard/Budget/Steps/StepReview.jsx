@@ -34,6 +34,15 @@ function StepReview() {
     useEffect(() => {
         getDocumentById('clients', budget.client).then(setClientData)
         console.log(budget.validity)
+        const budgetString = JSON.stringify(budget)
+        navigator.clipboard
+            .writeText(budgetString)
+            .then(() => {
+                console.log('String JSON copiada com sucesso!')
+            })
+            .catch((err) => {
+                console.error('Erro ao copiar a string JSON:', err)
+            })
     }, [budget.client])
 
     return (
