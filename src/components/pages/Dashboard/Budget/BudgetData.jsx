@@ -1,5 +1,6 @@
 import { Box, Button, Paper, Step, StepLabel, Stepper } from '@mui/material'
 import { useContext, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import { BudgetContext } from '../../../../contexts/budgetContext'
 import useUtilities from './../../../../hooks/useUtilities'
@@ -38,6 +39,7 @@ function CadastroDados() {
     const [activeStep, setActiveStep] = useState(0)
     const { budget } = useContext(BudgetContext)
     const { showToastMessage } = useUtilities()
+    const navigate = useNavigate()
 
     const handleNext = () => {
         let error = ''
@@ -104,7 +106,12 @@ function CadastroDados() {
             showToastMessage('error', error)
             throw new Error(error)
         } else {
-            setActiveStep((prevActiveStep) => prevActiveStep + 1)
+            console.log(activeStep, steps.length)
+            if (activeStep + 1 >= steps.length) {
+                navigate('/dashboard/budget/result')
+            } else {
+                setActiveStep((prevActiveStep) => prevActiveStep + 1)
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import { Route, HashRouter as Router, Routes } from 'react-router-dom'
 import Auth from './components/pages/Auth/Auth'
 import AfterSales from './components/pages/Dashboard/AfterSales/AfterSales'
 import Agents from './components/pages/Dashboard/Agents/Agents'
+import Budget from './components/pages/Dashboard/Budget/Budget'
 import BudgetData from './components/pages/Dashboard/Budget/BudgetData'
 import BudgetResult from './components/pages/Dashboard/Budget/BudgetResult'
 import Clients from './components/pages/Dashboard/Clients/Clients'
@@ -60,6 +61,8 @@ function AppRouter() {
                         path='entity-registration/:type/:action/:id'
                         element={<EntityRegistration />}
                     />
+                    <Route path='budget' element={<Budget />} />
+                    <Route path='budget/new' element={<BudgetData />} />
                     <Route path='budget/new/:id' element={<BudgetData />} />
                     <Route path='budget/result' element={<BudgetResult />} />
                 </Route>

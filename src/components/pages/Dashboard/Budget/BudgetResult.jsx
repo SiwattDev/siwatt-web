@@ -1,87 +1,23 @@
 import {
+    EnergySavingsLeafRounded,
     MapRounded,
     MonetizationOnRounded,
+    SavingsRounded,
     SolarPowerRounded,
 } from '@mui/icons-material'
-import { Box, Paper, Typography } from '@mui/material'
+import { Box, CircularProgress, Grid, Paper, Typography } from '@mui/material'
 import axios from 'axios'
 import 'chart.js/auto'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Bar } from 'react-chartjs-2'
+import { BudgetContext } from '../../../../contexts/budgetContext'
 import useFirebase from '../../../../hooks/useFirebase'
 
 function BudgetResult() {
+    const { budget } = useContext(BudgetContext)
     const [result, setResult] = useState()
+    const [loading, setLoading] = useState(true)
     const { getDocumentById } = useFirebase()
-    const budget = {
-        client: 'EhNg5OfiouDAqGT',
-        consumption: {
-            accountForInstallation: {
-                name: 'Empresa',
-                months: {
-                    jan: 3000,
-                    fev: 3000,
-                    mar: 3000,
-                    abr: 3000,
-                    mai: 3000,
-                    jun: 3000,
-                    jul: 3000,
-                    ago: 3000,
-                    set: 3000,
-                    out: 3000,
-                    nov: 3000,
-                    dez: 3000,
-                },
-                id: 'Gv9q4ToVateAlQI',
-            },
-            typeCeiling: 'ceramics',
-            typeNetwork: 'three-phase',
-            energyBills: [
-                {
-                    name: 'Empresa',
-                    months: {
-                        jan: 3000,
-                        fev: 3000,
-                        mar: 3000,
-                        abr: 3000,
-                        mai: 3000,
-                        jun: 3000,
-                        jul: 3000,
-                        ago: 3000,
-                        set: 3000,
-                        out: 3000,
-                        nov: 3000,
-                        dez: 3000,
-                    },
-                    id: 'Gv9q4ToVateAlQI',
-                },
-            ],
-        },
-        solarPlantSite: {
-            state: 29,
-            city: 'Feira de Santana',
-        },
-        kit: {
-            id: 'bAA6UyLrGxckyL5',
-            modules: {
-                id: 'BUjwXyVWPn3GGRV',
-                model: 'SolarMax X545',
-                unitPrice: 2200,
-                totalPrice: 103008.12,
-                amount: 47,
-                power: '545',
-            },
-            inverter: {
-                id: '2pnqfwtyWaaBdN8',
-                model: 'InversorMax Y30000',
-                unitPrice: 45000,
-                totalPrice: 45000,
-                amount: 1,
-                powerMax: '30',
-            },
-        },
-        validity: '2024-03-31',
-    }
 
     function calculateAverageEnergyBill(budgetData) {
         let totalMonths = budgetData.consumption.energyBills.reduce(
@@ -99,27 +35,26 @@ function BudgetResult() {
     }
 
     const colors = [
-        'rgb(255, 99, 132)', // Vermelho
-        'rgb(75, 192, 192)', // Verde-água
-        'rgb(255, 205, 86)', // Amarelo
-        'rgb(201, 203, 207)', // Cinza
-        'rgb(54, 162, 235)', // Azul
-        // Adicione mais cores conforme necessário
+        'rgb(255, 99, 132)',
+        'rgb(75, 192, 192)',
+        'rgb(255, 205, 86)',
+        'rgb(201, 203, 207)',
+        'rgb(54, 162, 235)',
+        'rgb(153, 102, 255)',
+        'rgb(255, 159, 64)',
+        'rgb(255, 99, 71)',
+        'rgb(128, 0, 128)',
+        'rgb(0, 255, 255)',
     ]
 
-    // Função para embaralhar um array
     function shuffle(array) {
         let currentIndex = array.length,
             temporaryValue,
             randomIndex
 
-        // Enquanto ainda houver elementos para embaralhar...
         while (0 !== currentIndex) {
-            // Escolhe um elemento restante...
             randomIndex = Math.floor(Math.random() * currentIndex)
             currentIndex -= 1
-
-            // E troca com o elemento atual.
             temporaryValue = array[currentIndex]
             array[currentIndex] = array[randomIndex]
             array[randomIndex] = temporaryValue
@@ -128,7 +63,6 @@ function BudgetResult() {
         return array
     }
 
-    // Embaralha a lista de cores
     const shuffledColors = shuffle(colors)
 
     function translateCeilingType(typeCeiling) {
@@ -181,6 +115,7 @@ function BudgetResult() {
                     ...apiResponse.data,
                 }
                 setResult(result)
+                setLoading(false)
             } catch (error) {
                 console.error(error)
             }
@@ -196,12 +131,25 @@ function BudgetResult() {
     return (
         <Box>
             <Paper className='p-4 position-relative'>
-                {result && (
+                {loading && (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            width: '100%',
+                            height: '100%',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <CircularProgress color='black' />
+                    </Box>
+                )}
+                {result && !loading && (
                     <>
                         <Typography className='fw-bold' variant='h6'>
                             Dados do cliente
                         </Typography>
-                        <Paper className='p-3 mb-3' elevation={2}>
+                        <Paper className='p-3 mb-3' elevation={3}>
                             <Typography>
                                 <strong>Razão social:</strong>{' '}
                                 {result.client.name}
@@ -222,7 +170,7 @@ function BudgetResult() {
                         <Typography className='fw-bold' variant='h6'>
                             Dados do vendedor
                         </Typography>
-                        <Paper elevation={2} className='p-3 mb-3'>
+                        <Paper elevation={3} className='p-3 mb-3'>
                             <Typography>
                                 <strong>Nome fantasia:</strong>{' '}
                                 {result.client.seller.name}
@@ -311,7 +259,7 @@ function BudgetResult() {
                             Kit Fotovoltaico
                         </Typography>
                         <Box className='d-flex gap-3 mb-3'>
-                            <Paper className='p-3 w-100' elevation={2}>
+                            <Paper className='p-3 w-100' elevation={3}>
                                 <Typography className='fw-bold' variant='h6'>
                                     <strong>Placas:</strong>{' '}
                                     {result.kit.modules.model}
@@ -339,7 +287,7 @@ function BudgetResult() {
                                     )}
                                 </Typography>
                             </Paper>
-                            <Paper className='p-3 w-100' elevation={2}>
+                            <Paper className='p-3 w-100' elevation={3}>
                                 <Typography className='fw-bold' variant='h6'>
                                     <strong>Inversor:</strong>{' '}
                                     {result.kit.inverter.model}
@@ -381,12 +329,13 @@ function BudgetResult() {
                             sx={{
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(2, 1fr)',
-                                gridGap: '10px',
+                                gridGap: '1rem',
+                                marginBottom: '10px',
                             }}
                         >
                             <Paper
                                 className='p-3 w-100 text-center'
-                                elevation={2}
+                                elevation={3}
                             >
                                 <Typography className='fw-bold'>
                                     <MonetizationOnRounded />
@@ -402,7 +351,7 @@ function BudgetResult() {
                             </Paper>
                             <Paper
                                 className='p-3 w-100 text-center'
-                                elevation={2}
+                                elevation={3}
                             >
                                 <Typography className='fw-bold'>
                                     <SolarPowerRounded />
@@ -415,7 +364,7 @@ function BudgetResult() {
                             </Paper>
                             <Paper
                                 className='p-3 w-100 text-center'
-                                elevation={2}
+                                elevation={3}
                             >
                                 <Typography className='fw-bold'>
                                     <MapRounded />
@@ -426,7 +375,7 @@ function BudgetResult() {
                             </Paper>
                             <Paper
                                 className='p-3 w-100 text-center'
-                                elevation={2}
+                                elevation={3}
                             >
                                 <Typography className='fw-bold'>
                                     <MonetizationOnRounded />
@@ -438,10 +387,423 @@ function BudgetResult() {
                                 </Typography>
                             </Paper>
                         </Box>
+                        <Box className='d-flex gap-3 mb-3'>
+                            <Box className='w-100 text-center'>
+                                <Typography variant='h6' className='fw-bold'>
+                                    Geração em KW
+                                </Typography>
+                                <Paper
+                                    className='p-3 w-100 text-center d-flex align-items-center justify-content-center gap-3'
+                                    elevation={3}
+                                >
+                                    <EnergySavingsLeafRounded />
+                                    <Box>
+                                        <Typography>
+                                            <strong>Geração de KWh/mês:</strong>{' '}
+                                            {result.averageEnergyGeneration.toFixed(
+                                                0
+                                            )}
+                                        </Typography>
+                                        <Typography>
+                                            <strong>Geração de KWh/ano:</strong>{' '}
+                                            {result.averageEnergyGeneration.toFixed(
+                                                0
+                                            ) * 12}
+                                        </Typography>
+                                    </Box>
+                                </Paper>
+                            </Box>
+                            <Box className='w-100 text-center'>
+                                <Typography variant='h6' className='fw-bold'>
+                                    Economia em R$
+                                </Typography>
+                                <Paper
+                                    className='p-3 w-100 text-center d-flex align-items-center justify-content-center gap-3'
+                                    elevation={3}
+                                >
+                                    <SavingsRounded />
+                                    <Box>
+                                        <Typography>
+                                            <strong>Economia mensal:</strong>{' '}
+                                            {result.investmentReturnPayback.monthlySavings.toLocaleString(
+                                                'pt-BR',
+                                                {
+                                                    style: 'currency',
+                                                    currency: 'BRL',
+                                                }
+                                            )}
+                                        </Typography>
+                                        <Typography>
+                                            <strong>Economia anual:</strong>{' '}
+                                            {(
+                                                result.investmentReturnPayback
+                                                    .monthlySavings * 12
+                                            ).toLocaleString('pt-BR', {
+                                                style: 'currency',
+                                                currency: 'BRL',
+                                            })}
+                                        </Typography>
+                                    </Box>
+                                </Paper>
+                            </Box>
+                        </Box>
+                        <Typography variant='h6' className='fw-bold'>
+                            Validade da Proposta
+                        </Typography>
+                        <Paper className='p-3 w-100 mb-3' elevation={3}>
+                            <Typography>
+                                <strong>Proposta emitida em:</strong>{' '}
+                                {new Date().toLocaleDateString('pt-BR')}
+                            </Typography>
+                            <Typography>
+                                <strong>Proposta valida até:</strong>{' '}
+                                {result.validity.split('-').reverse().join('/')}
+                            </Typography>
+                        </Paper>
+                        <Typography variant='h6' className='fw-bold'>
+                            Formas e Condições de Pagamento
+                        </Typography>
+                        <Grid container spacing={2}>
+                            <Grid item xs={2}>
+                                <Paper
+                                    className='p-3 text-center d-flex flex-column justify-content-center'
+                                    elevation={3}
+                                    sx={{ height: '100%' }}
+                                >
+                                    <Typography
+                                        variant='h5'
+                                        className='fw-bold mb-3'
+                                    >
+                                        A vista
+                                    </Typography>
+                                    <Typography variant='h6'>
+                                        {result.plantValue.toLocaleString(
+                                            'pt-BR',
+                                            {
+                                                style: 'currency',
+                                                currency: 'BRL',
+                                            }
+                                        )}
+                                    </Typography>
+                                </Paper>
+                            </Grid>
+                            <Grid item xs={10}>
+                                <Paper className='p-3' elevation={3}>
+                                    <Typography
+                                        variant='h6'
+                                        className='fw-bold'
+                                    >
+                                        Financiamento bancário
+                                    </Typography>
+                                    <Typography>
+                                        <strong>Com entrada de 10%:</strong>{' '}
+                                        {(
+                                            result.plantValue * 0.1
+                                        ).toLocaleString('pt-BR', {
+                                            style: 'currency',
+                                            currency: 'BRL',
+                                        })}
+                                    </Typography>
+                                    <Typography>
+                                        <strong>Financiamento de:</strong>{' '}
+                                        {(
+                                            result.plantValue -
+                                            result.plantValue * 0.1
+                                        ).toLocaleString('pt-BR', {
+                                            style: 'currency',
+                                            currency: 'BRL',
+                                        })}
+                                    </Typography>
+                                    <Box className='d-flex'>
+                                        <Box className='w-100'>
+                                            {[24, 36, 48].map(
+                                                (amount, index) => (
+                                                    <Typography key={index}>
+                                                        <strong>
+                                                            {amount}x:
+                                                        </strong>{' '}
+                                                        {result.bankFinancingInstallments[
+                                                            index
+                                                        ].toLocaleString(
+                                                            'pt-BR',
+                                                            {
+                                                                style: 'currency',
+                                                                currency: 'BRL',
+                                                            }
+                                                        )}
+                                                    </Typography>
+                                                )
+                                            )}
+                                        </Box>
+                                        <Box className='w-100'>
+                                            {[60, 90, 120].map(
+                                                (amount, index) => (
+                                                    <Typography key={index}>
+                                                        <strong>
+                                                            {amount}x:
+                                                        </strong>{' '}
+                                                        {result.bankFinancingInstallments[
+                                                            index
+                                                        ].toLocaleString(
+                                                            'pt-BR',
+                                                            {
+                                                                style: 'currency',
+                                                                currency: 'BRL',
+                                                            }
+                                                        )}
+                                                    </Typography>
+                                                )
+                                            )}
+                                        </Box>
+                                    </Box>
+                                </Paper>
+                            </Grid>
+                        </Grid>
+                        <Paper elevation={3} className='p-3 my-3'>
+                            <Typography variant='h6' className='fw-bold'>
+                                Cartão de crédito
+                            </Typography>
+                            <Box className='d-flex gap-3'>
+                                {[2, 4, 8, 10, 12].map((amount, index) => (
+                                    <Paper
+                                        key={index}
+                                        elevation={3}
+                                        className='p-3 w-100'
+                                    >
+                                        <Typography>
+                                            <strong>{amount}x:</strong>
+                                        </Typography>
+                                        <Typography>
+                                            {result.creditCardInstallments[
+                                                index
+                                            ].toLocaleString('pt-BR', {
+                                                style: 'currency',
+                                                currency: 'BRL',
+                                            })}
+                                        </Typography>
+                                    </Paper>
+                                ))}
+                            </Box>
+                        </Paper>
+                        <Paper className='p-3' elevation={3}>
+                            <Paper className='p-3 text-center' elevation={3}>
+                                <Typography variant='h4' className='fw-bold'>
+                                    Payback
+                                </Typography>
+                                <Typography variant='h6' className='fw-bold'>
+                                    {
+                                        result.investmentReturnPayback
+                                            .paybackInYears
+                                    }{' '}
+                                    anos e{' '}
+                                    {
+                                        result.investmentReturnPayback
+                                            .remainingMonths
+                                    }{' '}
+                                    meses
+                                </Typography>
+                            </Paper>
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    maxWidth: '800px',
+                                }}
+                                className='m-auto'
+                            >
+                                <Bar
+                                    className='mb-3'
+                                    data={{
+                                        labels: [
+                                            '1 ano',
+                                            '2 anos',
+                                            '3 anos',
+                                            '4 anos',
+                                            '5 anos',
+                                            '6 anos',
+                                            '7 anos',
+                                            '8 anos',
+                                            '9 anos',
+                                            '10 anos',
+                                            '11 anos',
+                                            '12 anos',
+                                            '13 anos',
+                                            '14 anos',
+                                            '15 anos',
+                                            '16 anos',
+                                            '17 anos',
+                                            '18 anos',
+                                            '19 anos',
+                                            '20 anos',
+                                            '21 anos',
+                                            '22 anos',
+                                            '23 anos',
+                                            '24 anos',
+                                            '25 anos',
+                                        ],
+                                        datasets: [
+                                            {
+                                                label: 'Retorno Financeiro',
+                                                data: result.investmentReturnPayback.returnIn25Years.map(
+                                                    (value) => value.toFixed(2)
+                                                ),
+                                                backgroundColor: 'rgb(0, 0, 0)',
+                                                borderWidth: 0,
+                                            },
+                                        ],
+                                    }}
+                                    options={{
+                                        plugins: {
+                                            title: {
+                                                display: true,
+                                                text: 'Payback em 25 anos',
+                                                color: 'rgb(0, 0, 0)',
+                                                font: {
+                                                    size: 20,
+                                                    family: 'Aptos',
+                                                },
+                                            },
+                                        },
+                                    }}
+                                />
+                            </Box>
+                        </Paper>
+                        <Paper className='p-3 my-3' elevation={3}>
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    maxWidth: '800px',
+                                }}
+                                className='m-auto'
+                            >
+                                <Bar
+                                    className='mb-3'
+                                    data={{
+                                        labels: [
+                                            '2 anos',
+                                            '3 anos',
+                                            '4 anos',
+                                            '5 anos',
+                                            '6 anos',
+                                            '7 anos',
+                                            '8 anos',
+                                            '9 anos',
+                                            '10 anos',
+                                            '11 anos',
+                                            '12 anos',
+                                            '13 anos',
+                                            '14 anos',
+                                            '15 anos',
+                                            '16 anos',
+                                            '17 anos',
+                                            '18 anos',
+                                            '19 anos',
+                                            '20 anos',
+                                            '21 anos',
+                                            '22 anos',
+                                            '23 anos',
+                                            '24 anos',
+                                            '25 anos',
+                                        ],
+                                        datasets: [
+                                            {
+                                                label: 'Reajuste tarifário',
+                                                data: result.tariffReadjustment
+                                                    .slice(1)
+                                                    .map((value) =>
+                                                        value.toFixed(2)
+                                                    ),
+                                                backgroundColor: 'rgb(0, 0, 0)',
+                                                borderWidth: 0,
+                                            },
+                                        ],
+                                    }}
+                                    options={{
+                                        plugins: {
+                                            title: {
+                                                display: true,
+                                                text: 'Reajuste tarifário',
+                                                color: 'rgb(0, 0, 0)',
+                                                font: {
+                                                    size: 20,
+                                                    family: 'Aptos',
+                                                },
+                                            },
+                                        },
+                                    }}
+                                />
+                            </Box>
+                        </Paper>
+                        <Paper className='p-3' elevation={3}>
+                            <Box
+                                sx={{
+                                    width: '100%',
+                                    maxWidth: '800px',
+                                }}
+                                className='m-auto'
+                            >
+                                <Bar
+                                    className='mb-3'
+                                    data={{
+                                        labels: [
+                                            '2 anos',
+                                            '3 anos',
+                                            '4 anos',
+                                            '5 anos',
+                                            '6 anos',
+                                            '7 anos',
+                                            '8 anos',
+                                            '9 anos',
+                                            '10 anos',
+                                            '11 anos',
+                                            '12 anos',
+                                            '13 anos',
+                                            '14 anos',
+                                            '15 anos',
+                                            '16 anos',
+                                            '17 anos',
+                                            '18 anos',
+                                            '19 anos',
+                                            '20 anos',
+                                            '21 anos',
+                                            '22 anos',
+                                            '23 anos',
+                                            '24 anos',
+                                            '25 anos',
+                                        ],
+                                        datasets: [
+                                            {
+                                                label: 'Rentabilidade total do investimento',
+                                                data: result.investmentReturn
+                                                    .slice(1)
+                                                    .map((value) =>
+                                                        value.toFixed(2)
+                                                    ),
+                                                backgroundColor: 'rgb(0, 0, 0)',
+                                                borderWidth: 0,
+                                            },
+                                        ],
+                                    }}
+                                    options={{
+                                        plugins: {
+                                            title: {
+                                                display: true,
+                                                text: 'Rentabilidade total do investimento',
+                                                color: 'rgb(0, 0, 0)',
+                                                font: {
+                                                    size: 20,
+                                                    family: 'Aptos',
+                                                },
+                                            },
+                                        },
+                                    }}
+                                />
+                            </Box>
+                        </Paper>
                     </>
                 )}
             </Paper>
         </Box>
     )
 }
+
 export default BudgetResult

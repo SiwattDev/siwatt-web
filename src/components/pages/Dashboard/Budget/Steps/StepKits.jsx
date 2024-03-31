@@ -1,6 +1,7 @@
 import {
     Box,
     Button,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -19,6 +20,7 @@ import useUtilities from './../../../../../hooks/useUtilities'
 function StepKits({ supplyType = 'Three-phase' }) {
     const [products, setProducts] = useState()
     const [kits, setKits] = useState([])
+    const [loading, setLoading] = useState(true)
     const [editDialogOpen, setEditDialogOpen] = useState(false)
     const [editedKit, setEditedKit] = useState(null)
     const { generateCode } = useUtilities()
@@ -264,6 +266,7 @@ function StepKits({ supplyType = 'Three-phase' }) {
             )
             console.log(combinations)
             setKits(combinations)
+            setLoading(false)
         }
 
         fetchData()
@@ -271,7 +274,21 @@ function StepKits({ supplyType = 'Three-phase' }) {
 
     return (
         <Box className='mt-4'>
+            {loading && (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        width: '100%',
+                        height: '100%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                >
+                    <CircularProgress color='black' />
+                </Box>
+            )}
             {kits &&
+                !loading &&
                 kits.map((kit, index) => (
                     <Paper
                         key={index}

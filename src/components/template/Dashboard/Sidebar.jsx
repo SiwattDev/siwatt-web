@@ -131,7 +131,7 @@ function Sidebar() {
                         <Typography variant='h6'>Funil</Typography>
                     </Button>
                 </Link>
-                <Link to='/dashboard/documents'>
+                <Link to='/dashboard/budget'>
                     <Button
                         variant='text'
                         color='black'
