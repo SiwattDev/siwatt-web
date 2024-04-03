@@ -20,18 +20,37 @@ function BudgetResult() {
     const { getDocumentById } = useFirebase()
 
     function calculateAverageEnergyBill(budgetData) {
-        let totalMonths = budgetData.consumption.energyBills.reduce(
-            (total, bill) => {
-                let monthlyTotal = Object.values(bill.months).reduce(
-                    (sum, value) => sum + Number(value),
-                    0
-                )
-                return total + monthlyTotal
-            },
+        // Primeiro, vamos criar um objeto para armazenar a soma dos consumos de cada mês
+        let monthlyTotal = {
+            jan: 0,
+            fev: 0,
+            mar: 0,
+            abr: 0,
+            mai: 0,
+            jun: 0,
+            jul: 0,
+            ago: 0,
+            set: 0,
+            out: 0,
+            nov: 0,
+            dez: 0,
+        }
+
+        // Iteramos sobre cada conta de energia
+        budgetData.consumption.energyBills.forEach((bill) => {
+            // Iteramos sobre cada mês na conta de energia e somamos ao total correspondente
+            Object.entries(bill.months).forEach(([month, value]) => {
+                monthlyTotal[month.toLowerCase()] += Number(value)
+            })
+        })
+
+        // Agora que temos a soma dos consumos de todos os meses, podemos calcular a média
+        let totalConsumption = Object.values(monthlyTotal).reduce(
+            (total, value) => total + value,
             0
         )
-        let totalBills = budgetData.consumption.energyBills.length * 12
-        return totalMonths / totalBills
+        let totalMonths = Object.keys(monthlyTotal).length
+        return totalConsumption / totalMonths
     }
 
     const colors = [
@@ -93,14 +112,54 @@ function BudgetResult() {
                     clientData.seller
                 )
                 console.log('Dados do vendedor:', sellerData)
+                const modulesData = await getDocumentById(
+                    'kits/itens/itens',
+                    budget.kit.modules.id
+                )
+                const inverterData = await getDocumentById(
+                    'kits/itens/itens',
+                    budget.kit.inverter.id
+                )
 
-                const clientObj = { ...clientData, seller: { ...sellerData } }
+                const clientObj = {
+                    ...clientData,
+                    seller: { ...sellerData },
+                }
+
+                const kitObj = {
+                    modules: {
+                        ...modulesData,
+                        unitPrice: modulesData.price,
+                        amount: budget.kit.modules.amount,
+                        totalPrice:
+                            parseFloat(
+                                modulesData.price
+                                    .replace('.', '')
+                                    .replace(/[^\d,.-]/g, '')
+                                    .replace(',', '.')
+                            ) * budget.kit.modules.amount,
+                    },
+                    inverter: {
+                        ...inverterData,
+                        unitPrice: inverterData.price,
+                        amount: budget.kit.inverter.amount,
+                        totalPrice:
+                            parseFloat(
+                                inverterData.price
+                                    .replace('.', '')
+                                    .replace(/[^\d,.-]/g, '')
+                                    .replace(',', '.')
+                            ) * budget.kit.inverter.amount,
+                    },
+                }
 
                 const body = {
                     cityName: budget.solarPlantSite.city,
                     averageConsumption: calculateAverageEnergyBill(budget),
                     powerSupplyType: budget.consumption.typeNetwork,
                     panelPower: budget.kit.modules.power,
+                    kitPrice:
+                        kitObj.modules.totalPrice + kitObj.inverter.totalPrice,
                 }
                 console.log(body)
 
@@ -112,6 +171,7 @@ function BudgetResult() {
                 const result = {
                     ...budget,
                     client: clientObj,
+                    kit: kitObj,
                     ...apiResponse.data,
                 }
                 setResult(result)
@@ -543,7 +603,7 @@ function BudgetResult() {
                                                             {amount}x:
                                                         </strong>{' '}
                                                         {result.bankFinancingInstallments[
-                                                            index
+                                                            index + 3
                                                         ].toLocaleString(
                                                             'pt-BR',
                                                             {

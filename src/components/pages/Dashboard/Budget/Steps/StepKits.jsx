@@ -218,18 +218,37 @@ function StepKits({ supplyType = 'Three-phase' }) {
     }
 
     function calculateAverageEnergyBill(budgetData) {
-        let totalMonths = budgetData.consumption.energyBills.reduce(
-            (total, bill) => {
-                let monthlyTotal = Object.values(bill.months).reduce(
-                    (sum, value) => sum + Number(value),
-                    0
-                )
-                return total + monthlyTotal
-            },
+        // Primeiro, vamos criar um objeto para armazenar a soma dos consumos de cada mês
+        let monthlyTotal = {
+            jan: 0,
+            fev: 0,
+            mar: 0,
+            abr: 0,
+            mai: 0,
+            jun: 0,
+            jul: 0,
+            ago: 0,
+            set: 0,
+            out: 0,
+            nov: 0,
+            dez: 0,
+        }
+
+        // Iteramos sobre cada conta de energia
+        budgetData.consumption.energyBills.forEach((bill) => {
+            // Iteramos sobre cada mês na conta de energia e somamos ao total correspondente
+            Object.entries(bill.months).forEach(([month, value]) => {
+                monthlyTotal[month.toLowerCase()] += Number(value)
+            })
+        })
+
+        // Agora que temos a soma dos consumos de todos os meses, podemos calcular a média
+        let totalConsumption = Object.values(monthlyTotal).reduce(
+            (total, value) => total + value,
             0
         )
-        let totalBills = budgetData.consumption.energyBills.length * 12
-        return totalMonths / totalBills
+        let totalMonths = Object.keys(monthlyTotal).length
+        return totalConsumption / totalMonths
     }
 
     useEffect(() => {
@@ -426,13 +445,16 @@ function StepKits({ supplyType = 'Three-phase' }) {
                                 size='small'
                                 select
                                 label='Modelo de Placa'
-                                value={editedKit ? editedKit.modules.model : ''}
+                                value={editedKit ? editedKit.modules.id : ''}
                                 onChange={(e) =>
                                     setEditedKit({
                                         ...editedKit,
                                         modules: {
                                             ...editedKit.modules,
-                                            model: e.target.value,
+                                            id: e.target.value,
+                                            model: products.modules.filter(
+                                                (p) => p.id === e.target.value
+                                            )[0].model,
                                         },
                                     })
                                 }
@@ -442,7 +464,7 @@ function StepKits({ supplyType = 'Three-phase' }) {
                                 {products.modules.map((product) => (
                                     <MenuItem
                                         key={product.id}
-                                        value={product.model}
+                                        value={product.id}
                                     >
                                         {product.model}
                                     </MenuItem>
@@ -453,15 +475,16 @@ function StepKits({ supplyType = 'Three-phase' }) {
                                 size='small'
                                 select
                                 label='Modelo de Inversor'
-                                value={
-                                    editedKit ? editedKit.inverter.model : ''
-                                }
+                                value={editedKit ? editedKit.inverter.id : ''}
                                 onChange={(e) =>
                                     setEditedKit({
                                         ...editedKit,
                                         inverter: {
                                             ...editedKit.inverter,
-                                            model: e.target.value,
+                                            id: e.target.value,
+                                            model: products.inverters.filter(
+                                                (p) => p.id === e.target.value
+                                            )[0].model,
                                         },
                                     })
                                 }
@@ -471,7 +494,7 @@ function StepKits({ supplyType = 'Three-phase' }) {
                                 {products.inverters.map((product) => (
                                     <MenuItem
                                         key={product.id}
-                                        value={product.model}
+                                        value={product.id}
                                     >
                                         {product.model}
                                     </MenuItem>

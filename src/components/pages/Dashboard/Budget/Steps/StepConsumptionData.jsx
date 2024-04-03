@@ -53,6 +53,23 @@ function AddEnergyBill({ open, onClose }) {
     const handleAdd = () => {
         if (isFormComplete()) {
             onClose(energyBill)
+            setEnergyBill({
+                name: '',
+                months: {
+                    jan: '',
+                    fev: '',
+                    mar: '',
+                    abr: '',
+                    mai: '',
+                    jun: '',
+                    jul: '',
+                    ago: '',
+                    set: '',
+                    out: '',
+                    nov: '',
+                    dez: '',
+                },
+            })
         } else {
             alert('Por favor, preencha todos os campos.')
         }
@@ -303,17 +320,29 @@ function AddEnergyBill({ open, onClose }) {
 }
 
 function StepConsumptionData() {
+    const { budget, setBudget } = useContext(BudgetContext)
     const [open, setOpen] = useState(false)
-    const [energyBills, setEnergyBills] = useState([])
-    const [accountForInstallation, setAccountForInstallation] = useState()
-    const [typeCeiling, setTypeCeiling] = useState()
-    const [typeNetwork, setTypeNetwork] = useState()
-    const [state, setState] = useState()
-    const [city, setCity] = useState()
+    const [energyBills, setEnergyBills] = useState(
+        budget.consumption ? budget.consumption.energyBills : []
+    )
+    const [accountForInstallation, setAccountForInstallation] = useState(
+        budget.consumption ? budget.consumption.accountForInstallation : null
+    )
+    const [typeCeiling, setTypeCeiling] = useState(
+        budget.consumption ? budget.consumption.typeCeiling : null
+    )
+    const [typeNetwork, setTypeNetwork] = useState(
+        budget.consumption ? budget.consumption.typeNetwork : null
+    )
+    const [state, setState] = useState(
+        budget.solarPlantSite ? budget.solarPlantSite.state : null
+    )
+    const [city, setCity] = useState(
+        budget.solarPlantSite ? budget.solarPlantSite.city : null
+    )
     const [states, setStates] = useState([])
     const [cities, setCities] = useState([])
     const { generateCode } = useUtilities()
-    const { budget, setBudget } = useContext(BudgetContext)
 
     const months = [
         'JAN',
@@ -497,7 +526,7 @@ function StepConsumptionData() {
                     onChange={(e) => setTypeNetwork(e.target.value)}
                 >
                     <MenuItem value='single-phase'>Monofásica</MenuItem>
-                    <MenuItem value='biphasic'>Bifásica</MenuItem>
+                    <MenuItem value='two-phase'>Bifásica</MenuItem>
                     <MenuItem value='three-phase'>Trifásica</MenuItem>
                 </Select>
             </FormControl>
