@@ -115,8 +115,11 @@ function StepKits({ supplyType = 'Three-phase' }) {
 
         const topThreeOptions = modulesWithPrice.slice(0, 3)
         const inverters = products.filter((prod) => prod.type === 'inverter')
+        console.log(inverters)
         const compatibleInverters = inverters.filter(
-            (inverter) => inverter.power >= neededPower
+            (inverter) =>
+                inverter.power >= neededPower &&
+                inverter.power <= neededPower * 2
         )
 
         let bestInverter = null

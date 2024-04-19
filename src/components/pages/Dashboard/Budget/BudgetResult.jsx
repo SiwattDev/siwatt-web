@@ -1,11 +1,19 @@
 import {
+    DownloadRounded,
     EnergySavingsLeafRounded,
     MapRounded,
     MonetizationOnRounded,
     SavingsRounded,
     SolarPowerRounded,
 } from '@mui/icons-material'
-import { Box, CircularProgress, Grid, Paper, Typography } from '@mui/material'
+import {
+    Box,
+    Button,
+    CircularProgress,
+    Grid,
+    Paper,
+    Typography,
+} from '@mui/material'
 import axios from 'axios'
 import 'chart.js/auto'
 import { useContext, useEffect, useState } from 'react'
@@ -14,13 +22,12 @@ import { BudgetContext } from '../../../../contexts/budgetContext'
 import useFirebase from '../../../../hooks/useFirebase'
 
 function BudgetResult() {
-    const { budget } = useContext(BudgetContext)
+    const { budget, setBudget } = useContext(BudgetContext)
     const [result, setResult] = useState()
     const [loading, setLoading] = useState(true)
     const { getDocumentById } = useFirebase()
 
     function calculateAverageEnergyBill(budgetData) {
-        // Primeiro, vamos criar um objeto para armazenar a soma dos consumos de cada mês
         let monthlyTotal = {
             jan: 0,
             fev: 0,
@@ -35,16 +42,11 @@ function BudgetResult() {
             nov: 0,
             dez: 0,
         }
-
-        // Iteramos sobre cada conta de energia
         budgetData.consumption.energyBills.forEach((bill) => {
-            // Iteramos sobre cada mês na conta de energia e somamos ao total correspondente
             Object.entries(bill.months).forEach(([month, value]) => {
                 monthlyTotal[month.toLowerCase()] += Number(value)
             })
         })
-
-        // Agora que temos a soma dos consumos de todos os meses, podemos calcular a média
         let totalConsumption = Object.values(monthlyTotal).reduce(
             (total, value) => total + value,
             0
@@ -54,16 +56,12 @@ function BudgetResult() {
     }
 
     const colors = [
-        'rgb(255, 99, 132)',
         'rgb(75, 192, 192)',
         'rgb(255, 205, 86)',
         'rgb(201, 203, 207)',
         'rgb(54, 162, 235)',
-        'rgb(153, 102, 255)',
         'rgb(255, 159, 64)',
         'rgb(255, 99, 71)',
-        'rgb(128, 0, 128)',
-        'rgb(0, 255, 255)',
     ]
 
     function shuffle(array) {
@@ -96,6 +94,43 @@ function BudgetResult() {
                 return 'Laje'
             default:
                 return 'Desconhecido'
+        }
+    }
+
+    function generateUniqueNumber() {
+        const date = new Date()
+        const dateString =
+            ('0' + date.getDate()).slice(-2) +
+            ('0' + (date.getMonth() + 1)).slice(-2) +
+            String(date.getFullYear()).slice(-2)
+        const randomString = Math.floor(Math.random() * 100)
+            .toString()
+            .padStart(2, '0')
+        const uniqueNumber = dateString + randomString
+        return uniqueNumber
+    }
+
+    async function downloadPDF() {
+        try {
+            const response = await axios({
+                url: 'https://backend.siwatt.com.br/api/generate-pdf',
+                method: 'POST',
+                responseType: 'blob',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                data: JSON.stringify(result),
+            })
+
+            const url = window.URL.createObjectURL(new Blob([response.data]))
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', `Orç. ${result.client.name}.pdf`)
+            document.body.appendChild(link)
+            link.click()
+            window.URL.revokeObjectURL(url)
+        } catch (error) {
+            console.error('Erro:', error)
         }
     }
 
@@ -167,15 +202,19 @@ function BudgetResult() {
                     'https://backend.siwatt.com.br/api/calculate-solar-energy',
                     body
                 )
+
                 console.log(apiResponse.data)
                 const result = {
+                    id: generateUniqueNumber(),
                     ...budget,
                     client: clientObj,
                     kit: kitObj,
                     ...apiResponse.data,
                 }
+
                 setResult(result)
                 setLoading(false)
+                setBudget(null)
             } catch (error) {
                 console.error(error)
             }
@@ -859,6 +898,15 @@ function BudgetResult() {
                                 />
                             </Box>
                         </Paper>
+                        <Button
+                            variant='contained'
+                            onClick={downloadPDF}
+                            color='black'
+                            className='mt-3'
+                            startIcon={<DownloadRounded />}
+                        >
+                            Baixar PDF
+                        </Button>
                     </>
                 )}
             </Paper>
