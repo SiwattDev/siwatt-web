@@ -50,6 +50,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
         photoConsumptionChart: null,
     })
     const { uploadFile } = useStorage()
+    const { showToastMessage } = useUtilities()
 
     const isFormComplete = () => {
         if (energyBill.name === '') return false
@@ -148,12 +149,13 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     'Erro ao enviar imagens para o Firebase Storage:',
                     error
                 )
-                alert(
+                showToastMessage(
+                    'error',
                     'Ocorreu um erro ao adicionar a conta de energia. Por favor, tente novamente.'
                 )
             }
         } else {
-            alert('Por favor, preencha todos os campos.')
+            showToastMessage('error', 'Por favor, preencha todos os campos.')
         }
     }
 

@@ -65,6 +65,10 @@ function AppRouter() {
                     <Route path='budget/new' element={<BudgetData />} />
                     <Route path='budget/new/:id' element={<BudgetData />} />
                     <Route path='budget/result' element={<BudgetResult />} />
+                    <Route
+                        path='budget/result/:id'
+                        element={<BudgetResult />}
+                    />
                 </Route>
             </Routes>
         </Router>

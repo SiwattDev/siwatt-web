@@ -18,14 +18,19 @@ import axios from 'axios'
 import 'chart.js/auto'
 import { useContext, useEffect, useState } from 'react'
 import { Bar } from 'react-chartjs-2'
+import { useParams } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
 import { BudgetContext } from '../../../../contexts/budgetContext'
 import useFirebase from '../../../../hooks/useFirebase'
+import useUtilities from '../../../../hooks/useUtilities'
 
 function BudgetResult() {
+    const { id: budgetID } = useParams()
     const { budget, setBudget } = useContext(BudgetContext)
     const [result, setResult] = useState()
     const [loading, setLoading] = useState(true)
-    const { getDocumentById } = useFirebase()
+    const { getDocumentById, createDocument } = useFirebase()
+    const { showToastMessage } = useUtilities()
 
     function calculateAverageEnergyBill(budgetData) {
         let monthlyTotal = {
@@ -135,11 +140,12 @@ function BudgetResult() {
     }
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchData = async (budgetData = budget) => {
+            console.log(budgetData)
             try {
                 const clientData = await getDocumentById(
                     'clients',
-                    budget.client
+                    budgetData.client.id || budgetData.client
                 )
                 console.log('Dados do cliente:', clientData)
                 const sellerData = await getDocumentById(
@@ -149,11 +155,11 @@ function BudgetResult() {
                 console.log('Dados do vendedor:', sellerData)
                 const modulesData = await getDocumentById(
                     'kits/itens/itens',
-                    budget.kit.modules.id
+                    budgetData.kit.modules.id
                 )
                 const inverterData = await getDocumentById(
                     'kits/itens/itens',
-                    budget.kit.inverter.id
+                    budgetData.kit.inverter.id
                 )
 
                 const clientObj = {
@@ -165,34 +171,34 @@ function BudgetResult() {
                     modules: {
                         ...modulesData,
                         unitPrice: modulesData.price,
-                        amount: budget.kit.modules.amount,
+                        amount: budgetData.kit.modules.amount,
                         totalPrice:
                             parseFloat(
                                 modulesData.price
                                     .replace('.', '')
                                     .replace(/[^\d,.-]/g, '')
                                     .replace(',', '.')
-                            ) * budget.kit.modules.amount,
+                            ) * budgetData.kit.modules.amount,
                     },
                     inverter: {
                         ...inverterData,
                         unitPrice: inverterData.price,
-                        amount: budget.kit.inverter.amount,
+                        amount: budgetData.kit.inverter.amount,
                         totalPrice:
                             parseFloat(
                                 inverterData.price
                                     .replace('.', '')
                                     .replace(/[^\d,.-]/g, '')
                                     .replace(',', '.')
-                            ) * budget.kit.inverter.amount,
+                            ) * budgetData.kit.inverter.amount,
                     },
                 }
 
                 const body = {
-                    cityName: budget.solarPlantSite.city,
-                    averageConsumption: calculateAverageEnergyBill(budget),
-                    powerSupplyType: budget.consumption.typeNetwork,
-                    panelPower: budget.kit.modules.power,
+                    cityName: budgetData.solarPlantSite.city,
+                    averageConsumption: calculateAverageEnergyBill(budgetData),
+                    powerSupplyType: budgetData.consumption.typeNetwork,
+                    panelPower: budgetData.kit.modules.power,
                     kitPrice:
                         kitObj.modules.totalPrice + kitObj.inverter.totalPrice,
                 }
@@ -206,21 +212,44 @@ function BudgetResult() {
                 console.log(apiResponse.data)
                 const result = {
                     id: generateUniqueNumber(),
-                    ...budget,
+                    ...budgetData,
                     client: clientObj,
                     kit: kitObj,
                     ...apiResponse.data,
+                    createdAt: new Date(),
                 }
 
                 setResult(result)
                 setLoading(false)
                 setBudget(null)
+
+                if (!budgetID) {
+                    createDocument('budgets', result.id, result)
+                        .then(() => {
+                            showToastMessage(
+                                'success',
+                                'Orçamento gerado com sucesso'
+                            )
+                        })
+                        .catch((error) => {
+                            console.error(error)
+                            showToastMessage(
+                                'error',
+                                'Error inesperado ao tentar gerar orçamento'
+                            )
+                        })
+                }
             } catch (error) {
                 console.error(error)
             }
         }
 
-        fetchData()
+        if (budgetID) {
+            getDocumentById('budgets', budgetID).then((data) => {
+                setBudget(data)
+                fetchData(data)
+            })
+        } else fetchData()
     }, [])
 
     useEffect(() => {
@@ -910,6 +939,7 @@ function BudgetResult() {
                     </>
                 )}
             </Paper>
+            <ToastContainer />
         </Box>
     )
 }

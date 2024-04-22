@@ -15,6 +15,7 @@ import { db } from '../firebase'
 const useFirebase = () => {
     const getDocumentById = (path, id) => {
         return new Promise((resolve, reject) => {
+            console.log(path, id)
             const docRef = doc(db, path, id)
             getDoc(docRef)
                 .then((doc) => {
