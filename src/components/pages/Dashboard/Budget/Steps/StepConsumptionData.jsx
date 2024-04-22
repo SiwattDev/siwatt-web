@@ -2,7 +2,9 @@ import {
     AddAPhotoRounded,
     AddRounded,
     AddchartRounded,
+    Save,
 } from '@mui/icons-material'
+import { LoadingButton } from '@mui/lab'
 import {
     Box,
     Button,
@@ -49,6 +51,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
         photoEnergyBill: null,
         photoConsumptionChart: null,
     })
+    const [uploading, setUploading] = useState(false)
     const { uploadFile } = useStorage()
     const { showToastMessage } = useUtilities()
 
@@ -105,6 +108,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     energyBill.photoEnergyBill,
                     energyBill.photoConsumptionChart
                 )
+                setUploading(true)
                 const photoEnergyBill = await uploadFile(
                     'energyBills',
                     energyBill.photoEnergyBill,
@@ -116,6 +120,8 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     energyBill.photoConsumptionChart,
                     `${energyBill.name}_consumption_chart.jpg`
                 )
+
+                setUploading(false)
 
                 const energyBillObj = {
                     ...energyBill,
@@ -186,7 +192,9 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     size='small'
                     className='mb-3 w-100'
                     value={energyBill.name}
-                    disabled={true}
+                    onChange={(e) =>
+                        setEnergyBill({ ...energyBill, name: e.target.value })
+                    }
                 />
                 <Grid container spacing={2}>
                     <Grid item xs={4}>
@@ -509,18 +517,30 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     size='small'
                     variant='contained'
                     onClick={handleClose}
+                    disabled={uploading}
                 >
                     Cancelar
                 </Button>
-                <Button
-                    color='black'
-                    size='small'
-                    variant='contained'
-                    autoFocus
-                    onClick={handleAdd}
-                >
-                    Adicionar
-                </Button>
+                {uploading ? (
+                    <LoadingButton
+                        loading
+                        loadingPosition='start'
+                        startIcon={<Save />}
+                        variant='contained'
+                    >
+                        Adicionando
+                    </LoadingButton>
+                ) : (
+                    <Button
+                        color='black'
+                        size='small'
+                        variant='contained'
+                        autoFocus
+                        onClick={handleAdd}
+                    >
+                        Adicionar
+                    </Button>
+                )}
             </DialogActions>
         </Dialog>
     )

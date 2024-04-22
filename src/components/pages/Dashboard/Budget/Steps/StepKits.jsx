@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 import axios from 'axios'
 import { useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { BudgetContext } from '../../../../../contexts/budgetContext'
 import useFirebase from './../../../../../hooks/useFirebase'
 import useUtilities from './../../../../../hooks/useUtilities'
@@ -26,6 +27,7 @@ function StepKits({ supplyType = 'Three-phase' }) {
     const { generateCode } = useUtilities()
     const { budget, setBudget } = useContext(BudgetContext)
     const firebase = useFirebase()
+    const navigate = useNavigate()
 
     const openEditDialog = (kit) => {
         setEditedKit(kit)
@@ -124,6 +126,7 @@ function StepKits({ supplyType = 'Three-phase' }) {
 
         let bestInverter = null
         if (compatibleInverters.length > 0) {
+            console.log(compatibleInverters)
             compatibleInverters.sort((a, b) => a.price - b.price)
             bestInverter = {
                 id: compatibleInverters[0].id,
@@ -151,26 +154,30 @@ function StepKits({ supplyType = 'Three-phase' }) {
                     inverter.power * 2 >= neededPower &&
                     inverter.power * 2 <= neededPower * 1.2
             )
-            bestInverter = {
-                id: identicalInverters[0].id,
-                model: identicalInverters[0].model,
-                amount: 2,
-                power: identicalInverters[0].power * 2,
-                pricePerUnit: parseFloat(
-                    identicalInverters[0].price
-                        .split(',')[0]
-                        .replace('R$', '')
-                        .replace(',', '')
-                        .replace('.', '')
-                ),
-                totalPrice:
-                    parseFloat(
+            if (identicalInverters.length > 0) {
+                bestInverter = {
+                    id: identicalInverters[0].id,
+                    model: identicalInverters[0].model,
+                    amount: 2,
+                    power: identicalInverters[0].power * 2,
+                    pricePerUnit: parseFloat(
                         identicalInverters[0].price
                             .split(',')[0]
                             .replace('R$', '')
                             .replace(',', '')
                             .replace('.', '')
-                    ) * 2,
+                    ),
+                    totalPrice:
+                        parseFloat(
+                            identicalInverters[0].price
+                                .split(',')[0]
+                                .replace('R$', '')
+                                .replace(',', '')
+                                .replace('.', '')
+                        ) * 2,
+                }
+            } else {
+                bestInverter = null
             }
         }
 
@@ -221,7 +228,6 @@ function StepKits({ supplyType = 'Three-phase' }) {
     }
 
     function calculateAverageEnergyBill(budgetData) {
-        // Primeiro, vamos criar um objeto para armazenar a soma dos consumos de cada mês
         let monthlyTotal = {
             jan: 0,
             fev: 0,
@@ -237,21 +243,69 @@ function StepKits({ supplyType = 'Three-phase' }) {
             dez: 0,
         }
 
-        // Iteramos sobre cada conta de energia
         budgetData.consumption.energyBills.forEach((bill) => {
-            // Iteramos sobre cada mês na conta de energia e somamos ao total correspondente
             Object.entries(bill.months).forEach(([month, value]) => {
                 monthlyTotal[month.toLowerCase()] += Number(value)
             })
         })
 
-        // Agora que temos a soma dos consumos de todos os meses, podemos calcular a média
         let totalConsumption = Object.values(monthlyTotal).reduce(
             (total, value) => total + value,
             0
         )
         let totalMonths = Object.keys(monthlyTotal).length
         return totalConsumption / totalMonths
+    }
+
+    const generateRandomKit = () => {
+        const moduleIndex = Math.floor(Math.random() * products.modules.length)
+        const inverterIndex = Math.floor(
+            Math.random() * products.inverters.length
+        )
+        const kit = {
+            modules: {
+                id: products.modules[moduleIndex].id,
+                model: products.modules[moduleIndex].model,
+                unitPrice: parseFloat(
+                    products.modules[moduleIndex].price
+                        .split(',')[0]
+                        .replace('R$', '')
+                        .replace(',', '')
+                        .replace('.', '')
+                ),
+                totalPrice: parseFloat(
+                    products.modules[moduleIndex].price
+                        .split(',')[0]
+                        .replace('R$', '')
+                        .replace(',', '')
+                        .replace('.', '')
+                ),
+                amount: 0,
+                power: products.modules[moduleIndex].power,
+            },
+            inverter: {
+                id: products.inverters[inverterIndex].id,
+                model: products.inverters[inverterIndex].model,
+                unitPrice: parseFloat(
+                    products.inverters[inverterIndex].price
+                        .split(',')[0]
+                        .replace('R$', '')
+                        .replace(',', '')
+                        .replace('.', '')
+                ),
+                totalPrice: parseFloat(
+                    products.inverters[inverterIndex].price
+                        .split(',')[0]
+                        .replace('R$', '')
+                        .replace(',', '')
+                        .replace('.', '')
+                ),
+                amount: 0,
+                powerMax: products.inverters[inverterIndex].power,
+            },
+        }
+
+        setKits([kit])
     }
 
     useEffect(() => {
@@ -282,13 +336,21 @@ function StepKits({ supplyType = 'Three-phase' }) {
                 solarIrradiation
             )
             const selections = chooseModulesAndInverters(products, neededPower)
-            const combinations = generateOptimalCombinations(
-                selections.topThreeModules,
-                [selections.bestInverter]
-            )
-            console.log(combinations)
-            setKits(combinations)
-            setLoading(false)
+            if (
+                selections.topThreeModules.length === 0 ||
+                selections.bestInverter === null
+            ) {
+                setLoading(false)
+                return
+            } else {
+                const combinations = generateOptimalCombinations(
+                    selections.topThreeModules,
+                    [selections.bestInverter]
+                )
+                console.log(combinations)
+                setKits(combinations)
+                setLoading(false)
+            }
         }
 
         fetchData()
@@ -308,6 +370,44 @@ function StepKits({ supplyType = 'Three-phase' }) {
                 >
                     <CircularProgress color='black' />
                 </Box>
+            )}
+            {!loading && kits.length === 0 && (
+                <>
+                    <Typography className='text-center' variant='h5'>
+                        Não conseguimos gerar um Kit neste momento :(
+                    </Typography>
+                    <Typography
+                        className='text-center mx-auto'
+                        variant='body1'
+                        sx={{
+                            maxWidth: '550px',
+                        }}
+                    >
+                        Para resolver isso, você pode cadastrar mais produtos
+                        ou, se preferir, montar o Kit manualmente, basta clicar
+                        no botão <strong>GERAR KIT MANUALMENTE</strong>, um
+                        modelo de kit será apresentado na tela e então você pode
+                        editar ele, alterando o modelo e a quantidade dos
+                        módulos e dos inversores.
+                    </Typography>
+                    <Box className='text-center mt-3'>
+                        <Button
+                            onClick={() => navigate('/dashboard/products')}
+                            color='black'
+                            variant='contained'
+                            className='me-3'
+                        >
+                            Cadastrar mais produtos
+                        </Button>
+                        <Button
+                            onClick={generateRandomKit}
+                            color='black'
+                            variant='contained'
+                        >
+                            Gerar kit manualmente
+                        </Button>
+                    </Box>
+                </>
             )}
             {kits &&
                 !loading &&
