@@ -153,45 +153,10 @@ function BudgetResult() {
                     clientData.seller
                 )
                 console.log('Dados do vendedor:', sellerData)
-                const modulesData = await getDocumentById(
-                    'kits/itens/itens',
-                    budgetData.kit.modules.id
-                )
-                const inverterData = await getDocumentById(
-                    'kits/itens/itens',
-                    budgetData.kit.inverter.id
-                )
 
                 const clientObj = {
                     ...clientData,
                     seller: { ...sellerData },
-                }
-
-                const kitObj = {
-                    modules: {
-                        ...modulesData,
-                        unitPrice: modulesData.price,
-                        amount: budgetData.kit.modules.amount,
-                        totalPrice:
-                            parseFloat(
-                                modulesData.price
-                                    .replace('.', '')
-                                    .replace(/[^\d,.-]/g, '')
-                                    .replace(',', '.')
-                            ) * budgetData.kit.modules.amount,
-                    },
-                    inverter: {
-                        ...inverterData,
-                        unitPrice: inverterData.price,
-                        amount: budgetData.kit.inverter.amount,
-                        totalPrice:
-                            parseFloat(
-                                inverterData.price
-                                    .replace('.', '')
-                                    .replace(/[^\d,.-]/g, '')
-                                    .replace(',', '.')
-                            ) * budgetData.kit.inverter.amount,
-                    },
                 }
 
                 const body = {
@@ -200,7 +165,8 @@ function BudgetResult() {
                     powerSupplyType: budgetData.consumption.typeNetwork,
                     panelPower: budgetData.kit.modules.power,
                     kitPrice:
-                        kitObj.modules.totalPrice + kitObj.inverter.totalPrice,
+                        budgetData.kit.modules.totalPrice +
+                        budgetData.kit.inverter.totalPrice,
                 }
                 console.log(body)
 
@@ -214,7 +180,6 @@ function BudgetResult() {
                     id: generateUniqueNumber(),
                     ...budgetData,
                     client: clientObj,
-                    kit: kitObj,
                     ...apiResponse.data,
                     createdAt: new Date(),
                 }

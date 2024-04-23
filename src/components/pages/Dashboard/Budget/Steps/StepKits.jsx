@@ -6,8 +6,11 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    FormControl,
+    InputLabel,
     MenuItem,
     Paper,
+    Select,
     TextField,
     Typography,
 } from '@mui/material'
@@ -18,7 +21,7 @@ import { BudgetContext } from '../../../../../contexts/budgetContext'
 import useFirebase from './../../../../../hooks/useFirebase'
 import useUtilities from './../../../../../hooks/useUtilities'
 
-function StepKits({ supplyType = 'Three-phase' }) {
+function StepKits() {
     const [products, setProducts] = useState()
     const [kits, setKits] = useState([])
     const [loading, setLoading] = useState(true)
@@ -332,9 +335,15 @@ function StepKits({ supplyType = 'Three-phase' }) {
             })
             const neededPower = getNeededPower(
                 averageConsumption,
-                supplyType,
+                budget.consumption.typeNetwork,
                 solarIrradiation
             )
+
+            setBudget({
+                ...budget,
+                neededPower,
+            })
+
             const selections = chooseModulesAndInverters(products, neededPower)
             if (
                 selections.topThreeModules.length === 0 ||
@@ -358,6 +367,16 @@ function StepKits({ supplyType = 'Three-phase' }) {
 
     return (
         <Box className='mt-4'>
+            {budget.neededPower && (
+                <>
+                    <Typography className='text-center mb-0' variant='h6'>
+                        Potência necessária:
+                    </Typography>
+                    <Typography className='text-center mb-3' variant='h4'>
+                        {budget.neededPower.toFixed(2)} KWp
+                    </Typography>
+                </>
+            )}
             {loading && (
                 <Box
                     sx={{
@@ -539,109 +558,257 @@ function StepKits({ supplyType = 'Three-phase' }) {
                     </Paper>
                 ))}
             <Dialog open={editDialogOpen} onClose={closeEditDialog}>
-                <DialogTitle>Editar Kit</DialogTitle>
-                <DialogContent>
+                <DialogTitle className='pb-0'>Editar Kit</DialogTitle>
+                <DialogContent className='row container w-100 mx-0'>
                     {products && (
                         <>
-                            <TextField
-                                color='black'
-                                size='small'
-                                select
-                                label='Modelo de Placa'
-                                value={editedKit ? editedKit.modules.id : ''}
-                                onChange={(e) =>
-                                    setEditedKit({
-                                        ...editedKit,
-                                        modules: {
-                                            ...editedKit.modules,
-                                            id: e.target.value,
-                                            model: products.modules.filter(
-                                                (p) => p.id === e.target.value
-                                            )[0].model,
-                                        },
-                                    })
-                                }
-                                fullWidth
-                                margin='normal'
-                            >
-                                {products.modules.map((product) => (
-                                    <MenuItem
-                                        key={product.id}
-                                        value={product.id}
+                            <Box className='col-6 mt-2'>
+                                <Typography variant='h6' className='mb-2'>
+                                    Placas
+                                </Typography>
+                                <FormControl
+                                    size='small'
+                                    color='black'
+                                    fullWidth
+                                >
+                                    <InputLabel>Modelo de Placa</InputLabel>
+                                    <Select
+                                        label='Modelo de Placa'
+                                        value={
+                                            editedKit
+                                                ? editedKit.modules.id
+                                                : ''
+                                        }
+                                        onChange={(e) =>
+                                            setEditedKit({
+                                                ...editedKit,
+                                                modules: {
+                                                    ...editedKit.modules,
+                                                    id: e.target.value,
+                                                    model: products.modules.filter(
+                                                        (p) =>
+                                                            p.id ===
+                                                            e.target.value
+                                                    )[0].model,
+                                                },
+                                            })
+                                        }
+                                        fullWidth
                                     >
-                                        {product.model}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                            <TextField
-                                color='black'
-                                size='small'
-                                select
-                                label='Modelo de Inversor'
-                                value={editedKit ? editedKit.inverter.id : ''}
-                                onChange={(e) =>
-                                    setEditedKit({
-                                        ...editedKit,
-                                        inverter: {
-                                            ...editedKit.inverter,
-                                            id: e.target.value,
-                                            model: products.inverters.filter(
-                                                (p) => p.id === e.target.value
-                                            )[0].model,
-                                        },
-                                    })
-                                }
-                                fullWidth
-                                margin='normal'
-                            >
-                                {products.inverters.map((product) => (
-                                    <MenuItem
-                                        key={product.id}
-                                        value={product.id}
+                                        {products.modules.map((product) => (
+                                            <MenuItem
+                                                key={product.id}
+                                                value={product.id}
+                                            >
+                                                {product.model}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <TextField
+                                    type='number'
+                                    color='black'
+                                    variant='outlined'
+                                    size='small'
+                                    label='Quantidade'
+                                    fullWidth
+                                    className='mt-3'
+                                    value={
+                                        editedKit ? editedKit.modules.amount : 0
+                                    }
+                                    onChange={(e) =>
+                                        setEditedKit({
+                                            ...editedKit,
+                                            modules: {
+                                                ...editedKit.modules,
+                                                amount: e.target.value,
+                                            },
+                                        })
+                                    }
+                                ></TextField>
+                                <TextField
+                                    color='black'
+                                    variant='outlined'
+                                    size='small'
+                                    label='Preço por Unidade'
+                                    fullWidth
+                                    className='mt-3'
+                                    value={
+                                        editedKit
+                                            ? editedKit.modules.unitPrice.toLocaleString(
+                                                  'pt-BR',
+                                                  {
+                                                      style: 'currency',
+                                                      currency: 'BRL',
+                                                  }
+                                              )
+                                            : 0
+                                    }
+                                    onChange={(e) =>
+                                        setEditedKit({
+                                            ...editedKit,
+                                            modules: {
+                                                ...editedKit.modules,
+                                                unitPrice: e.target.value,
+                                            },
+                                        })
+                                    }
+                                ></TextField>
+                                <TextField
+                                    color='black'
+                                    variant='outlined'
+                                    size='small'
+                                    label='Preço Total'
+                                    fullWidth
+                                    className='mt-3'
+                                    value={
+                                        editedKit
+                                            ? editedKit.modules.totalPrice.toLocaleString(
+                                                  'pt-BR',
+                                                  {
+                                                      style: 'currency',
+                                                      currency: 'BRL',
+                                                  }
+                                              )
+                                            : 0
+                                    }
+                                    onChange={(e) =>
+                                        setEditedKit({
+                                            ...editedKit,
+                                            modules: {
+                                                ...editedKit.modules,
+                                                totalPrice: e.target.value,
+                                            },
+                                        })
+                                    }
+                                ></TextField>
+                            </Box>
+                            <Box className='col-6 mt-2'>
+                                <Typography variant='h6' className='mb-2'>
+                                    Inversores
+                                </Typography>
+                                <FormControl
+                                    color='black'
+                                    size='small'
+                                    fullWidth
+                                >
+                                    <InputLabel>Modelo de Inversor</InputLabel>
+                                    <Select
+                                        label='Modelo do Inversor'
+                                        value={
+                                            editedKit
+                                                ? editedKit.inverter.id
+                                                : ''
+                                        }
+                                        onChange={(e) =>
+                                            setEditedKit({
+                                                ...editedKit,
+                                                inverters: {
+                                                    ...editedKit.inverters,
+                                                    id: e.target.value,
+                                                    model: products.inverters.filter(
+                                                        (p) =>
+                                                            p.id ===
+                                                            e.target.value
+                                                    )[0].model,
+                                                },
+                                            })
+                                        }
+                                        fullWidth
+                                        margin='normal'
                                     >
-                                        {product.model}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
+                                        {products.inverters.map((product) => (
+                                            <MenuItem
+                                                key={product.id}
+                                                value={product.id}
+                                            >
+                                                {product.model}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <TextField
+                                    type='number'
+                                    color='black'
+                                    variant='outlined'
+                                    size='small'
+                                    label='Quantidade'
+                                    fullWidth
+                                    className='mt-3'
+                                    value={
+                                        editedKit
+                                            ? editedKit.inverter.amount
+                                            : 0
+                                    }
+                                    onChange={(e) =>
+                                        setEditedKit({
+                                            ...editedKit,
+                                            inverter: {
+                                                ...editedKit.inverter,
+                                                amount: e.target.value,
+                                            },
+                                        })
+                                    }
+                                ></TextField>
+                                <TextField
+                                    color='black'
+                                    variant='outlined'
+                                    size='small'
+                                    label='Preço por Unidade'
+                                    fullWidth
+                                    className='mt-3'
+                                    value={
+                                        editedKit
+                                            ? editedKit.inverter.unitPrice.toLocaleString(
+                                                  'pt-BR',
+                                                  {
+                                                      style: 'currency',
+                                                      currency: 'BRL',
+                                                  }
+                                              )
+                                            : 0
+                                    }
+                                    onChange={(e) =>
+                                        setEditedKit({
+                                            ...editedKit,
+                                            inverter: {
+                                                ...editedKit.inverter,
+                                                unitPrice: e.target.value,
+                                            },
+                                        })
+                                    }
+                                ></TextField>
+                                <TextField
+                                    color='black'
+                                    variant='outlined'
+                                    size='small'
+                                    label='Preço Total'
+                                    fullWidth
+                                    className='mt-3'
+                                    value={
+                                        editedKit
+                                            ? editedKit.inverter.totalPrice.toLocaleString(
+                                                  'pt-BR',
+                                                  {
+                                                      style: 'currency',
+                                                      currency: 'BRL',
+                                                  }
+                                              )
+                                            : 0
+                                    }
+                                    onChange={(e) =>
+                                        setEditedKit({
+                                            ...editedKit,
+                                            inverter: {
+                                                ...editedKit.inverter,
+                                                totalPrice: e.target.value,
+                                            },
+                                        })
+                                    }
+                                ></TextField>
+                            </Box>
                         </>
                     )}
-
-                    <TextField
-                        color='black'
-                        size='small'
-                        label='Quantidade de Placas'
-                        type='number'
-                        value={editedKit ? editedKit.modules.amount : ''}
-                        onChange={(e) =>
-                            setEditedKit({
-                                ...editedKit,
-                                modules: {
-                                    ...editedKit.modules,
-                                    amount: e.target.value,
-                                },
-                            })
-                        }
-                        fullWidth
-                        margin='normal'
-                    />
-                    <TextField
-                        color='black'
-                        size='small'
-                        label='Quantidade de Inversores'
-                        type='number'
-                        value={editedKit ? editedKit.inverter.amount : ''}
-                        onChange={(e) =>
-                            setEditedKit({
-                                ...editedKit,
-                                inverter: {
-                                    ...editedKit.inverter,
-                                    amount: e.target.value,
-                                },
-                            })
-                        }
-                        fullWidth
-                        margin='normal'
-                    />
                 </DialogContent>
                 <DialogActions>
                     <Button

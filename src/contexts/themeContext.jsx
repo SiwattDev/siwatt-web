@@ -15,6 +15,12 @@ function ThemeProvider(props) {
                     dark: '#000000',
                     contrastText: '#ffffff',
                 },
+                blue: {
+                    main: '#0656B4',
+                    light: '#0656B4',
+                    dark: '#0656B4',
+                    contrastText: '#ffffff',
+                },
             },
             typography: {
                 fontFamily: 'Aptos',
@@ -35,6 +41,12 @@ function ThemeProvider(props) {
                         light: color,
                         dark: color,
                         contrastText: contrastText,
+                    },
+                    blue: {
+                        main: '#0656B4',
+                        light: '#0656B4',
+                        dark: '#0656B4',
+                        contrastText: '#ffffff',
                     },
                 },
                 typography: {

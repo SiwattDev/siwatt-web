@@ -57,9 +57,10 @@ function AddEnergyBill({ open, onClose, existingIds }) {
 
     const isFormComplete = () => {
         if (energyBill.name === '') return false
-        for (let month in energyBill.months) {
+        for (let month in energyBill.months)
             if (energyBill.months[month] === '') return false
-        }
+        if (energyBill.photoEnergyBill === null) return false
+        if (energyBill.photoConsumptionChart === null) return false
         return true
     }
 
@@ -98,6 +99,8 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                 nov: '',
                 dez: '',
             },
+            photoEnergyBill: null,
+            photoConsumptionChart: null,
         })
     }
 
@@ -149,6 +152,8 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                         nov: '',
                         dez: '',
                     },
+                    photoEnergyBill: null,
+                    photoConsumptionChart: null,
                 })
             } catch (error) {
                 console.error(
@@ -199,6 +204,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                 <Grid container spacing={2}>
                     <Grid item xs={4}>
                         <TextField
+                            type='number'
                             label='Jan'
                             color='black'
                             size='small'
@@ -216,6 +222,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     </Grid>
                     <Grid item xs={4}>
                         <TextField
+                            type='number'
                             label='Fev'
                             color='black'
                             size='small'
@@ -233,6 +240,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     </Grid>
                     <Grid item xs={4}>
                         <TextField
+                            type='number'
                             label='Mar'
                             color='black'
                             size='small'
@@ -250,6 +258,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     </Grid>
                     <Grid item xs={4}>
                         <TextField
+                            type='number'
                             label='Abr'
                             color='black'
                             size='small'
@@ -267,6 +276,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     </Grid>
                     <Grid item xs={4}>
                         <TextField
+                            type='number'
                             label='Mai'
                             color='black'
                             size='small'
@@ -284,6 +294,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     </Grid>
                     <Grid item xs={4}>
                         <TextField
+                            type='number'
                             label='Jun'
                             color='black'
                             size='small'
@@ -301,6 +312,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     </Grid>
                     <Grid item xs={4}>
                         <TextField
+                            type='number'
                             label='Jul'
                             color='black'
                             size='small'
@@ -318,6 +330,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     </Grid>
                     <Grid item xs={4}>
                         <TextField
+                            type='number'
                             label='Ago'
                             color='black'
                             size='small'
@@ -335,6 +348,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     </Grid>
                     <Grid item xs={4}>
                         <TextField
+                            type='number'
                             label='Set'
                             color='black'
                             size='small'
@@ -352,6 +366,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     </Grid>
                     <Grid item xs={4}>
                         <TextField
+                            type='number'
                             label='Out'
                             color='black'
                             size='small'
@@ -369,6 +384,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     </Grid>
                     <Grid item xs={4}>
                         <TextField
+                            type='number'
                             label='Nov'
                             color='black'
                             size='small'
@@ -386,6 +402,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                     </Grid>
                     <Grid item xs={4}>
                         <TextField
+                            type='number'
                             label='Dez'
                             color='black'
                             size='small'
