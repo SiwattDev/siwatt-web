@@ -1,11 +1,13 @@
 import {
     AddRounded,
+    DeleteRounded,
     EditRounded,
     FilterListOffRounded,
     FilterListRounded,
     LockClockRounded,
     LockOpenRounded,
     LockRounded,
+    LoopRounded,
     NoEncryptionRounded,
     VisibilityRounded,
 } from '@mui/icons-material'
@@ -26,9 +28,12 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
+import { BudgetContext } from '../../../../contexts/budgetContext'
 import useFirebase from '../../../../hooks/useFirebase'
+import useUtilities from '../../../../hooks/useUtilities'
 
 function Budget() {
     const navigate = useNavigate()
@@ -40,7 +45,9 @@ function Budget() {
         status: 'all',
         seller: 'all',
     })
-    const { getDocumentsInCollection } = useFirebase()
+    const { getDocumentsInCollection, updateDocument } = useFirebase()
+    const { showToastMessage } = useUtilities()
+    const { setBudget } = useContext(BudgetContext)
     const status = [
         {
             status: 'opened',
@@ -74,6 +81,7 @@ function Budget() {
             getDocumentsInCollection('/users'),
         ]).then(([budgets, users]) => {
             budgets = budgets.map((budget) => {
+                if (budget.deleted) return false
                 budget.status = budget.status ? budget.status : 'opened'
                 return budget
             })
@@ -99,6 +107,34 @@ function Budget() {
         }
     }
 
+    const updateBudget = (id) => {
+        let budget = budgets.find((budget) => budget.id === id)
+        budget = {
+            ...budget,
+            action: 'edit',
+        }
+        setBudget(budget)
+        navigate(`edit/${id}`)
+    }
+
+    const deleteBudget = (id) => {
+        updateDocument('budgets', id, { deleted: true })
+            .then(() => {
+                showToastMessage('success', 'O orçamento foi excluído')
+                setBudgets(budgets.filter((budget) => budget.id !== id))
+                setOriginalBudgets(
+                    originalBudgets.filter((budget) => budget.id !== id)
+                )
+            })
+            .catch((error) => {
+                showToastMessage(
+                    'error',
+                    'Erro inesperado ao tentar excluir o orçamento'
+                )
+                console.log(error)
+            })
+    }
+
     return (
         <>
             <Button
@@ -112,101 +148,139 @@ function Budget() {
             </Button>
             {budgets.length > 0 ? (
                 <Box className='d-flex flex-wrap justify-content-center'>
-                    {budgets.map((budget) => (
-                        <Paper
-                            elevation={3}
-                            sx={{ m: 2, p: 2, maxWidth: '400px' }}
-                            key={budget.id}
-                        >
-                            <Box className='d-flex'>
-                                <Box className='w-100'>
-                                    <Typography variant='h6'>
-                                        <strong>Nº da proposta</strong>:{' '}
-                                        {budget.id}
-                                    </Typography>
-                                    <Typography variant='body1'>
-                                        <strong>Tamanho da Usina</strong>:{' '}
-                                        {budget.peakGeneration} kW
-                                    </Typography>
-                                    <Typography variant='body1'>
-                                        <strong>Client</strong>:{' '}
-                                        {budget.client.name}
-                                    </Typography>
-                                    <Typography variant='body1'>
-                                        <strong>
-                                            {budget.client.cnpj
-                                                ? 'CNPJ'
-                                                : 'CPF'}
-                                        </strong>
-                                        :{' '}
-                                        {budget.client.cnpj ||
-                                            budget.client.cpf}
-                                    </Typography>
-                                    <Typography variant='body1'>
-                                        <strong>Telefone</strong>:{' '}
-                                        {budget.client.phone}
-                                    </Typography>
-                                </Box>
-                                <Box className='ms-3 d-flex flex-column gap-2'>
-                                    <Button
-                                        variant='contained'
-                                        size='small'
-                                        color='black'
-                                        onClick={() =>
-                                            navigate(`result/${budget.id}`)
-                                        }
-                                        startIcon={<VisibilityRounded />}
-                                        sx={{
-                                            whiteSpace: 'nowrap',
-                                        }}
-                                    >
-                                        Ver mais
-                                    </Button>
-                                    {budget.status !== 'closed' && (
+                    {budgets.map((budget) => {
+                        console.log(budget)
+                        return budget ? (
+                            <Paper
+                                elevation={3}
+                                sx={{ m: 2, p: 2, maxWidth: '400px' }}
+                                key={budget.id}
+                            >
+                                <Box className='d-flex'>
+                                    <Box className='w-100'>
+                                        <Typography variant='h6'>
+                                            <strong>Nº da proposta</strong>:{' '}
+                                            {budget.id}
+                                        </Typography>
+                                        <Typography variant='body1'>
+                                            <strong>Tamanho da Usina</strong>:{' '}
+                                            {budget.peakGeneration} kW
+                                        </Typography>
+                                        <Typography variant='body1'>
+                                            <strong>Client</strong>:{' '}
+                                            {budget.client.name}
+                                        </Typography>
+                                        <Typography variant='body1'>
+                                            <strong>
+                                                {budget.client.cnpj
+                                                    ? 'CNPJ'
+                                                    : 'CPF'}
+                                            </strong>
+                                            :{' '}
+                                            {budget.client.cnpj ||
+                                                budget.client.cpf}
+                                        </Typography>
+                                        <Typography variant='body1'>
+                                            <strong>Telefone</strong>:{' '}
+                                            {budget.client.phone}
+                                        </Typography>
+                                    </Box>
+                                    <Box className='ms-3 d-flex flex-column gap-2'>
                                         <Button
                                             variant='contained'
                                             size='small'
                                             color='black'
-                                            startIcon={<EditRounded />}
+                                            onClick={() =>
+                                                navigate(`result/${budget.id}`)
+                                            }
+                                            startIcon={<VisibilityRounded />}
                                             sx={{
                                                 whiteSpace: 'nowrap',
                                             }}
                                         >
-                                            Editar
+                                            Ver mais
                                         </Button>
-                                    )}
+                                        {budget.status !== 'closed' && (
+                                            <Button
+                                                variant='contained'
+                                                size='small'
+                                                color='black'
+                                                startIcon={<EditRounded />}
+                                                sx={{
+                                                    whiteSpace: 'nowrap',
+                                                }}
+                                                onClick={() =>
+                                                    updateBudget(budget.id)
+                                                }
+                                            >
+                                                Editar
+                                            </Button>
+                                        )}
+                                        <Button
+                                            variant='contained'
+                                            size='small'
+                                            color='black'
+                                            startIcon={<DeleteRounded />}
+                                            sx={{
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                            onClick={() =>
+                                                deleteBudget(budget.id)
+                                            }
+                                        >
+                                            Excluir
+                                        </Button>
+                                        <Button
+                                            variant='contained'
+                                            size='small'
+                                            color='black'
+                                            className='mb-1'
+                                            startIcon={<LoopRounded />}
+                                            sx={{
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                            onClick={() => {}}
+                                        >
+                                            Status
+                                        </Button>
+                                    </Box>
                                 </Box>
-                            </Box>
-                            <Alert
-                                sx={{
-                                    '& .MuiAlert-icon': {
-                                        marginRight: 0,
-                                    },
-                                }}
-                                icon={
-                                    status.filter(
-                                        ({ status }) =>
-                                            status === budget.status || 'opened'
-                                    )[0].icon
-                                }
-                                severity={
-                                    status.filter(
-                                        ({ status }) =>
-                                            status === budget.status || 'opened'
-                                    )[0].color
-                                }
-                                className='py-0 px-2 d-flex align-items-center mt-2'
-                            >
-                                Status:{' '}
-                                {
-                                    status.filter(
-                                        (status) =>
-                                            status === budget.status || 'opened'
-                                    )[0].text
-                                }
-                            </Alert>
-                        </Paper>
-                    ))}
+                                <Alert
+                                    sx={{
+                                        '& .MuiAlert-icon': {
+                                            marginRight: 0,
+                                        },
+                                    }}
+                                    icon={
+                                        status.filter(
+                                            ({ status }) =>
+                                                status === budget.status ||
+                                                'opened'
+                                        )[0].icon
+                                    }
+                                    severity={
+                                        status.filter(
+                                            ({ status }) =>
+                                                status === budget.status ||
+                                                'opened'
+                                        )[0].color
+                                    }
+                                    className='py-0 px-2 d-flex align-items-center mt-2'
+                                >
+                                    Status:{' '}
+                                    {
+                                        status.filter(
+                                            (status) =>
+                                                status === budget.status ||
+                                                'opened'
+                                        )[0].text
+                                    }
+                                </Alert>
+                            </Paper>
+                        ) : (
+                            false
+                        )
+                    })}
                 </Box>
             ) : (
                 <Typography variant='h4' className='text-center mt-3'>
@@ -313,6 +387,7 @@ function Budget() {
                     <AddRounded />
                 </Fab>
             </Tooltip>
+            <ToastContainer />
         </>
     )
 }

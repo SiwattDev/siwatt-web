@@ -45,9 +45,16 @@ const StepCustomerData = () => {
     useEffect(() => {
         if (clients && budget && budget.client)
             setActiveClient(
-                clients.filter((cliente) => cliente.id === budget.client)[0]
+                clients.filter(
+                    (cliente) =>
+                        cliente.id === budget.client.id || budget.client
+                )[0]
             )
     }, [clients])
+
+    useEffect(() => {
+        console.log(budget)
+    }, [budget])
 
     return (
         <Grid container spacing={2} className='mt-2'>

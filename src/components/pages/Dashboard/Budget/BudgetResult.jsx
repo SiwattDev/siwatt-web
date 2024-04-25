@@ -6,6 +6,7 @@ import {
     SavingsRounded,
     SolarPowerRounded,
 } from '@mui/icons-material'
+import { LoadingButton } from '@mui/lab'
 import {
     Box,
     Button,
@@ -29,7 +30,8 @@ function BudgetResult() {
     const { budget, setBudget } = useContext(BudgetContext)
     const [result, setResult] = useState()
     const [loading, setLoading] = useState(true)
-    const { getDocumentById, createDocument } = useFirebase()
+    const [downloading, setDownloading] = useState(false)
+    const { getDocumentById, createDocument, updateDocument } = useFirebase()
     const { showToastMessage } = useUtilities()
 
     function calculateAverageEnergyBill(budgetData) {
@@ -116,6 +118,7 @@ function BudgetResult() {
     }
 
     async function downloadPDF() {
+        setDownloading(true)
         try {
             const response = await axios({
                 url: 'https://backend.siwatt.com.br/api/generate-pdf',
@@ -134,7 +137,9 @@ function BudgetResult() {
             document.body.appendChild(link)
             link.click()
             window.URL.revokeObjectURL(url)
+            setDownloading(false)
         } catch (error) {
+            setDownloading(false)
             console.error('Erro:', error)
         }
     }
@@ -188,7 +193,7 @@ function BudgetResult() {
                 setLoading(false)
                 setBudget(null)
 
-                if (!budgetID) {
+                if (!budgetID && !budget.action) {
                     createDocument('budgets', result.id, result)
                         .then(() => {
                             showToastMessage(
@@ -201,6 +206,21 @@ function BudgetResult() {
                             showToastMessage(
                                 'error',
                                 'Error inesperado ao tentar gerar orçamento'
+                            )
+                        })
+                } else if (!budgetID && budget.action) {
+                    updateDocument('budgets', budget.id, result)
+                        .then(() => {
+                            showToastMessage(
+                                'success',
+                                'Orçamento atualizado com sucesso'
+                            )
+                        })
+                        .catch((error) => {
+                            console.error(error)
+                            showToastMessage(
+                                'error',
+                                'Error inesperado ao tentar atualizar orçamento'
                             )
                         })
                 }
@@ -892,15 +912,28 @@ function BudgetResult() {
                                 />
                             </Box>
                         </Paper>
-                        <Button
-                            variant='contained'
-                            onClick={downloadPDF}
-                            color='black'
-                            className='mt-3'
-                            startIcon={<DownloadRounded />}
-                        >
-                            Baixar PDF
-                        </Button>
+                        {downloading ? (
+                            <LoadingButton
+                                loading
+                                loadingPosition='start'
+                                startIcon={<DownloadRounded />}
+                                variant='contained'
+                                color='black'
+                                className='mt-3'
+                            >
+                                Baixando PDF...
+                            </LoadingButton>
+                        ) : (
+                            <Button
+                                variant='contained'
+                                onClick={downloadPDF}
+                                color='black'
+                                className='mt-3'
+                                startIcon={<DownloadRounded />}
+                            >
+                                Baixar PDF
+                            </Button>
+                        )}
                     </>
                 )}
             </Paper>

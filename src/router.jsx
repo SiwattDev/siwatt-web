@@ -69,6 +69,8 @@ function AppRouter() {
                         path='budget/result/:id'
                         element={<BudgetResult />}
                     />
+                    <Route path='budget/edit/:id' element={<BudgetData />} />
+                    <Route path='*' element={<h1>Page not found</h1>} />
                 </Route>
             </Routes>
         </Router>
