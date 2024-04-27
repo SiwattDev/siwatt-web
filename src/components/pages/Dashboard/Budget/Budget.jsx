@@ -22,6 +22,7 @@ import {
     Fab,
     FormControl,
     InputLabel,
+    Menu,
     MenuItem,
     Paper,
     Select,
@@ -48,6 +49,8 @@ function Budget() {
     const { getDocumentsInCollection, updateDocument } = useFirebase()
     const { showToastMessage } = useUtilities()
     const { setBudget } = useContext(BudgetContext)
+    const [anchorEl, setAnchorEl] = useState(null)
+    const [currentBudgetId, setCurrentBudgetId] = useState(null)
     const status = [
         {
             status: 'opened',
@@ -68,14 +71,13 @@ function Budget() {
             icon: <LockRounded className='me-1' fontSize='small' />,
         },
         {
-            status: 'canceled',
+            status: 'cancelled',
             text: 'Cancelado',
             color: 'error',
             icon: <NoEncryptionRounded className='me-1' fontSize='small' />,
         },
     ]
-
-    useEffect(() => {
+    const fetchData = () => {
         Promise.all([
             getDocumentsInCollection('/budgets'),
             getDocumentsInCollection('/users'),
@@ -89,6 +91,25 @@ function Budget() {
             setOriginalBudgets(budgets)
             setUsers(users.filter((user) => user.id !== 'user_types'))
         })
+    }
+
+    const handleClick = (event, id) => {
+        setAnchorEl(event.currentTarget)
+        setCurrentBudgetId(id)
+    }
+
+    const handleClose = (status) => {
+        if (currentBudgetId && status) {
+            updateDocument('/budgets', currentBudgetId, { status }).then(() => {
+                console.log('updated')
+                fetchData()
+            })
+        }
+        setAnchorEl(null)
+    }
+
+    useEffect(() => {
+        fetchData()
     }, [])
 
     const applyFilters = (newFilters = filters) => {
@@ -200,22 +221,6 @@ function Budget() {
                                         >
                                             Ver mais
                                         </Button>
-                                        {budget.status !== 'closed' && (
-                                            <Button
-                                                variant='contained'
-                                                size='small'
-                                                color='black'
-                                                startIcon={<EditRounded />}
-                                                sx={{
-                                                    whiteSpace: 'nowrap',
-                                                }}
-                                                onClick={() =>
-                                                    updateBudget(budget.id)
-                                                }
-                                            >
-                                                Editar
-                                            </Button>
-                                        )}
                                         <Button
                                             variant='contained'
                                             size='small'
@@ -234,15 +239,86 @@ function Budget() {
                                             variant='contained'
                                             size='small'
                                             color='black'
-                                            className='mb-1'
-                                            startIcon={<LoopRounded />}
+                                            startIcon={<EditRounded />}
+                                            disabled={
+                                                budget.status === 'closed' ||
+                                                budget.status === 'cancelled'
+                                            }
                                             sx={{
                                                 whiteSpace: 'nowrap',
                                             }}
-                                            onClick={() => {}}
+                                            onClick={() =>
+                                                updateBudget(budget.id)
+                                            }
+                                        >
+                                            Editar
+                                        </Button>
+                                        <Button
+                                            variant='contained'
+                                            size='small'
+                                            color='black'
+                                            className='mb-1'
+                                            startIcon={<LoopRounded />}
+                                            disabled={
+                                                budget.status === 'closed' ||
+                                                budget.status === 'cancelled'
+                                            }
+                                            sx={{
+                                                whiteSpace: 'nowrap',
+                                            }}
+                                            onClick={(event) =>
+                                                handleClick(event, budget.id)
+                                            }
                                         >
                                             Status
                                         </Button>
+                                        <Menu
+                                            id='simple-menu'
+                                            anchorEl={anchorEl}
+                                            keepMounted
+                                            open={Boolean(anchorEl)}
+                                            onClose={() =>
+                                                handleClose(null, null)
+                                            }
+                                            elevation={2}
+                                            anchorOrigin={{
+                                                vertical: 'bottom',
+                                                horizontal: 'center',
+                                            }}
+                                            transformOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'center',
+                                            }}
+                                        >
+                                            <MenuItem
+                                                onClick={() =>
+                                                    handleClose('opened')
+                                                }
+                                            >
+                                                Em aberto
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() =>
+                                                    handleClose('in-progress')
+                                                }
+                                            >
+                                                Em andamento
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() =>
+                                                    handleClose('closed')
+                                                }
+                                            >
+                                                Fechado
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() =>
+                                                    handleClose('cancelled')
+                                                }
+                                            >
+                                                Cancelado
+                                            </MenuItem>
+                                        </Menu>
                                     </Box>
                                 </Box>
                                 <Alert
@@ -252,17 +328,14 @@ function Budget() {
                                         },
                                     }}
                                     icon={
-                                        status.filter(
-                                            ({ status }) =>
-                                                status === budget.status ||
-                                                'opened'
-                                        )[0].icon
+                                        status.filter(({ status }) => {
+                                            return status === budget.status
+                                        })[0].icon
                                     }
                                     severity={
                                         status.filter(
                                             ({ status }) =>
-                                                status === budget.status ||
-                                                'opened'
+                                                status === budget.status
                                         )[0].color
                                     }
                                     className='py-0 px-2 d-flex align-items-center mt-2'
@@ -270,9 +343,8 @@ function Budget() {
                                     Status:{' '}
                                     {
                                         status.filter(
-                                            (status) =>
-                                                status === budget.status ||
-                                                'opened'
+                                            ({ status }) =>
+                                                status === budget.status
                                         )[0].text
                                     }
                                 </Alert>
@@ -317,7 +389,7 @@ function Budget() {
                             <MenuItem value='in-progress'>
                                 Em andamento
                             </MenuItem>
-                            <MenuItem value='canceled'>Cancelado</MenuItem>
+                            <MenuItem value='cancelled'>Cancelado</MenuItem>
                             <MenuItem value='closed'>Concluído</MenuItem>
                         </Select>
                     </FormControl>

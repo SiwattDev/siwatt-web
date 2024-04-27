@@ -79,7 +79,7 @@ function StepKits() {
             'Three-phase': 100,
         }
 
-        const supplyTypeValue = supplyTypeValues[supplyType] || 0
+        const supplyTypeValue = supplyTypeValues[supplyType] || 30
         const average = solarIrradiation
         const result =
             (averageConsumption - supplyTypeValue) / 30 / (average * 0.75)
