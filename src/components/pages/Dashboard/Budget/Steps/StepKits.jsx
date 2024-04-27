@@ -367,16 +367,33 @@ function StepKits() {
 
     return (
         <Box className='mt-4'>
-            {budget.neededPower && (
-                <>
-                    <Typography className='text-center mb-0' variant='h6'>
-                        Potência necessária:
-                    </Typography>
-                    <Typography className='text-center mb-3' variant='h4'>
-                        {budget.neededPower.toFixed(2)} KWp
-                    </Typography>
-                </>
-            )}
+            <Box className='d-flex gap-5 justify-content-center mb-3'>
+                {budget.neededPower && (
+                    <Paper className='p-3 py-1' elevation={3}>
+                        <Typography className='text-center mb-0' variant='h6'>
+                            Potência necessária:
+                        </Typography>
+                        <Typography className='text-center mb-3' variant='h4'>
+                            {budget.neededPower.toFixed(2)} KWp
+                        </Typography>
+                    </Paper>
+                )}
+                {budget.kit && (
+                    <Paper className='p-3 py-1' elevation={3}>
+                        <Typography className='text-center mb-0' variant='h6'>
+                            Tamanho da Usina:
+                        </Typography>
+                        <Typography className='text-center mb-3' variant='h4'>
+                            {(
+                                (budget.kit.modules.power *
+                                    budget.kit.modules.amount) /
+                                1000
+                            ).toFixed(2)}{' '}
+                            KWp
+                        </Typography>
+                    </Paper>
+                )}
+            </Box>
             {loading && (
                 <Box
                     sx={{
