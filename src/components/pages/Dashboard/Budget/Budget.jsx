@@ -18,6 +18,7 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
+    DialogContentText,
     DialogTitle,
     Fab,
     FormControl,
@@ -26,6 +27,7 @@ import {
     MenuItem,
     Paper,
     Select,
+    TextField,
     Tooltip,
     Typography,
 } from '@mui/material'
@@ -46,6 +48,9 @@ function Budget() {
         status: 'all',
         seller: 'all',
     })
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false)
+    const [openValueDialog, setOpenValueDialog] = useState(false)
+    const [newBudgetValue, setNewBudgetValue] = useState('')
     const { getDocumentsInCollection, updateDocument } = useFirebase()
     const { showToastMessage } = useUtilities()
     const { setBudget } = useContext(BudgetContext)
@@ -100,10 +105,21 @@ function Budget() {
 
     const handleClose = (status) => {
         if (currentBudgetId && status) {
-            updateDocument('/budgets', currentBudgetId, { status }).then(() => {
-                console.log('updated')
-                fetchData()
-            })
+            if (status === 'closed') {
+                setOpenConfirmDialog(true)
+            } else {
+                updateDocument('/budgets', currentBudgetId, { status })
+                    .then(() => {
+                        console.log('updated')
+                        fetchData()
+                    })
+                    .catch((error) => {
+                        console.error(
+                            'Erro ao atualizar o status do orçamento:',
+                            error
+                        )
+                    })
+            }
         }
         setAnchorEl(null)
     }
@@ -156,6 +172,58 @@ function Budget() {
             })
     }
 
+    const handleConfirmDialogClose = (confirmChange) => {
+        setOpenConfirmDialog(false)
+        if (confirmChange) {
+            setOpenValueDialog(true)
+        } else {
+            // Se o usuário clicar em 'Não', altere o status como seria para todos os outros status
+            updateDocument('/budgets', currentBudgetId, { status: 'closed' })
+                .then(() => {
+                    console.log('updated')
+                    fetchData()
+                })
+                .catch((error) => {
+                    console.error(
+                        'Erro ao atualizar o status do orçamento:',
+                        error
+                    )
+                })
+        }
+    }
+
+    const handleValueDialogClose = (confirmValue) => {
+        setOpenValueDialog(false)
+        if (confirmValue) {
+            // Chame a função para salvar o valor atualizado do orçamento
+            saveUpdatedBudgetValue(newBudgetValue)
+        }
+    }
+
+    const saveUpdatedBudgetValue = (value) => {
+        // Formate o novo valor do orçamento como um número
+        const formattedValue = parseFloat(value)
+        if (isNaN(formattedValue)) {
+            console.error('Erro: O valor inserido não é um número válido.')
+        } else {
+            // Atualize o valor do orçamento no banco de dados
+            updateDocument('/budgets', currentBudgetId, {
+                negotiationValue: formattedValue,
+                status: 'closed',
+            })
+                .then(() => {
+                    console.log('updated')
+                    fetchData()
+                })
+                .catch((error) => {
+                    console.error(
+                        'Erro ao atualizar o valor do orçamento:',
+                        error
+                    )
+                })
+        }
+    }
+
     return (
         <>
             <Button
@@ -174,7 +242,7 @@ function Budget() {
                         return budget ? (
                             <Paper
                                 elevation={3}
-                                sx={{ m: 2, p: 2, maxWidth: '400px' }}
+                                sx={{ m: 2, p: 2, width: '400px' }}
                                 key={budget.id}
                             >
                                 <Box className='d-flex'>
@@ -460,6 +528,78 @@ function Budget() {
                 </Fab>
             </Tooltip>
             <ToastContainer />
+            <Dialog
+                open={openConfirmDialog}
+                onClose={() => handleConfirmDialogClose(false)}
+                fullWidth
+                maxWidth='xs'
+            >
+                <DialogTitle>Alterar o valor do orçamento?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Você quer alterar o valor do orçamento? Caso o valor
+                        negociado com o cliente seja diferente ao valor estimado
+                        pelo sistema é recomendado altera-lo.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant='contained'
+                        color='black'
+                        size='small'
+                        onClick={() => handleConfirmDialogClose(false)}
+                    >
+                        Não
+                    </Button>
+                    <Button
+                        variant='contained'
+                        color='black'
+                        size='small'
+                        onClick={() => handleConfirmDialogClose(true)}
+                    >
+                        Sim
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={openValueDialog}
+                onClose={() => handleValueDialogClose(false)}
+                fullWidth
+                maxWidth='xs'
+            >
+                <DialogTitle>{'Informe o valor negociado'}</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        label='Novo valor do orçamento'
+                        type='number'
+                        color='black'
+                        size='small'
+                        fullWidth
+                        variant='standard'
+                        value={newBudgetValue}
+                        onChange={(e) => setNewBudgetValue(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        variant='contained'
+                        color='black'
+                        size='small'
+                        onClick={() => handleValueDialogClose(false)}
+                    >
+                        Cancelar
+                    </Button>
+                    <Button
+                        variant='contained'
+                        color='black'
+                        size='small'
+                        onClick={() => handleValueDialogClose(true)}
+                    >
+                        Salvar
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </>
     )
 }

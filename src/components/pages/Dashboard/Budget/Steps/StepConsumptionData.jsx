@@ -31,7 +31,52 @@ import { BudgetContext } from '../../../../../contexts/budgetContext'
 import useStorage from '../../../../../hooks/useStorage'
 import useUtilities from './../../../../../hooks/useUtilities'
 
-function AddEnergyBill({ open, onClose, existingIds }) {
+function getNeededPower(averageConsumption, supplyType, solarIrradiation) {
+    const supplyTypeValues = {
+        'Single-phase': 30,
+        'Two-phase': 50,
+        'Three-phase': 100,
+    }
+
+    const supplyTypeValue = supplyTypeValues[supplyType] || 30
+    const average = solarIrradiation
+    const result =
+        (averageConsumption - supplyTypeValue) / 30 / (average * 0.75)
+
+    return result
+}
+
+function calculateAverageEnergyBill(budgetData) {
+    let monthlyTotal = {
+        jan: 0,
+        fev: 0,
+        mar: 0,
+        abr: 0,
+        mai: 0,
+        jun: 0,
+        jul: 0,
+        ago: 0,
+        set: 0,
+        out: 0,
+        nov: 0,
+        dez: 0,
+    }
+
+    budgetData.consumption.energyBills.forEach((bill) => {
+        Object.entries(bill.months).forEach(([month, value]) => {
+            monthlyTotal[month.toLowerCase()] += Number(value)
+        })
+    })
+
+    let totalConsumption = Object.values(monthlyTotal).reduce(
+        (total, value) => total + value,
+        0
+    )
+    let totalMonths = Object.keys(monthlyTotal).length
+    return totalConsumption / totalMonths
+}
+
+function AddEnergyBill({ open, onClose, existingIds, energyBills = [] }) {
     const [energyBill, setEnergyBill] = useState({
         name: generateEnergyBillId(existingIds),
         months: {
@@ -51,6 +96,7 @@ function AddEnergyBill({ open, onClose, existingIds }) {
         photoEnergyBill: null,
         photoConsumptionChart: null,
     })
+    const [energyBillsWithNew, setEnergyBillsWithNew] = useState(energyBills)
     const [uploading, setUploading] = useState(false)
     const { uploadFile } = useStorage()
     const { showToastMessage } = useUtilities()
@@ -172,6 +218,16 @@ function AddEnergyBill({ open, onClose, existingIds }) {
 
     useEffect(() => {
         console.log(energyBill)
+        const newEnergyBill = {
+            ...energyBill,
+            months: Object.fromEntries(
+                Object.entries(energyBill.months).map(([month, value]) => [
+                    month,
+                    value === '' ? 0 : value,
+                ])
+            ),
+        }
+        setEnergyBillsWithNew([...energyBills, newEnergyBill])
     }, [energyBill])
 
     function getBase64(file) {
@@ -527,6 +583,47 @@ function AddEnergyBill({ open, onClose, existingIds }) {
                         }}
                     />
                 </Box>
+                <Typography variant='body1'>
+                    <strong>Consumo médio</strong>:{' '}
+                    {(() => {
+                        console.log(energyBillsWithNew)
+                        if (
+                            energyBillsWithNew.length === 0 ||
+                            energyBillsWithNew[0]?.length === 0 ||
+                            energyBillsWithNew[1]?.length === 0
+                        )
+                            return 0
+                        const averageEnergyBill = calculateAverageEnergyBill({
+                            consumption: { energyBills: energyBillsWithNew },
+                        })
+                        return averageEnergyBill.toFixed(2)
+                    })()}{' '}
+                    KW/mês
+                </Typography>
+                <Typography variant='body1'>
+                    <strong>Potência necessária</strong>:{' '}
+                    {(() => {
+                        console.log(energyBillsWithNew)
+                        if (
+                            energyBillsWithNew.length === 0 ||
+                            energyBillsWithNew[0]?.length === 0 ||
+                            energyBillsWithNew[1]?.length === 0
+                        )
+                            return 0
+                        const averageEnergyBill = calculateAverageEnergyBill({
+                            consumption: { energyBills: energyBillsWithNew },
+                        })
+                        console.log(averageEnergyBill)
+                        const neededPower = getNeededPower(
+                            averageEnergyBill,
+                            'single-fase',
+                            5.153
+                        )
+                        console.log(neededPower)
+                        return neededPower.toFixed(2)
+                    })()}{' '}
+                    KWp
+                </Typography>
             </DialogContent>
             <DialogActions>
                 <Button
@@ -697,6 +794,37 @@ function StepConsumptionData() {
                     ))}
                 </TableBody>
             </Table>
+            <Typography variant='body1'>
+                <strong>Consumo médio</strong>:{' '}
+                {(() => {
+                    console.log(energyBills.length)
+                    if (energyBills.length === 0) return 0
+                    const averageEnergyBill = calculateAverageEnergyBill({
+                        consumption: { energyBills },
+                    })
+                    return averageEnergyBill.toFixed(2)
+                })()}{' '}
+                KW/mês
+            </Typography>
+            <Typography variant='body1'>
+                <strong>Potência necessária</strong>:{' '}
+                {(() => {
+                    console.log(energyBills.length)
+                    if (energyBills.length === 0) return 0
+                    const averageEnergyBill = calculateAverageEnergyBill({
+                        consumption: { energyBills },
+                    })
+                    console.log(averageEnergyBill)
+                    const neededPower = getNeededPower(
+                        averageEnergyBill,
+                        typeNetwork || 'single-fase',
+                        5.153
+                    )
+                    console.log(neededPower)
+                    return neededPower.toFixed(2)
+                })()}{' '}
+                KWp
+            </Typography>
             <Button
                 color='black'
                 size='small'
@@ -781,6 +909,7 @@ function StepConsumptionData() {
                     setOpen(false)
                 }}
                 existingIds={energyBills.map((bill) => bill.name)}
+                energyBills={energyBills}
             />
         </Box>
     )

@@ -219,7 +219,16 @@ const ProductList = () => {
                         <div className='col' key={product.id}>
                             <Card>
                                 <CardContent>
-                                    <Typography variant='h5' component='div'>
+                                    <Typography
+                                        variant='h5'
+                                        sx={{
+                                            display: '-webkit-box',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            WebkitBoxOrient: 'vertical',
+                                            WebkitLineClamp: '1',
+                                        }}
+                                    >
                                         {product.model}
                                     </Typography>
                                     <Typography variant='body2'>
@@ -240,7 +249,7 @@ const ProductList = () => {
                                                 product.id,
                                                 !product.disabled
                                             )
-                                        } // Mudança aqui
+                                        }
                                         color='black'
                                     />
 
