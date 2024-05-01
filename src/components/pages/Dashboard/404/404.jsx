@@ -1,7 +1,11 @@
 import { Box, Typography } from '@mui/material'
 import IconLogo from '/src/assets/404.png'
 
-function Page404({ fullPage = false }) {
+function Page404({
+    fullPage = false,
+    title = '404',
+    message = 'Página não encontrada',
+}) {
     return (
         <Box
             sx={{
@@ -22,7 +26,7 @@ function Page404({ fullPage = false }) {
             >
                 <img
                     src={IconLogo}
-                    alt='Ilustração de página não encontrada'
+                    alt='Ilustração 404'
                     style={{
                         width: '100%',
                         maxWidth: '300px',
@@ -34,10 +38,18 @@ function Page404({ fullPage = false }) {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        textAlign: 'center',
                     }}
                 >
-                    <Typography variant='h1'>404</Typography>
-                    <Typography variant='h6'>Página não encontrada</Typography>
+                    <Typography
+                        variant={title === '404' ? 'h1' : 'h4'}
+                        sx={{ maxWidth: '404px' }}
+                    >
+                        {title}
+                    </Typography>
+                    <Typography variant='body1' sx={{ maxWidth: '404px' }}>
+                        {message}
+                    </Typography>
                 </Box>
             </Box>
         </Box>

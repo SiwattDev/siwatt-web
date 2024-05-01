@@ -26,6 +26,7 @@ import { useEffect, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import useUtilities from '../../../../hooks/useUtilities'
 import useFirebase from './../../../../hooks/useFirebase'
+import Page404 from './../404/404'
 
 function Teams() {
     const [teams, setTeams] = useState(null)
@@ -247,6 +248,13 @@ function Teams() {
                         Carregando equipes...
                     </Typography>
                 </Box>
+            )}
+            {!loading && (!teams || teams.length === 0) && (
+                <Page404
+                    fullPage={false}
+                    title='Nenhuma equipe encontrada!'
+                    message='Clique no botão abaixo para criar uma nova equipe.'
+                />
             )}
             <Tooltip title='Nova Equipe'>
                 <Fab
