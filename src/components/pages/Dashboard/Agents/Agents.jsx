@@ -7,10 +7,7 @@ function Agents() {
         <>
             <Paper className='d-flex gap-2 align-items-center px-3 py-2 mb-3'>
                 <BadgeRounded color='black' />
-                <Typography
-                    variant='h6'
-                    sx={{ color: 'black' }}
-                >
+                <Typography variant='h6' sx={{ color: 'black' }}>
                     Usuários
                 </Typography>
             </Paper>
@@ -21,7 +18,7 @@ function Agents() {
                     { property: 'name', value: true },
                     { property: 'email', value: true },
                     { property: 'phone', value: true },
-                    { property: 'type', value: true },
+                    { property: 'user_type', value: true },
                     { property: 'uf', value: false },
                     { property: 'city', value: false },
                     { property: 'neighborhood', value: false },
@@ -36,7 +33,7 @@ function Agents() {
                     { key: 'email', title: 'Email' },
                     { key: 'phone', title: 'Telefone' },
                     {
-                        key: 'user_type.type',
+                        key: 'user_type',
                         title: 'Tipo de Usuário',
                     },
                     { key: 'address.uf', title: 'UF' },

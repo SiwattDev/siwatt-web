@@ -1,7 +1,8 @@
 import { onAuthStateChanged } from 'firebase/auth'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { Route, HashRouter as Router, Routes } from 'react-router-dom'
 import Auth from './components/pages/Auth/Auth'
+import Page404 from './components/pages/Dashboard/404/404'
 import AfterSales from './components/pages/Dashboard/AfterSales/AfterSales'
 import Agents from './components/pages/Dashboard/Agents/Agents'
 import Budget from './components/pages/Dashboard/Budget/Budget'
@@ -9,11 +10,11 @@ import BudgetData from './components/pages/Dashboard/Budget/BudgetData'
 import BudgetResult from './components/pages/Dashboard/Budget/BudgetResult'
 import Clients from './components/pages/Dashboard/Clients/Clients'
 import Dashboard from './components/pages/Dashboard/Dashboard'
-import Panel from './components/pages/Dashboard/Panel/Panel'
 import Partners from './components/pages/Dashboard/Partners/Partners'
 import Products from './components/pages/Dashboard/Products/Products'
 import Projects from './components/pages/Dashboard/Projects/Projects'
-import Sales from './components/pages/Dashboard/Sales/Sales'
+import SalesFunnel from './components/pages/Dashboard/SalesFunnel/SalesFunnel'
+import Teams from './components/pages/Dashboard/Teams/Teams'
 import EntityRegistration from './components/template/Dashboard/EntityRegistration/EntityRegistration'
 import EntityDetails from './components/template/Dashboard/ListEntities/EntityDetails'
 import { UserContext } from './contexts/userContext'
@@ -24,25 +25,30 @@ function AppRouter() {
     const { user, setUser } = useContext(UserContext)
     const { getDocumentById } = useFirebase()
 
-    onAuthStateChanged(auth, (userData) => {
-        console.log(userData)
-        if (userData && user?.id !== userData.uid) {
-            getDocumentById('users', userData.uid).then((data) => setUser(data))
-            window.localStorage.setItem('logged', true)
-        } else if (!userData) {
-            window.localStorage.setItem('logged', false)
-            setUser(false)
-        }
-    })
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (userData) => {
+            console.log(userData)
+            if (userData && user?.id !== userData.uid) {
+                getDocumentById('users', userData.uid).then((data) =>
+                    setUser(data)
+                )
+                window.localStorage.setItem('logged', true)
+            } else if (!userData) {
+                window.localStorage.setItem('logged', false)
+                setUser(false)
+            }
+        })
+
+        return unsubscribe
+    }, [])
 
     return (
         <Router>
             <Routes>
                 <Route path='/' element={<Auth />} />
                 <Route path='/dashboard' element={<Dashboard />}>
-                    <Route index element={<Panel />} />
-                    <Route path='panel' element={<Panel />} />
-                    <Route path='sales' element={<Sales />} />
+                    <Route index element={<SalesFunnel />} />
+                    <Route path='funnel' element={<SalesFunnel />} />
                     <Route path='projects' element={<Projects />} />
                     <Route path='aftersales' element={<AfterSales />} />
                     <Route path='clients' element={<Clients />} />
@@ -70,8 +76,10 @@ function AppRouter() {
                         element={<BudgetResult />}
                     />
                     <Route path='budget/edit/:id' element={<BudgetData />} />
-                    <Route path='*' element={<h1>Page not found</h1>} />
+                    <Route path='teams' element={<Teams />} />
+                    <Route path='*' element={<Page404 />} />
                 </Route>
+                <Route path='*' element={<Page404 fullPage={true} />} />
             </Routes>
         </Router>
     )

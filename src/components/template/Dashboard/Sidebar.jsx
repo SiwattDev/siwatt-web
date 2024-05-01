@@ -3,6 +3,7 @@ import {
     BentoRounded,
     ConstructionRounded,
     DescriptionRounded,
+    Diversity3Rounded,
     HandshakeRounded,
     ManageHistoryRounded,
     MonetizationOnRounded,
@@ -120,7 +121,7 @@ function Sidebar() {
                 </svg>
             </ToggleAside>
             <Links>
-                <Link to='/dashboard/sales'>
+                <Link to='/dashboard/funnel'>
                     <Button
                         variant='text'
                         color='black'
@@ -206,6 +207,17 @@ function Sidebar() {
                         size='large'
                     >
                         <Typography variant='h6'>Parceiros</Typography>
+                    </Button>
+                </Link>
+                <Link to='/dashboard/teams'>
+                    <Button
+                        variant='text'
+                        color='black'
+                        className='rounded-0 text-capitalize px-4 w-100 justify-content-start'
+                        startIcon={<Diversity3Rounded />}
+                        size='large'
+                    >
+                        <Typography variant='h6'>Equipes</Typography>
                     </Button>
                 </Link>
             </Links>

@@ -126,20 +126,11 @@ function TypeOne(props) {
             />
             {type === 'user' && (
                 <div className='col-12 col-md-6'>
-                    <Typography
-                        className='col-12'
-                        variant='h6'
-                    >
+                    <Typography className='col-12' variant='h6'>
                         Tipo de usuário
                     </Typography>
-                    <FormControl
-                        fullWidth
-                        size='small'
-                    >
-                        <InputLabel
-                            id='user-type'
-                            color='black'
-                        >
+                    <FormControl fullWidth size='small'>
+                        <InputLabel id='user-type' color='black'>
                             Tipo de usuário:
                         </InputLabel>
                         <Select
@@ -147,46 +138,9 @@ function TypeOne(props) {
                             label='Tipo de usuário: '
                             size='small'
                             color='black'
-                            value={state.user_type.type || ''}
+                            value={state.user_type || ''}
                             onChange={(e) => {
                                 let value = e.target.value
-                                if (
-                                    value === 'administrative' ||
-                                    value === 'support'
-                                ) {
-                                    value = {
-                                        type: value,
-                                        permissions: [
-                                            'users',
-                                            'sales',
-                                            'projects',
-                                            'after-sales',
-                                            'clients',
-                                            'kits',
-                                            'agents',
-                                            'partners',
-                                        ],
-                                    }
-                                } else if (value === 'financial') {
-                                    value = {
-                                        type: value,
-                                        permissions: [
-                                            'sales',
-                                            'projects',
-                                            'after-sales',
-                                            'kits',
-                                        ],
-                                    }
-                                } else if (value === 'manager') {
-                                    value = {
-                                        type: value,
-                                        permissions: [
-                                            'sales',
-                                            'projects',
-                                            'after-sales',
-                                        ],
-                                    }
-                                }
                                 updateState('user_type', value)
                             }}
                         >
@@ -196,6 +150,7 @@ function TypeOne(props) {
                             <MenuItem value='financial'>Financeiro</MenuItem>
                             <MenuItem value='manager'>Gerente</MenuItem>
                             <MenuItem value='support'>Suporte</MenuItem>
+                            <MenuItem value='seller'>Vendedor</MenuItem>
                         </Select>
                     </FormControl>
                 </div>
@@ -204,4 +159,5 @@ function TypeOne(props) {
         </form>
     )
 }
+
 export default TypeOne

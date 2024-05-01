@@ -65,7 +65,7 @@ function useUtilities() {
                 return 'E-mail'
             case 'phone':
                 return 'Telefone'
-            case 'type':
+            case 'user_type':
                 return 'Tipo'
             case 'uf':
                 return 'UF'
