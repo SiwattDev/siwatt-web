@@ -72,7 +72,7 @@ function Budget() {
         {
             status: 'closed',
             text: 'Fechado',
-            color: 'info',
+            color: 'primary',
             icon: <LockRounded className='me-1' fontSize='small' />,
         },
         {

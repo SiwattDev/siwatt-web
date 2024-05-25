@@ -150,7 +150,7 @@ function EntityRegistration() {
     const registerEntity = async () => {
         const data = filterFields(state, state.type)
         const newId = generateCode()
-        data.id = newId
+        data.id = id || newId
 
         const handleSuccess = () => {
             showToast('success', 'Entidade atualizada com sucesso')
@@ -203,10 +203,7 @@ function EntityRegistration() {
         <>
             <Paper className='d-flex gap-2 align-items-center px-3 py-2 mb-3'>
                 <PersonAddRounded color='black' />
-                <Typography
-                    variant='h6'
-                    sx={{ color: 'black' }}
-                >
+                <Typography variant='h6' sx={{ color: 'black' }}>
                     Cadastrar Entidade
                 </Typography>
             </Paper>
@@ -229,28 +226,13 @@ function EntityRegistration() {
                                 scrollButtons
                                 allowScrollButtonsMobile
                             >
-                                <Tab
-                                    label='Usuário'
-                                    value='user'
-                                />
-                                <Tab
-                                    label='Cliente'
-                                    value='client'
-                                />
-                                <Tab
-                                    label='Fornecedor'
-                                    value='supplier'
-                                />
-                                <Tab
-                                    label='Parceiro'
-                                    value='partner'
-                                />
+                                <Tab label='Usuário' value='user' />
+                                <Tab label='Cliente' value='client' />
+                                <Tab label='Fornecedor' value='supplier' />
+                                <Tab label='Parceiro' value='partner' />
                             </TabList>
                         </Box>
-                        <TabPanel
-                            value='user'
-                            className='p-0 pt-3'
-                        >
+                        <TabPanel value='user' className='p-0 pt-3'>
                             <TypeOne
                                 type='user'
                                 state={state}
@@ -258,10 +240,7 @@ function EntityRegistration() {
                                 updateStateSubObject={updateStateSubObject}
                             />
                         </TabPanel>
-                        <TabPanel
-                            value='client'
-                            className='p-0 pt-3'
-                        >
+                        <TabPanel value='client' className='p-0 pt-3'>
                             <TypeTwo
                                 type='client'
                                 state={state}
@@ -269,10 +248,7 @@ function EntityRegistration() {
                                 updateStateSubObject={updateStateSubObject}
                             />
                         </TabPanel>
-                        <TabPanel
-                            value='supplier'
-                            className='p-0 pt-3'
-                        >
+                        <TabPanel value='supplier' className='p-0 pt-3'>
                             <TypeTwo
                                 type='supplier'
                                 state={state}
@@ -280,10 +256,7 @@ function EntityRegistration() {
                                 updateStateSubObject={updateStateSubObject}
                             />
                         </TabPanel>
-                        <TabPanel
-                            value='partner'
-                            className='p-0 pt-3'
-                        >
+                        <TabPanel value='partner' className='p-0 pt-3'>
                             <TypeOne
                                 type='partner'
                                 state={state}
@@ -300,7 +273,7 @@ function EntityRegistration() {
                         className='mt-3'
                         onClick={registerEntity}
                     >
-                        {type !== 'edit' ? 'Cadastrar' : 'Editar'}
+                        {id ? 'Editar' : 'Cadastrar'}
                     </Button>
                 )}
                 <ToastContainer autoClose={5000} />

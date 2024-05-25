@@ -8,6 +8,8 @@ import Agents from './components/pages/Dashboard/Agents/Agents'
 import Budget from './components/pages/Dashboard/Budget/Budget'
 import BudgetData from './components/pages/Dashboard/Budget/BudgetData'
 import BudgetResult from './components/pages/Dashboard/Budget/BudgetResult'
+import CRM from './components/pages/Dashboard/CRM/CRM'
+import SellerVisits from './components/pages/Dashboard/CRM/SellerVisits'
 import Clients from './components/pages/Dashboard/Clients/Clients'
 import Dashboard from './components/pages/Dashboard/Dashboard'
 import Partners from './components/pages/Dashboard/Partners/Partners'
@@ -77,6 +79,8 @@ function AppRouter() {
                     />
                     <Route path='budget/edit/:id' element={<BudgetData />} />
                     <Route path='teams' element={<Teams />} />
+                    <Route path='visits' element={<CRM />} />
+                    <Route path='visits/:id' element={<SellerVisits />} />
                     <Route path='*' element={<Page404 />} />
                 </Route>
                 <Route path='*' element={<Page404 fullPage={true} />} />

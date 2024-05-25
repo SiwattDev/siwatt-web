@@ -8,6 +8,7 @@ import {
     ManageHistoryRounded,
     MonetizationOnRounded,
     PeopleAltRounded,
+    ShareLocationRounded,
 } from '@mui/icons-material'
 import { Button, Typography, css } from '@mui/material'
 import { useEffect, useState } from 'react'
@@ -174,6 +175,17 @@ function Sidebar() {
                         size='large'
                     >
                         <Typography variant='h6'>Clientes</Typography>
+                    </Button>
+                </Link>
+                <Link to='/dashboard/visits'>
+                    <Button
+                        variant='text'
+                        color='black'
+                        className='rounded-0 text-capitalize px-4 w-100 justify-content-start'
+                        startIcon={<ShareLocationRounded />}
+                        size='large'
+                    >
+                        <Typography variant='h6'>CRM Visitas</Typography>
                     </Button>
                 </Link>
                 <Link to='/dashboard/products'>

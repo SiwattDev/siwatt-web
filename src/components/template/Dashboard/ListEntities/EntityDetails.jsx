@@ -62,23 +62,11 @@ function EntityDetails() {
                     className='d-flex gap-2 align-items-center text-black link-underline link-underline-opacity-0'
                 >
                     <BadgeRounded color='black' />
-                    <Typography
-                        variant='h6'
-                        sx={{ color: 'black' }}
-                    >
+                    <Typography variant='h6' sx={{ color: 'black' }}>
                         {replaceEntityType(type)}
                     </Typography>
                 </Link>
             </Paper>
-            <Typography
-                variant='body1'
-                color='red'
-                className='bg-dark rounded-2 px-2 mb-3'
-            >
-                Siwatt em fase de teste. Algumas informações só poderão ser
-                cadastradas corretamente em fase de produção para a segurança
-                dos dados do cliente.
-            </Typography>
             {entity && (
                 <Card>
                     <CardContent>
@@ -87,10 +75,7 @@ function EntityDetails() {
                                 ? entity.fantasy_name
                                 : entity.name}
                         </Typography>
-                        <Divider
-                            className='my-2'
-                            color='black'
-                        ></Divider>
+                        <Divider className='my-2' color='black'></Divider>
                         <Table size='small'>
                             <TableBody>
                                 <TableRow>
@@ -214,10 +199,7 @@ function EntityDetails() {
                                 )}
                             </TableBody>
                         </Table>
-                        <Typography
-                            variant='h6'
-                            className='mt-4'
-                        >
+                        <Typography variant='h6' className='mt-4'>
                             Endereço:
                         </Typography>
                         <Table size='small'>
@@ -264,10 +246,7 @@ function EntityDetails() {
                                 'cnpj'
                             ) && (
                                 <>
-                                    <Typography
-                                        variant='h6'
-                                        className='mt-4'
-                                    >
+                                    <Typography variant='h6' className='mt-4'>
                                         Contato Direto:
                                     </Typography>
                                     <Table size='small'>
