@@ -2,12 +2,14 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
-} from 'firebase/auth'
-import { auth } from '../firebase'
-import useFirebase from './useFirebase'
+} from 'firebase/auth';
+import { auth } from '../firebase';
+import useActivityLog from './useActivityLog';
+import useFirebase from './useFirebase';
 
 const useAuth = () => {
     const { createDocument } = useFirebase()
+    const { logAction } = useActivityLog()
 
     const createUser = (email, password, confirmPassword, data) => {
         return new Promise((resolve, reject) => {
@@ -22,6 +24,7 @@ const useAuth = () => {
                     createDocument('users', user.uid, data).then(() =>
                         resolve('Conta criada com sucesso.')
                     )
+                    logAction('created entity', { entity: data.id })
                 })
                 .catch((error) => {
                     console.error(error)
@@ -49,6 +52,7 @@ const useAuth = () => {
                 .then((userCredential) => {
                     const user = userCredential.user
                     resolve(user)
+                    logAction('login in user', { user: user.uid })
                 })
                 .catch((error) => {
                     console.error(error.code)

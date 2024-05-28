@@ -35,6 +35,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import useCompareEffect from '../../../../hooks/useCompareEffect'
 import useUtilities from '../../../../hooks/useUtilities'
+import useActivityLog from './../../../../hooks/useActivityLog'
 import useFirebase from './../../../../hooks/useFirebase'
 function ListEntities({ type, entityFilters, entityColumns }) {
     const [entities, setEntities] = useState()
@@ -45,6 +46,7 @@ function ListEntities({ type, entityFilters, entityColumns }) {
     const navigate = useNavigate()
     const { replaceEntityProperties } = useUtilities()
     const { useDeepCompareEffect } = useCompareEffect()
+    const { logAction } = useActivityLog()
     const [open, setOpen] = useState(false)
     const [toBeDeleted, setToBeDeleted] = useState(null)
 
@@ -86,6 +88,7 @@ function ListEntities({ type, entityFilters, entityColumns }) {
 
     const handleDelete = async () => {
         await updateDocument(type, toBeDeleted, { delete: true })
+        logAction('deleted entity', { entity: toBeDeleted })
         setEntities(entities.filter((entity) => entity.id !== toBeDeleted))
         handleClose()
     }
@@ -167,10 +170,7 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                         </AccordionDetails>
                     </Accordion>
                     <TableContainer component={Paper}>
-                        <Table
-                            sx={{ minWidth: 650 }}
-                            aria-label='simple table'
-                        >
+                        <Table sx={{ minWidth: 650 }} aria-label='simple table'>
                             <TableHead>
                                 <TableRow>
                                     {filters.map((filter) => {
@@ -290,10 +290,7 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                                     )
                                 })}
                             </TableBody>
-                            <Dialog
-                                open={open}
-                                onClose={handleClose}
-                            >
+                            <Dialog open={open} onClose={handleClose}>
                                 <DialogTitle>
                                     {'Confirmação de Exclusão'}
                                 </DialogTitle>
@@ -305,10 +302,7 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                                     </DialogContentText>
                                 </DialogContent>
                                 <DialogActions>
-                                    <Button
-                                        onClick={handleClose}
-                                        color='black'
-                                    >
+                                    <Button onClick={handleClose} color='black'>
                                         Cancelar
                                     </Button>
                                     <Button
@@ -328,10 +322,7 @@ function ListEntities({ type, entityFilters, entityColumns }) {
                 <Paper className='p-3 d-flex w-100 justify-content-center align-items-center gap-3'>
                     {loading ? (
                         <>
-                            <CircularProgress
-                                color='black'
-                                size={25}
-                            />
+                            <CircularProgress color='black' size={25} />
                             <Typography variant='h6'>Carregando...</Typography>
                         </>
                     ) : (

@@ -5,6 +5,7 @@ import { validateBr } from 'js-brasil'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
+import useActivityLog from '../../../../hooks/useActivityLog'
 import useAuth from '../../../../hooks/useAuth'
 import useCompareEffect from '../../../../hooks/useCompareEffect'
 import useFirebase from '../../../../hooks/useFirebase'
@@ -53,6 +54,7 @@ function EntityRegistration() {
     const { generateCode, showToastMessage } = useUtilities()
     const { createUser } = useAuth()
     const { useDeepCompareEffect } = useCompareEffect()
+    const { logAction } = useActivityLog()
     const { action, id, type } = useParams()
 
     const updateState = (key, value) => {
@@ -178,7 +180,13 @@ function EntityRegistration() {
                 throw new Error('CNPJ inválido')
 
             if (action === 'edit' && id) {
+                const oldData = await getDocumentById(`${state.type}s`, id)
                 await updateDocument(`${state.type}s`, id, data)
+                logAction('edited entity', {
+                    entity: id,
+                    data,
+                    oldData: oldData,
+                })
                 handleSuccess()
             } else {
                 if (state.type === 'user') {
@@ -191,6 +199,7 @@ function EntityRegistration() {
                     handleSuccess()
                 } else {
                     await createDocument(`${state.type}s`, newId, data)
+                    logAction('created entity', { entity: newId })
                     handleSuccess()
                 }
             }

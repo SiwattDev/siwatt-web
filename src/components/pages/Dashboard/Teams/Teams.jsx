@@ -24,6 +24,7 @@ import {
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
+import useActivityLog from '../../../../hooks/useActivityLog'
 import useUtilities from '../../../../hooks/useUtilities'
 import useFirebase from './../../../../hooks/useFirebase'
 import Page404 from './../404/404'
@@ -42,6 +43,7 @@ function Teams() {
     const { getDocumentsInCollection, createDocument, updateDocument } =
         useFirebase()
     const { showToastMessage, generateCode } = useUtilities()
+    const { logAction } = useActivityLog()
 
     const fetchTeams = () => {
         setLoading(true)
@@ -92,6 +94,11 @@ function Teams() {
                             'Equipe atualizada com sucesso!'
                         )
                         setEditingTeam(null)
+                        logAction('edited team', {
+                            team: teamId,
+                            data: teamWithId,
+                            oldData: editingTeam,
+                        })
                         fetchTeams()
                     })
                     .catch((e) => {
@@ -108,6 +115,7 @@ function Teams() {
                             'success',
                             'Equipe criada com sucesso!'
                         )
+                        logAction('created team', { team: teamId })
                         fetchTeams()
                     })
                     .catch((e) => {
@@ -146,6 +154,7 @@ function Teams() {
                 setOpenDeleteDialog(false)
                 setEditingTeam(null)
                 fetchTeams()
+                logAction('deleted team', { team: team.id })
             })
             .catch((e) => {
                 console.log(e)

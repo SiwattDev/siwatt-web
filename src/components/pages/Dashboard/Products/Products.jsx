@@ -29,6 +29,7 @@ import {
 } from '@mui/material'
 import { useEffect, useState } from 'react'
 import useFirebase from '../../../../hooks/useFirebase'
+import useActivityLog from './../../../../hooks/useActivityLog'
 import CreateItemDialog from './CreateItemDialog'
 
 const ProductList = () => {
@@ -43,6 +44,7 @@ const ProductList = () => {
     const [open, setOpen] = useState(false)
     const [openCreateDialog, setOpenCreateDialog] = useState(false)
     const firebase = useFirebase()
+    const { logAction } = useActivityLog()
 
     const types = [
         { value: 'module', label: 'Módulo' },
@@ -55,8 +57,8 @@ const ProductList = () => {
             .then((data) => {
                 setLoading(false)
                 setProducts(data)
-                setFilteredProducts(data) // Adicionado para atualizar os produtos filtrados
-                console.log(data) // Adicionado para verificar os dados obtidos do Firebase
+                setFilteredProducts(data)
+                console.log(data)
             })
             .catch((error) => console.error(error))
     }
@@ -70,6 +72,13 @@ const ProductList = () => {
                 disabled: disabled,
             })
             .then(getProducts)
+            .then(() => {
+                logAction('edited product', {
+                    product: id,
+                    data: { ...product, disabled },
+                    oldData: product,
+                })
+            })
     }
 
     useEffect(() => {
@@ -112,6 +121,7 @@ const ProductList = () => {
         await firebase.updateDocument('kits/itens/itens', toBeDeleted, {
             delete: true,
         })
+        logAction('deleted product', { product: toBeDeleted })
         handleClose()
         getProducts()
     }

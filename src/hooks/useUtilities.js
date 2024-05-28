@@ -120,6 +120,19 @@ function useUtilities() {
         }
     }
 
+    function getPeriodOfDay(date) {
+        const hour = date.getHours()
+        if (hour < 6) return 'Madrugada'
+        else if (hour < 12) return 'Manhã'
+        else if (hour < 18) return 'Tarde'
+        else return 'Noite'
+    }
+
+    function getDayOfWeek(date) {
+        const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado']
+        return daysOfWeek[date.getDay()]
+    }
+
     return {
         generateCode,
         showToastMessage,
@@ -127,6 +140,8 @@ function useUtilities() {
         replaceUserType,
         replaceEntityProperties,
         getWindowSizes,
+        getPeriodOfDay,
+        getDayOfWeek,
     }
 }
 

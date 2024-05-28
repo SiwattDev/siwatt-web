@@ -2,8 +2,21 @@ import {
     PersonRounded,
     PinDropRounded,
     ShareLocationRounded,
+    VisibilityRounded,
 } from '@mui/icons-material'
-import { Box, Button, Grid, Paper, Typography } from '@mui/material'
+import {
+    Box,
+    Button,
+    Grid,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography,
+} from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -20,17 +33,19 @@ import {
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { Bar } from 'react-chartjs-2'
+import { useNavigate } from 'react-router-dom'
 import useFirebase from '../../../../hooks/useFirebase'
 
 function SellerVisits() {
     const [sellerVisits, setSellerVisits] = useState([])
     const [dateRange, setDateRange] = useState({
-        startDate: null,
-        endDate: null,
+        startDate: dayjs(new Date()),
+        endDate: dayjs(new Date()),
     })
     const [visitsByDate, setVisitsByDate] = useState({})
     const [daysWithoutVisits, setDaysWithoutVisits] = useState([])
     const { getDocumentsInCollection } = useFirebase()
+    const navigate = useNavigate()
 
     const filterVisitsByDate = () => {
         let startDate = dateRange.startDate
@@ -52,8 +67,8 @@ function SellerVisits() {
                 visitDate.getFullYear()
 
             if (
-                (!startDate || visit.date >= startDate.getTime()) &&
-                (!endDate || visit.date <= endDate.getTime())
+                (!startDate || visitDate >= startDate) &&
+                (!endDate || visitDate <= endDate)
             ) {
                 if (
                     !Object.prototype.hasOwnProperty.call(
@@ -67,12 +82,12 @@ function SellerVisits() {
             }
         })
 
-        setDaysWithoutVisits(addDaysWithoutVisits())
+        setDaysWithoutVisits(addDaysWithoutVisits(visitsByDate))
 
         return visitsByDate
     }
 
-    function addDaysWithoutVisits() {
+    function addDaysWithoutVisits(visitsByDate) {
         let startDate = dateRange.startDate
             ? new Date(dateRange.startDate)
             : null
@@ -88,9 +103,6 @@ function SellerVisits() {
             obj[date] = visitsByDate[date] || []
             return obj
         }, {})
-
-        console.log('all', allVisitsByDate)
-        console.log('visits', visitsByDate)
 
         return allVisitsByDate
     }
@@ -126,7 +138,7 @@ function SellerVisits() {
     const handleDateChange = (dateKey) => (date) => {
         setDateRange({
             ...dateRange,
-            [dateKey]: date?.format('YYYY-MM-DD') || null,
+            [dateKey]: date ? date.toDate() : null,
         })
     }
 
@@ -146,8 +158,6 @@ function SellerVisits() {
                     return { ...visit, seller }
                 })
                 setSellerVisits(visitsBySeller)
-
-                console.log(visitsBySeller)
             })
             .catch((error) => console.error(error))
     }, [])
@@ -361,6 +371,150 @@ function SellerVisits() {
                         </Paper>
                     </Grid>
                 )}
+                <Grid item xs={12}>
+                    <Paper className='p-3'>
+                        <Typography variant='h6'>
+                            Visitas feitas pelo vendedor
+                        </Typography>
+                        {visitsByDate &&
+                        Object.keys(visitsByDate).length > 0 ? (
+                            <TableContainer>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>
+                                                <Typography
+                                                    variant='body1'
+                                                    className='fw-bold'
+                                                >
+                                                    Cliente
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography
+                                                    variant='body1'
+                                                    className='fw-bold'
+                                                >
+                                                    Fotos da Visita
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography
+                                                    variant='body1'
+                                                    className='fw-bold'
+                                                >
+                                                    Data da Visita
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography
+                                                    variant='body1'
+                                                    className='fw-bold'
+                                                >
+                                                    Local da Visita
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography
+                                                    variant='body1'
+                                                    className='fw-bold'
+                                                >
+                                                    Contas de Energia
+                                                </Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Typography
+                                                    variant='body1'
+                                                    className='fw-bold'
+                                                >
+                                                    Ações
+                                                </Typography>
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+                                        {Object.keys(visitsByDate).map(
+                                            (date) => (
+                                                <TableRow
+                                                    key={date}
+                                                    sx={{
+                                                        '&:last-child td, &:last-child th':
+                                                            {
+                                                                border: 0,
+                                                            },
+                                                    }}
+                                                >
+                                                    <TableCell>
+                                                        {
+                                                            visitsByDate[
+                                                                date
+                                                            ][0].clientData.name
+                                                        }
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {
+                                                            visitsByDate[
+                                                                date
+                                                            ][0].visitImages
+                                                                .length
+                                                        }{' '}
+                                                        fotos
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {new Date(
+                                                            visitsByDate[
+                                                                date
+                                                            ][0].date
+                                                        ).toLocaleDateString(
+                                                            'pt-BR'
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {`${visitsByDate[date][0].locationData.latitude}, ${visitsByDate[date][0].locationData.longitude}`}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {visitsByDate[date][0]
+                                                            .energyBills
+                                                            ? 'Sim, ' +
+                                                              visitsByDate[
+                                                                  date
+                                                              ][0].energyBills
+                                                                  .length +
+                                                              ' conta(s)'
+                                                            : 'Não'}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Button
+                                                            variant='contained'
+                                                            color='black'
+                                                            size='small'
+                                                            onClick={() =>
+                                                                navigate(
+                                                                    `${visitsByDate[date][0].id}`
+                                                                )
+                                                            }
+                                                        >
+                                                            <VisibilityRounded fontSize='small' />
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            )
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                        ) : (
+                            <>
+                                <Typography
+                                    variant='body1'
+                                    className='text-center'
+                                >
+                                    Nenhuma visita encontrada
+                                </Typography>
+                            </>
+                        )}
+                    </Paper>
+                </Grid>
             </Grid>
         </>
     )

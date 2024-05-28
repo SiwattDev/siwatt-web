@@ -24,6 +24,7 @@ import { ToastContainer } from 'react-toastify'
 import { BudgetContext } from '../../../../contexts/budgetContext'
 import useFirebase from '../../../../hooks/useFirebase'
 import useUtilities from '../../../../hooks/useUtilities'
+import useActivityLog from './../../../../hooks/useActivityLog'
 
 function BudgetResult() {
     const { id: budgetID } = useParams()
@@ -33,6 +34,7 @@ function BudgetResult() {
     const [downloading, setDownloading] = useState(false)
     const { getDocumentById, createDocument, updateDocument } = useFirebase()
     const { showToastMessage } = useUtilities()
+    const { logAction } = useActivityLog()
 
     function calculateAverageEnergyBill(budgetData) {
         let monthlyTotal = {
@@ -200,6 +202,7 @@ function BudgetResult() {
                                 'success',
                                 'Orçamento gerado com sucesso'
                             )
+                            logAction('create budget', { budget: result.id })
                         })
                         .catch((error) => {
                             console.error(error)
@@ -215,6 +218,11 @@ function BudgetResult() {
                                 'success',
                                 'Orçamento atualizado com sucesso'
                             )
+                            logAction('edited budget', {
+                                budget: budget.id,
+                                data: result,
+                                oldData: budget,
+                            })
                         })
                         .catch((error) => {
                             console.error(error)

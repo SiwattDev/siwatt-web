@@ -78,7 +78,9 @@ function CRM() {
                                     </Typography>
                                 </Box>
                                 <Box>
-                                    <Link to={`${visitsBySeller.seller.id}`}>
+                                    <Link
+                                        to={`seller/${visitsBySeller.seller.id}`}
+                                    >
                                         <Button
                                             size='small'
                                             color='black'

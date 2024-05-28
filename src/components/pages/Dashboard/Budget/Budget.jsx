@@ -37,6 +37,7 @@ import { ToastContainer } from 'react-toastify'
 import { BudgetContext } from '../../../../contexts/budgetContext'
 import useFirebase from '../../../../hooks/useFirebase'
 import useUtilities from '../../../../hooks/useUtilities'
+import useActivityLog from './../../../../hooks/useActivityLog'
 
 function Budget() {
     const navigate = useNavigate()
@@ -53,6 +54,7 @@ function Budget() {
     const [newBudgetValue, setNewBudgetValue] = useState('')
     const { getDocumentsInCollection, updateDocument } = useFirebase()
     const { showToastMessage } = useUtilities()
+    const { logAction } = useActivityLog()
     const { setBudget } = useContext(BudgetContext)
     const [anchorEl, setAnchorEl] = useState(null)
     const [currentBudgetId, setCurrentBudgetId] = useState(null)
@@ -162,6 +164,7 @@ function Budget() {
                 setOriginalBudgets(
                     originalBudgets.filter((budget) => budget.id !== id)
                 )
+                logAction('deleted budget', { budget: id })
             })
             .catch((error) => {
                 showToastMessage(
@@ -177,10 +180,21 @@ function Budget() {
         if (confirmChange) {
             setOpenValueDialog(true)
         } else {
-            // Se o usuário clicar em 'Não', altere o status como seria para todos os outros status
             updateDocument('/budgets', currentBudgetId, { status: 'closed' })
                 .then(() => {
                     console.log('updated')
+                    logAction('edited budget', {
+                        budget: currentBudgetId,
+                        oldData: budgets.find(
+                            (budget) => budget.id === currentBudgetId
+                        ),
+                        data: {
+                            ...budgets.find(
+                                (budget) => budget.id === currentBudgetId
+                            ),
+                            status: 'closed',
+                        },
+                    })
                     fetchData()
                 })
                 .catch((error) => {

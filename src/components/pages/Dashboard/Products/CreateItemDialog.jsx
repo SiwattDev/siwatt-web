@@ -15,6 +15,7 @@ import {
 import { useEffect, useState } from 'react'
 import useFirebase from '../../../../hooks/useFirebase'
 import useUtilities from '../../../../hooks/useUtilities'
+import useActivityLog from './../../../../hooks/useActivityLog'
 
 const CreateItemDialog = ({ open, onClose, item, onUpdate }) => {
     const [type, setType] = useState(item ? item.type : '')
@@ -23,6 +24,7 @@ const CreateItemDialog = ({ open, onClose, item, onUpdate }) => {
     const [price, setPrice] = useState(item ? item.sale_price : '')
     const { createDocument, updateDocument } = useFirebase()
     const { generateCode } = useUtilities()
+    const { logAction } = useActivityLog()
 
     const handleTypeChange = (event) => {
         setType(event.target.value)
@@ -55,6 +57,7 @@ const CreateItemDialog = ({ open, onClose, item, onUpdate }) => {
         }
         if (item) {
             await updateDocument('kits/itens/itens', id, newItem)
+            logAction('edited item', { item: id, data: newItem, oldData: item })
         } else {
             await createDocument('kits/itens/itens', id, newItem)
         }

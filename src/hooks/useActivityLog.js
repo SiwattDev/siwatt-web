@@ -1,47 +1,77 @@
-import { addDoc, collection, getDocs, orderBy, query, serverTimestamp, where } from 'firebase/firestore'
-import { db } from '../firebase'
+import { getAuth } from 'firebase/auth';
+import useFirebase from './useFirebase';
 
-function useActivityLog() {
-    const logActivity = async (userId, action, details) => {
-        const timestamp = serverTimestamp()
+const useActivityLog = () => {
+    const { createDocument, getDocumentsInCollectionWithQuery } = useFirebase();
 
-        try {
-            const docRef = await addDoc(collection(db, 'activityLog'), {
-                userId,
-                action,
-                details,
-                timestamp
-            })
-            console.log('Document written with ID: ', docRef.id)
-        } catch (e) {
-            console.error('Error adding document: ', e)
-        }
-    }
+    const logAction = (action, details) => {
+        return new Promise((resolve, reject) => {
+            const auth = getAuth();
+            const user = auth.currentUser;
 
-    const getActivity = async (key, id) => {
-        const q = query(collection(db, 'activityLog'), where(key, '==', id), orderBy('timestamp', 'desc'))
-
-        try {
-            const querySnapshot = await getDocs(q)
-            let activities = []
-            querySnapshot.forEach((doc) => {
-                activities.push(doc.data())
-            })
-
-            if (activities.length === 0) {
-                console.log('Não há atividades para a chave ou id solicitado.')
-                return null
+            if (!user) {
+                reject('No user logged in');
+                return;
             }
 
-            return activities
-        } catch (e) {
-            console.log('Error getting documents: ', e)
-        }
-    }
+            const logData = {
+                action,
+                details,
+                userId: user.uid,
+                timestamp: new Date(),
+            };
 
+            createDocument('logs', null, logData)
+                .then((docRef) => resolve(docRef))
+                .catch((error) => {
+                    console.error(error);
+                    reject(error);
+                });
+        });
+    };
 
-    return { logActivity, getActivity }
-}
+    const getActionsForDocument = (documentId) => {
+        return new Promise((resolve, reject) => {
+            getDocumentsInCollectionWithQuery('logs', 'details.user', documentId)
+                .then((logs) => resolve(logs))
+                .catch((error) => {
+                    console.error(error);
+                    reject(error);
+                });
+        });
+    };
 
-export default useActivityLog
+    const getActionsByUser = (userId) => {
+        return new Promise((resolve, reject) => {
+            getDocumentsInCollectionWithQuery('logs', 'userId', userId)
+                .then((logs) => resolve(logs))
+                .catch((error) => {
+                    console.error(error);
+                    reject(error);
+                });
+        });
+    };
 
+    const getActionsByUserForDocument = (userId, documentId) => {
+        return new Promise((resolve, reject) => {
+            getDocumentsInCollectionWithQuery('logs', 'userId', userId)
+                .then((logs) => {
+                    const filteredLogs = logs.filter(log => log.details.user === documentId);
+                    resolve(filteredLogs);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    reject(error);
+                });
+        });
+    };
+
+    return {
+        logAction,
+        getActionsForDocument,
+        getActionsByUser,
+        getActionsByUserForDocument,
+    };
+};
+
+export default useActivityLog;
