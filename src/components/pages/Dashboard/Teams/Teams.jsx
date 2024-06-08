@@ -176,21 +176,26 @@ function Teams() {
     }, [])
 
     useEffect(() => {
-        console.log(teamToShow)
-    }, [teamToShow])
+        console.log('Equipes', teams)
+    }, [teams])
 
     return (
         <Box height={'100%'}>
             <Grid container spacing={2}>
                 {teams &&
+                    teams.length > 0 &&
                     !loading &&
                     teams.map((team) => {
                         const teamData = {
-                            manager: users.managers.find(
-                                (manager) => manager.id === team.manager
-                            ),
-                            sellers: team.sellers.map((seller) =>
-                                users.sellers.find((user) => user.id === seller)
+                            manager:
+                                users?.managers?.find(
+                                    (manager) => manager.id === team.manager
+                                ) || {},
+                            sellers: team.sellers.map(
+                                (seller) =>
+                                    users?.sellers?.find(
+                                        (user) => user.id === seller
+                                    ) || {}
                             ),
                         }
                         return (

@@ -105,6 +105,36 @@ function useUtilities() {
         }
     }
 
+    const replaceBudgetStatus = (status) => {
+        switch (status) {
+            case 'opened':
+                return 'Em aberto'
+            case 'in-progress':
+                return 'Em andamento'
+            case 'closed':
+                return 'Fechado'
+            case 'canceled':
+                return 'Cancelado'
+            default:
+                return 'Unknown'
+        }
+    }
+
+    const replaceVisitProgress = (progress) => {
+        switch (progress) {
+            case 'pending':
+                return 'Pendente'
+            case 'budget-generated':
+                return 'Orçamento Gerado'
+            case 'achieved':
+                return 'Concretizado'
+            case 'no-requirement':
+                return 'Sem Requisito'
+            default:
+                return 'Unknown'
+        }
+    }
+
     function getWindowSizes() {
         var width =
             window.innerWidth ||
@@ -139,6 +169,8 @@ function useUtilities() {
         replaceEntityType,
         replaceUserType,
         replaceEntityProperties,
+        replaceBudgetStatus,
+        replaceVisitProgress,
         getWindowSizes,
         getPeriodOfDay,
         getDayOfWeek,

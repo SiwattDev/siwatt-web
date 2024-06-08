@@ -16,8 +16,20 @@ import {
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import styled from 'styled-components'
 import useFirebase from '../../../../hooks/useFirebase'
 import useUtilities from '../../../../hooks/useUtilities'
+
+const StyledImage = styled.img`
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 500px;
+    max-height: 300px;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    margin: 20px auto 0px;
+`
 
 function VisitDetails() {
     const { visitId } = useParams()
@@ -29,7 +41,7 @@ function VisitDetails() {
         getDocumentById('visits', visitId)
             .then((data) => setVisit(data))
             .catch((error) => console.error(error))
-    }, [])
+    }, [visitId, getDocumentById])
 
     return (
         <Card>
@@ -147,21 +159,9 @@ function VisitDetails() {
                                 {visit.visitImages.length > 0 ? (
                                     <>
                                         {visit.visitImages.map((image) => (
-                                            <img
+                                            <StyledImage
                                                 key={image}
                                                 src={image}
-                                                style={{
-                                                    display: 'block',
-                                                    width: '100%',
-                                                    height: 'auto',
-                                                    maxWidth: '500px',
-                                                    maxHeight: '300px',
-                                                    boxShadow:
-                                                        '0px 0px 10px 0px rgba(0,0,0,0.25)',
-                                                    borderRadius: '10px',
-                                                    margin: '0px auto',
-                                                    marginTop: '20px',
-                                                }}
                                             />
                                         ))}
                                     </>
@@ -197,39 +197,13 @@ function VisitDetails() {
                                         {visit.energyBills.map(
                                             (bill, index) => (
                                                 <Box key={index}>
-                                                    <img
+                                                    <StyledImage
                                                         src={bill.energyBill}
-                                                        style={{
-                                                            display: 'block',
-                                                            width: '100%',
-                                                            height: 'auto',
-                                                            maxWidth: '500px',
-                                                            maxHeight: '300px',
-                                                            boxShadow:
-                                                                '0px 0px 10px 0px rgba(0,0,0,0.25)',
-                                                            borderRadius:
-                                                                '10px',
-                                                            margin: '0px auto',
-                                                            marginTop: '20px',
-                                                        }}
                                                     />
-                                                    <img
+                                                    <StyledImage
                                                         src={
                                                             bill.energyBillGraph
                                                         }
-                                                        style={{
-                                                            display: 'block',
-                                                            width: '100%',
-                                                            height: 'auto',
-                                                            maxWidth: '500px',
-                                                            maxHeight: '300px',
-                                                            boxShadow:
-                                                                '0px 0px 10px 0px rgba(0,0,0,0.25)',
-                                                            borderRadius:
-                                                                '10px',
-                                                            margin: '0px auto',
-                                                            marginTop: '20px',
-                                                        }}
                                                     />
                                                 </Box>
                                             )

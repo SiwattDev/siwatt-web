@@ -33,10 +33,12 @@ import {
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { Bar } from 'react-chartjs-2'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import useFirebase from '../../../../hooks/useFirebase'
 
 function SellerVisits() {
+    const { id } = useParams()
+    const [seller, setSeller] = useState(null)
     const [sellerVisits, setSellerVisits] = useState([])
     const [dateRange, setDateRange] = useState({
         startDate: dayjs(new Date()),
@@ -144,23 +146,24 @@ function SellerVisits() {
 
     useEffect(() => {
         Promise.all([
-            getDocumentsInCollection('visits'),
             getDocumentsInCollection('users'),
+            getDocumentsInCollection('visits'),
         ])
-            .then(([visits, users]) => {
-                const sellers = users.filter(
-                    (user) => user.user_type === 'seller'
+            .then(([users, visits]) => {
+                const sellerData = users.find(
+                    (user) => user.id === id && user.user_type === 'seller'
                 )
-                const visitsBySeller = visits.map((visit) => {
-                    const seller = sellers.find(
-                        (seller) => seller.id === visit.user
-                    )
-                    return { ...visit, seller }
-                })
+                if (sellerData) {
+                    setSeller(sellerData)
+                }
+
+                const visitsBySeller = visits.filter(
+                    (visit) => visit.user === id
+                )
                 setSellerVisits(visitsBySeller)
             })
             .catch((error) => console.error(error))
-    }, [])
+    }, [id, getDocumentsInCollection])
 
     useEffect(() => {
         setVisitsByDate(filterVisitsByDate())
@@ -227,44 +230,43 @@ function SellerVisits() {
                         </Paper>
                     </LocalizationProvider>
                 </Grid>
-                <Grid item xs={6}>
-                    <Paper className='p-3'>
-                        <Typography variant='h6' className='fw-bold'>
-                            <PersonRounded /> Vendedor
-                        </Typography>
-                        <Typography variant='body1'>
-                            <strong>Nome</strong>:{' '}
-                            {sellerVisits[0]?.seller?.name}
-                        </Typography>
-                        <Typography variant='body1'>
-                            <strong>Email</strong>:{' '}
-                            {sellerVisits[0]?.seller?.email}
-                        </Typography>
-                        <Typography variant='body1'>
-                            <strong>Telefone</strong>:{' '}
-                            {sellerVisits[0]?.seller?.phone}
-                        </Typography>
-                    </Paper>
-                </Grid>
-                <Grid item xs={6}>
-                    <Paper className='p-3'>
-                        <Typography variant='h6' className='fw-bold'>
-                            <PinDropRounded /> Local
-                        </Typography>
-                        <Typography variant='body1'>
-                            <strong>Cidade</strong>:{' '}
-                            {sellerVisits[0]?.seller?.address.city}
-                        </Typography>
-                        <Typography variant='body1'>
-                            <strong>Estado</strong>:{' '}
-                            {sellerVisits[0]?.seller?.address.uf}
-                        </Typography>
-                        <Typography variant='body1'>
-                            <strong>CEP</strong>:{' '}
-                            {sellerVisits[0]?.seller?.address.cep}
-                        </Typography>
-                    </Paper>
-                </Grid>
+                {seller && (
+                    <>
+                        <Grid item xs={6}>
+                            <Paper className='p-3'>
+                                <Typography variant='h6' className='fw-bold'>
+                                    <PersonRounded /> Vendedor
+                                </Typography>
+                                <Typography variant='body1'>
+                                    <strong>Nome</strong>: {seller.name}
+                                </Typography>
+                                <Typography variant='body1'>
+                                    <strong>Email</strong>: {seller.email}
+                                </Typography>
+                                <Typography variant='body1'>
+                                    <strong>Telefone</strong>: {seller.phone}
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Paper className='p-3'>
+                                <Typography variant='h6' className='fw-bold'>
+                                    <PinDropRounded /> Local
+                                </Typography>
+                                <Typography variant='body1'>
+                                    <strong>Cidade</strong>:{' '}
+                                    {seller.address.city}
+                                </Typography>
+                                <Typography variant='body1'>
+                                    <strong>Estado</strong>: {seller.address.uf}
+                                </Typography>
+                                <Typography variant='body1'>
+                                    <strong>CEP</strong>: {seller.address.cep}
+                                </Typography>
+                            </Paper>
+                        </Grid>
+                    </>
+                )}
                 {Object.keys(daysWithoutVisits).some(
                     (date) => daysWithoutVisits[date].length > 0
                 ) ? (
@@ -490,7 +492,7 @@ function SellerVisits() {
                                                             size='small'
                                                             onClick={() =>
                                                                 navigate(
-                                                                    `${visitsByDate[date][0].id}`
+                                                                    `visit/${visitsByDate[date][0].id}`
                                                                 )
                                                             }
                                                         >

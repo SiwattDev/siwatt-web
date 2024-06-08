@@ -86,7 +86,7 @@ function AppRouter() {
                         element={<SellerVisits />}
                     />
                     <Route
-                        path='visits/seller/:id/:visitId'
+                        path='visits/seller/:id/visit/:visitId'
                         element={<VisitDetails />}
                     />
                     <Route path='*' element={<Page404 />} />

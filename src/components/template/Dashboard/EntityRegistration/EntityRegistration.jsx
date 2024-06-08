@@ -159,8 +159,6 @@ function EntityRegistration() {
         }
 
         try {
-            if (!validateBr.email(state.email))
-                throw new Error('Email inválido')
             if (!validateBr.celular(state.phone))
                 throw new Error('Telefone inválido')
             if (!validateBr.cep(state.address.cep))

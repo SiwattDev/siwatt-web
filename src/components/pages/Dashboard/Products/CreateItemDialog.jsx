@@ -60,6 +60,7 @@ const CreateItemDialog = ({ open, onClose, item, onUpdate }) => {
             logAction('edited item', { item: id, data: newItem, oldData: item })
         } else {
             await createDocument('kits/itens/itens', id, newItem)
+            logAction('created item', { item: id })
         }
         onUpdate()
         onClose()

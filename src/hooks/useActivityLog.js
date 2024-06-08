@@ -5,6 +5,7 @@ const useActivityLog = () => {
     const { createDocument, getDocumentsInCollectionWithQuery } = useFirebase();
 
     const logAction = (action, details) => {
+        console.log('logging action: ', action, details);
         return new Promise((resolve, reject) => {
             const auth = getAuth();
             const user = auth.currentUser;
