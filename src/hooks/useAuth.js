@@ -1,11 +1,12 @@
 import {
     createUserWithEmailAndPassword,
+    sendPasswordResetEmail,
     signInWithEmailAndPassword,
-    signOut,
-} from 'firebase/auth';
-import { auth } from '../firebase';
-import useActivityLog from './useActivityLog';
-import useFirebase from './useFirebase';
+    signOut
+} from 'firebase/auth'
+import { auth } from '../firebase'
+import useActivityLog from './useActivityLog'
+import useFirebase from './useFirebase'
 
 const useAuth = () => {
     const { createDocument } = useFirebase()
@@ -13,17 +14,14 @@ const useAuth = () => {
 
     const createUser = (email, password, confirmPassword, data) => {
         return new Promise((resolve, reject) => {
-            if (!password) reject('Senha invalida.')
-            else if (password !== confirmPassword)
-                reject('Senhas não conferem.')
+            if (!password) reject('Senha inválida.')
+            else if (password !== confirmPassword) reject('Senhas não conferem.')
             createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     const user = userCredential.user
                     data.email = email
                     data.id = user.uid
-                    createDocument('users', user.uid, data).then(() =>
-                        resolve('Conta criada com sucesso.')
-                    )
+                    createDocument('users', user.uid, data).then(() => resolve('Conta criada com sucesso.'))
                     logAction('created entity', { entity: data.id })
                 })
                 .catch((error) => {
@@ -72,7 +70,20 @@ const useAuth = () => {
         })
     }
 
-    return { createUser, loginInUser, logout }
+    const resetPassword = (email) => {
+        return new Promise((resolve, reject) => {
+            sendPasswordResetEmail(auth, email)
+                .then(() => {
+                    resolve('Email de redefinição de senha enviado com sucesso.')
+                })
+                .catch((error) => {
+                    console.error(error)
+                    reject('Erro ao enviar email de redefinição de senha.')
+                })
+        })
+    }
+
+    return { createUser, loginInUser, logout, resetPassword }
 }
 
 export default useAuth

@@ -66,14 +66,24 @@ const Button = styled.button`
     }
 `
 
+const LinkButton = styled.button`
+    border: none;
+    background: none;
+    color: #0656b4;
+    text-decoration: underline;
+    cursor: pointer;
+    margin: 15px 0px;
+`
+
 function Auth() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [forgotPassword, setForgotPassword] = useState(false)
     const { user, setUser } = useContext(UserContext)
     const navigate = useNavigate()
     const params = useParams()
-    const { loginInUser } = useAuth()
+    const { loginInUser, resetPassword } = useAuth()
     const { showToastMessage } = useUtilities()
 
     useEffect(() => {
@@ -82,7 +92,7 @@ function Auth() {
                 ? navigate(params.redirect_url)
                 : navigate('/dashboard')
         }
-    })
+    }, [user, navigate, params])
 
     const login = () => {
         setIsLoading(true)
@@ -92,6 +102,23 @@ function Auth() {
                 setUser(user)
                 if (params.redirect_url) navigate(params.redirect_url)
                 else navigate('/dashboard')
+            })
+            .catch((e) => {
+                setIsLoading(false)
+                showToastMessage('error', e)
+            })
+    }
+
+    const handleForgotPassword = () => {
+        setIsLoading(true)
+        resetPassword(email)
+            .then(() => {
+                setIsLoading(false)
+                showToastMessage(
+                    'success',
+                    'Email para redefinição de senha enviado com sucesso'
+                )
+                setForgotPassword(false)
             })
             .catch((e) => {
                 setIsLoading(false)
@@ -138,7 +165,11 @@ function Auth() {
                     />
                 </Logo>
                 <div className='title'>
-                    <h1>Entre na sua conta</h1>
+                    <h1>
+                        {forgotPassword
+                            ? 'Redefinir senha'
+                            : 'Entre na sua conta'}
+                    </h1>
                 </div>
                 <div className='w-100 mt-3 mt-md-5'>
                     <Input
@@ -148,24 +179,39 @@ function Auth() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                     />
-                    <div className='m-4'></div>
-                    <Input
-                        type='password'
-                        placeholder='Informe sua senha'
-                        label='Senha:'
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
+                    {!forgotPassword && (
+                        <>
+                            <div className='m-4'></div>
+                            <Input
+                                type='password'
+                                placeholder='Informe sua senha'
+                                label='Senha:'
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <LinkButton onClick={() => setForgotPassword(true)}>
+                                Esqueci minha senha
+                            </LinkButton>
+                        </>
+                    )}
                     <Button
                         className='mt-5'
-                        onClick={login}
+                        onClick={forgotPassword ? handleForgotPassword : login}
                     >
-                        LOGIN
+                        {forgotPassword ? 'ENVIAR EMAIL' : 'LOGIN'}
                     </Button>
                 </div>
             </Card>
             <ToastContainer autoClose={5000} />
-            {isLoading && <Loading action='Tentando fazer login...' />}
+            {isLoading && (
+                <Loading
+                    action={
+                        forgotPassword
+                            ? 'Enviando email...'
+                            : 'Tentando fazer login...'
+                    }
+                />
+            )}
         </AuthContainer>
     )
 }

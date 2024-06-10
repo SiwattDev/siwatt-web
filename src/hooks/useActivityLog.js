@@ -1,8 +1,22 @@
 import { getAuth } from 'firebase/auth';
 import useFirebase from './useFirebase';
 
+const isMatch = (log, criteria) => {
+    return Object.keys(criteria).every(key => {
+        if (!(key in log)) {
+            return false;
+        }
+
+        if (typeof criteria[key] === 'object' && criteria[key] !== null) {
+            return isMatch(log[key], criteria[key]);
+        }
+        return log[key] === criteria[key];
+    });
+};
+
+
 const useActivityLog = () => {
-    const { createDocument, getDocumentsInCollectionWithQuery } = useFirebase();
+    const { createDocument, getDocumentsInCollectionWithQuery, getDocumentsInCollection } = useFirebase();
 
     const logAction = (action, details) => {
         console.log('logging action: ', action, details);
@@ -67,11 +81,31 @@ const useActivityLog = () => {
         });
     };
 
+    const getActionsWithCriteria = (criteria) => {
+        return new Promise((resolve, reject) => {
+            const { userId, ...otherCriteria } = criteria;
+            const queryPromise = userId ?
+                getDocumentsInCollectionWithQuery('logs', 'userId', userId) :
+                getDocumentsInCollection('logs');
+
+            queryPromise
+                .then((logs) => {
+                    const filteredLogs = logs.filter(log => isMatch(log, otherCriteria));
+                    resolve(filteredLogs);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    reject(error);
+                });
+        });
+    };
+
     return {
         logAction,
         getActionsForDocument,
         getActionsByUser,
         getActionsByUserForDocument,
+        getActionsWithCriteria,
     };
 };
 

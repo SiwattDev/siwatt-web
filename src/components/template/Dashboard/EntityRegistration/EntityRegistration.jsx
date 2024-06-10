@@ -2,9 +2,10 @@ import { PersonAddRounded } from '@mui/icons-material'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
 import { Box, Button, Card, Paper, Tab, Typography } from '@mui/material'
 import { validateBr } from 'js-brasil'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
+import { EntityContext } from '../../../../contexts/entityContext'
 import useActivityLog from '../../../../hooks/useActivityLog'
 import useAuth from '../../../../hooks/useAuth'
 import useCompareEffect from '../../../../hooks/useCompareEffect'
@@ -14,41 +15,7 @@ import TypeOne from './Types/TypeOne'
 import TypeTwo from './Types/TypeTwo'
 
 function EntityRegistration() {
-    const [state, setState] = useState({
-        type: 'user',
-        name: null,
-        fantasy_name: null,
-        email: null,
-        store_facade: null,
-        docs: null,
-        phone: null,
-        password: null,
-        type_entity: null,
-        cpf: null,
-        cnpj: null,
-        state_registration: null,
-        address: {
-            number: null,
-            road: null,
-            neighborhood: null,
-            city: null,
-            reference: null,
-            cep: null,
-            uf: null,
-        },
-        direct_contact: {
-            name: null,
-            email: null,
-            phone: null,
-            cpf: null,
-            birth_of_date: null,
-        },
-        user_type: {
-            type: null,
-            permissions: [],
-        },
-        seller: null,
-    })
+    const { entity, setEntity } = useContext(EntityContext)
     const [isDataLoaded, setIsDataLoaded] = useState(false)
     const { getDocumentById, createDocument, updateDocument } = useFirebase()
     const { generateCode, showToastMessage } = useUtilities()
@@ -58,14 +25,14 @@ function EntityRegistration() {
     const { action, id, type } = useParams()
 
     const updateState = (key, value) => {
-        setState((prevState) => ({
+        setEntity((prevState) => ({
             ...prevState,
             [key]: value,
         }))
     }
 
     const updateStateSubObject = (object, key, value) => {
-        setState((prevState) => ({
+        setEntity((prevState) => ({
             ...prevState,
             [object]: {
                 ...prevState[object],
@@ -134,23 +101,23 @@ function EntityRegistration() {
     useDeepCompareEffect(() => {
         if (type) updateState('type', type)
         if (action === 'edit' && id && !isDataLoaded) {
-            getDocumentById(`${state.type}s`, id)
+            getDocumentById(`${entity.type}s`, id)
                 .then((userData) => {
-                    setState(userData)
+                    setEntity(userData)
                     setIsDataLoaded(true)
                 })
                 .catch((error) => {
                     console.error('Erro ao buscar usuário:', error)
                 })
         }
-    }, [action, getDocumentById, id, state.type, type, isDataLoaded])
+    }, [action, getDocumentById, id, entity.type, type, isDataLoaded])
 
     const showToast = (type, message) => {
         showToastMessage(type, message)
     }
 
     const registerEntity = async () => {
-        const data = filterFields(state, state.type)
+        const data = filterFields(entity, entity.type)
         const newId = generateCode()
         data.id = id || newId
 
@@ -159,27 +126,27 @@ function EntityRegistration() {
         }
 
         try {
-            if (!validateBr.celular(state.phone))
+            if (!validateBr.celular(entity.phone))
                 throw new Error('Telefone inválido')
-            if (!validateBr.cep(state.address.cep))
+            if (!validateBr.cep(entity.address.cep))
                 throw new Error('Cep inválido')
             if (
-                (state.type === 'client' || state.type === 'supplier') &&
-                state.type_entity === 'individual' &&
-                !validateBr.cpf(state.cpf)
+                (entity.type === 'client' || entity.type === 'supplier') &&
+                entity.type_entity === 'individual' &&
+                !validateBr.cpf(entity.cpf)
             )
                 throw new Error('CPF inválido')
 
             if (
-                (state.type === 'client' || state.type === 'supplier') &&
-                state.type_entity === 'legal-entity' &&
-                !validateBr.cnpj(state.cnpj)
+                (entity.type === 'client' || entity.type === 'supplier') &&
+                entity.type_entity === 'legal-entity' &&
+                !validateBr.cnpj(entity.cnpj)
             )
                 throw new Error('CNPJ inválido')
 
             if (action === 'edit' && id) {
-                const oldData = await getDocumentById(`${state.type}s`, id)
-                await updateDocument(`${state.type}s`, id, data)
+                const oldData = await getDocumentById(`${entity.type}s`, id)
+                await updateDocument(`${entity.type}s`, id, data)
                 logAction('edited entity', {
                     entity: id,
                     data,
@@ -187,17 +154,20 @@ function EntityRegistration() {
                 })
                 handleSuccess()
             } else {
-                if (state.type === 'user') {
+                if (entity.type === 'user') {
                     await createUser(
-                        state.email,
-                        state.password,
-                        state.password,
+                        entity.email,
+                        entity.password,
+                        entity.password,
                         data
                     )
                     handleSuccess()
                 } else {
-                    await createDocument(`${state.type}s`, newId, data)
-                    logAction('created entity', { entity: newId })
+                    await createDocument(`${entity.type}s`, newId, data)
+                    logAction('created entity', {
+                        entity: newId,
+                        origin: entity.origin || { type: 'user' },
+                    })
                     handleSuccess()
                 }
             }
@@ -216,7 +186,7 @@ function EntityRegistration() {
             </Paper>
             <Card className='p-4 rounded-2'>
                 <Box sx={{ width: '100%', typography: 'body1' }}>
-                    <TabContext value={state.type}>
+                    <TabContext value={entity.type}>
                         <Box
                             sx={{
                                 borderBottom: 1,
@@ -242,7 +212,7 @@ function EntityRegistration() {
                         <TabPanel value='user' className='p-0 pt-3'>
                             <TypeOne
                                 type='user'
-                                state={state}
+                                state={entity}
                                 updateState={updateState}
                                 updateStateSubObject={updateStateSubObject}
                             />
@@ -250,7 +220,7 @@ function EntityRegistration() {
                         <TabPanel value='client' className='p-0 pt-3'>
                             <TypeTwo
                                 type='client'
-                                state={state}
+                                state={entity}
                                 updateState={updateState}
                                 updateStateSubObject={updateStateSubObject}
                             />
@@ -258,7 +228,7 @@ function EntityRegistration() {
                         <TabPanel value='supplier' className='p-0 pt-3'>
                             <TypeTwo
                                 type='supplier'
-                                state={state}
+                                state={entity}
                                 updateState={updateState}
                                 updateStateSubObject={updateStateSubObject}
                             />
@@ -266,14 +236,14 @@ function EntityRegistration() {
                         <TabPanel value='partner' className='p-0 pt-3'>
                             <TypeOne
                                 type='partner'
-                                state={state}
+                                state={entity}
                                 updateState={updateState}
                                 updateStateSubObject={updateStateSubObject}
                             />
                         </TabPanel>
                     </TabContext>
                 </Box>
-                {state.type && (
+                {entity.type && (
                     <Button
                         variant='contained'
                         color='black'

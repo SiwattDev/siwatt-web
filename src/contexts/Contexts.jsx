@@ -1,4 +1,5 @@
 import { BudgetProvider } from './budgetContext'
+import { EntityProvider } from './entityContext'
 import { ThemeProvider } from './themeContext'
 import { UserProvider } from './userContext'
 
@@ -6,7 +7,9 @@ function Contexts(props) {
     return (
         <ThemeProvider>
             <UserProvider>
-                <BudgetProvider>{props.children}</BudgetProvider>
+                <EntityProvider>
+                    <BudgetProvider>{props.children}</BudgetProvider>
+                </EntityProvider>
             </UserProvider>
         </ThemeProvider>
     )

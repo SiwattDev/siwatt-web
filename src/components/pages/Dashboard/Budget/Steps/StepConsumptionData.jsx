@@ -2,6 +2,8 @@ import {
     AddAPhotoRounded,
     AddRounded,
     AddchartRounded,
+    DeleteRounded,
+    EditRounded,
     Save,
 } from '@mui/icons-material'
 import { LoadingButton } from '@mui/lab'
@@ -76,30 +78,44 @@ function calculateAverageEnergyBill(budgetData) {
     return totalConsumption / totalMonths
 }
 
-function AddEnergyBill({ open, onClose, existingIds, energyBills = [] }) {
-    const [energyBill, setEnergyBill] = useState({
-        name: generateEnergyBillId(existingIds),
-        months: {
-            jan: '',
-            fev: '',
-            mar: '',
-            abr: '',
-            mai: '',
-            jun: '',
-            jul: '',
-            ago: '',
-            set: '',
-            out: '',
-            nov: '',
-            dez: '',
-        },
-        photoEnergyBill: null,
-        photoConsumptionChart: null,
-    })
+function AddEnergyBill({
+    open,
+    onClose,
+    existingIds,
+    energyBills = [],
+    editingBill,
+}) {
+    const [energyBill, setEnergyBill] = useState(
+        editingBill || {
+            name: generateEnergyBillId(existingIds),
+            months: {
+                jan: '',
+                fev: '',
+                mar: '',
+                abr: '',
+                mai: '',
+                jun: '',
+                jul: '',
+                ago: '',
+                set: '',
+                out: '',
+                nov: '',
+                dez: '',
+            },
+            photoEnergyBill: null,
+            photoConsumptionChart: null,
+        }
+    )
     const [energyBillsWithNew, setEnergyBillsWithNew] = useState(energyBills)
     const [uploading, setUploading] = useState(false)
     const { uploadFile } = useStorage()
     const { showToastMessage } = useUtilities()
+
+    useEffect(() => {
+        if (editingBill) {
+            setEnergyBill(editingBill)
+        }
+    }, [editingBill])
 
     const isFormComplete = () => {
         if (energyBill.name === '') return false
@@ -153,30 +169,35 @@ function AddEnergyBill({ open, onClose, existingIds, energyBills = [] }) {
     const handleAdd = async () => {
         if (isFormComplete()) {
             try {
-                console.log(
-                    energyBill.photoEnergyBill,
-                    energyBill.photoConsumptionChart
-                )
                 setUploading(true)
-                const photoEnergyBill = await uploadFile(
-                    'energyBills',
-                    energyBill.photoEnergyBill,
-                    `${energyBill.name}_energy_energy.jpg`
-                )
+                let photoEnergyBillUrl = energyBill.photoEnergyBill
+                let photoConsumptionChartUrl = energyBill.photoConsumptionChart
 
-                const photoConsumptionChart = await uploadFile(
-                    'energyBills',
-                    energyBill.photoConsumptionChart,
-                    `${energyBill.name}_consumption_chart.jpg`
-                )
+                // Verificar se a imagem foi alterada (não é uma URL)
+                if (!photoEnergyBillUrl.startsWith('http')) {
+                    photoEnergyBillUrl = await uploadFile(
+                        'energyBills',
+                        photoEnergyBillUrl, // Deve ser uma URL da imagem, não a string de dados
+                        `${energyBill.name}_energy_energy.jpg`
+                    )
+                }
+
+                // Verificar se a imagem foi alterada (não é uma URL)
+                if (!photoConsumptionChartUrl.startsWith('http')) {
+                    photoConsumptionChartUrl = await uploadFile(
+                        'energyBills',
+                        photoConsumptionChartUrl, // Deve ser uma URL da imagem, não a string de dados
+                        `${energyBill.name}_consumption_chart.jpg`
+                    )
+                }
 
                 setUploading(false)
 
                 const energyBillObj = {
                     ...energyBill,
                     id: energyBill.name,
-                    photoEnergyBill,
-                    photoConsumptionChart,
+                    photoEnergyBill: photoEnergyBillUrl, // Usando a URL da imagem
+                    photoConsumptionChart: photoConsumptionChartUrl, // Usando a URL da imagem
                 }
 
                 setEnergyBill(energyBillObj)
@@ -217,7 +238,6 @@ function AddEnergyBill({ open, onClose, existingIds, energyBills = [] }) {
     }
 
     useEffect(() => {
-        console.log(energyBill)
         const newEnergyBill = {
             ...energyBill,
             months: Object.fromEntries(
@@ -245,7 +265,9 @@ function AddEnergyBill({ open, onClose, existingIds, energyBills = [] }) {
 
     return (
         <Dialog open={open} onClose={handleClose}>
-            <DialogTitle>Adicionar uma conta de energia</DialogTitle>
+            <DialogTitle>
+                {editingBill ? 'Editar' : 'Adicionar'} uma conta de energia
+            </DialogTitle>
             <DialogContent>
                 <TextField
                     label='Nome: '
@@ -258,222 +280,29 @@ function AddEnergyBill({ open, onClose, existingIds, energyBills = [] }) {
                     }
                 />
                 <Grid container spacing={2}>
-                    <Grid item xs={4}>
-                        <TextField
-                            type='number'
-                            label='Jan'
-                            color='black'
-                            size='small'
-                            value={energyBill.months.jan}
-                            onChange={(e) =>
-                                setEnergyBill({
-                                    ...energyBill,
-                                    months: {
-                                        ...energyBill.months,
-                                        jan: e.target.value,
-                                    },
-                                })
-                            }
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            type='number'
-                            label='Fev'
-                            color='black'
-                            size='small'
-                            value={energyBill.months.fev}
-                            onChange={(e) =>
-                                setEnergyBill({
-                                    ...energyBill,
-                                    months: {
-                                        ...energyBill.months,
-                                        fev: e.target.value,
-                                    },
-                                })
-                            }
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            type='number'
-                            label='Mar'
-                            color='black'
-                            size='small'
-                            value={energyBill.months.mar}
-                            onChange={(e) =>
-                                setEnergyBill({
-                                    ...energyBill,
-                                    months: {
-                                        ...energyBill.months,
-                                        mar: e.target.value,
-                                    },
-                                })
-                            }
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            type='number'
-                            label='Abr'
-                            color='black'
-                            size='small'
-                            value={energyBill.months.abr}
-                            onChange={(e) =>
-                                setEnergyBill({
-                                    ...energyBill,
-                                    months: {
-                                        ...energyBill.months,
-                                        abr: e.target.value,
-                                    },
-                                })
-                            }
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            type='number'
-                            label='Mai'
-                            color='black'
-                            size='small'
-                            value={energyBill.months.mai}
-                            onChange={(e) =>
-                                setEnergyBill({
-                                    ...energyBill,
-                                    months: {
-                                        ...energyBill.months,
-                                        mai: e.target.value,
-                                    },
-                                })
-                            }
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            type='number'
-                            label='Jun'
-                            color='black'
-                            size='small'
-                            value={energyBill.months.jun}
-                            onChange={(e) =>
-                                setEnergyBill({
-                                    ...energyBill,
-                                    months: {
-                                        ...energyBill.months,
-                                        jun: e.target.value,
-                                    },
-                                })
-                            }
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            type='number'
-                            label='Jul'
-                            color='black'
-                            size='small'
-                            value={energyBill.months.jul}
-                            onChange={(e) =>
-                                setEnergyBill({
-                                    ...energyBill,
-                                    months: {
-                                        ...energyBill.months,
-                                        jul: e.target.value,
-                                    },
-                                })
-                            }
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            type='number'
-                            label='Ago'
-                            color='black'
-                            size='small'
-                            value={energyBill.months.ago}
-                            onChange={(e) =>
-                                setEnergyBill({
-                                    ...energyBill,
-                                    months: {
-                                        ...energyBill.months,
-                                        ago: e.target.value,
-                                    },
-                                })
-                            }
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            type='number'
-                            label='Set'
-                            color='black'
-                            size='small'
-                            value={energyBill.months.set}
-                            onChange={(e) =>
-                                setEnergyBill({
-                                    ...energyBill,
-                                    months: {
-                                        ...energyBill.months,
-                                        set: e.target.value,
-                                    },
-                                })
-                            }
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            type='number'
-                            label='Out'
-                            color='black'
-                            size='small'
-                            value={energyBill.months.out}
-                            onChange={(e) =>
-                                setEnergyBill({
-                                    ...energyBill,
-                                    months: {
-                                        ...energyBill.months,
-                                        out: e.target.value,
-                                    },
-                                })
-                            }
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            type='number'
-                            label='Nov'
-                            color='black'
-                            size='small'
-                            value={energyBill.months.nov}
-                            onChange={(e) =>
-                                setEnergyBill({
-                                    ...energyBill,
-                                    months: {
-                                        ...energyBill.months,
-                                        nov: e.target.value,
-                                    },
-                                })
-                            }
-                        />
-                    </Grid>
-                    <Grid item xs={4}>
-                        <TextField
-                            type='number'
-                            label='Dez'
-                            color='black'
-                            size='small'
-                            value={energyBill.months.dez}
-                            onChange={(e) =>
-                                setEnergyBill({
-                                    ...energyBill,
-                                    months: {
-                                        ...energyBill.months,
-                                        dez: e.target.value,
-                                    },
-                                })
-                            }
-                        />
-                    </Grid>
+                    {Object.keys(energyBill.months).map((month) => (
+                        <Grid item xs={4} key={month}>
+                            <TextField
+                                type='number'
+                                label={
+                                    month.charAt(0).toUpperCase() +
+                                    month.slice(1)
+                                }
+                                color='black'
+                                size='small'
+                                value={energyBill.months[month]}
+                                onChange={(e) =>
+                                    setEnergyBill({
+                                        ...energyBill,
+                                        months: {
+                                            ...energyBill.months,
+                                            [month]: e.target.value,
+                                        },
+                                    })
+                                }
+                            />
+                        </Grid>
+                    ))}
                 </Grid>
                 <Box className='mt-3 w-100'>
                     <label htmlFor='photo-energy-bill' className='w-100'>
@@ -519,7 +348,6 @@ function AddEnergyBill({ open, onClose, existingIds, energyBills = [] }) {
                         type='file'
                         id='photo-energy-bill'
                         style={{ display: 'none' }}
-                        value={null}
                         onChange={async (e) => {
                             const base64 = await getBase64(e.target.files[0])
                             setEnergyBill({
@@ -553,7 +381,7 @@ function AddEnergyBill({ open, onClose, existingIds, energyBills = [] }) {
                                         variant='body1'
                                         className='mb-2'
                                     >
-                                        Gráfico de consumo:
+                                        Gráfico de consumo:
                                     </Typography>
                                     <img
                                         src={energyBill.photoConsumptionChart}
@@ -564,7 +392,7 @@ function AddEnergyBill({ open, onClose, existingIds, energyBills = [] }) {
                             ) : (
                                 <>
                                     <AddchartRounded className='me-2' />
-                                    Selecionar foto do gráfico de consumo
+                                    Selecionar foto do gráfico de consumo
                                 </>
                             )}
                         </Box>
@@ -573,7 +401,6 @@ function AddEnergyBill({ open, onClose, existingIds, energyBills = [] }) {
                         type='file'
                         id='photo-consumption-chart'
                         style={{ display: 'none' }}
-                        value={null}
                         onChange={async (e) => {
                             const base64 = await getBase64(e.target.files[0])
                             setEnergyBill({
@@ -586,13 +413,7 @@ function AddEnergyBill({ open, onClose, existingIds, energyBills = [] }) {
                 <Typography variant='body1'>
                     <strong>Consumo médio</strong>:{' '}
                     {(() => {
-                        console.log(energyBillsWithNew)
-                        if (
-                            energyBillsWithNew.length === 0 ||
-                            energyBillsWithNew[0]?.length === 0 ||
-                            energyBillsWithNew[1]?.length === 0
-                        )
-                            return 0
+                        if (energyBillsWithNew.length === 0) return 0
                         const averageEnergyBill = calculateAverageEnergyBill({
                             consumption: { energyBills: energyBillsWithNew },
                         })
@@ -600,61 +421,17 @@ function AddEnergyBill({ open, onClose, existingIds, energyBills = [] }) {
                     })()}{' '}
                     KW/mês
                 </Typography>
-                <Typography variant='body1'>
-                    <strong>Potência necessária</strong>:{' '}
-                    {(() => {
-                        console.log(energyBillsWithNew)
-                        if (
-                            energyBillsWithNew.length === 0 ||
-                            energyBillsWithNew[0]?.length === 0 ||
-                            energyBillsWithNew[1]?.length === 0
-                        )
-                            return 0
-                        const averageEnergyBill = calculateAverageEnergyBill({
-                            consumption: { energyBills: energyBillsWithNew },
-                        })
-                        console.log(averageEnergyBill)
-                        const neededPower = getNeededPower(
-                            averageEnergyBill,
-                            'single-fase',
-                            5.153
-                        )
-                        console.log(neededPower)
-                        return neededPower.toFixed(2)
-                    })()}{' '}
-                    KWp
-                </Typography>
             </DialogContent>
             <DialogActions>
-                <Button
-                    color='black'
-                    size='small'
-                    variant='contained'
-                    onClick={handleClose}
-                    disabled={uploading}
+                <Button onClick={handleClose}>Cancelar</Button>
+                <LoadingButton
+                    onClick={handleAdd}
+                    loading={uploading}
+                    loadingPosition='start'
+                    startIcon={<Save />}
                 >
-                    Cancelar
-                </Button>
-                {uploading ? (
-                    <LoadingButton
-                        loading
-                        loadingPosition='start'
-                        startIcon={<Save />}
-                        variant='contained'
-                    >
-                        Adicionando
-                    </LoadingButton>
-                ) : (
-                    <Button
-                        color='black'
-                        size='small'
-                        variant='contained'
-                        autoFocus
-                        onClick={handleAdd}
-                    >
-                        Adicionar
-                    </Button>
-                )}
+                    {editingBill ? 'Salvar' : 'Adicionar'}
+                </LoadingButton>
             </DialogActions>
         </Dialog>
     )
@@ -681,6 +458,7 @@ function StepConsumptionData() {
     const [city, setCity] = useState(
         budget.solarPlantSite ? budget.solarPlantSite.city : null
     )
+    const [editingBill, setEditingBill] = useState(null)
     const [states, setStates] = useState([])
     const [cities, setCities] = useState([])
     const { generateCode } = useUtilities()
@@ -721,6 +499,25 @@ function StepConsumptionData() {
         }
         setEnergyBills([...energyBills, energyBill])
         return true
+    }
+
+    const handleOpenEditDialog = (id) => {
+        const billToEdit = energyBills.find((bill) => bill.id === id)
+        setEditingBill(billToEdit)
+        setOpen(true)
+    }
+
+    const handleEdit = (id, updatedEnergyBill) => {
+        if (!updatedEnergyBill) return
+        const updatedEnergyBills = energyBills.map((bill) =>
+            bill.id === id ? updatedEnergyBill : bill
+        )
+        setEnergyBills(updatedEnergyBills)
+    }
+
+    const handleRemove = (id) => {
+        const updatedEnergyBills = energyBills.filter((bill) => bill.id !== id)
+        setEnergyBills(updatedEnergyBills)
     }
 
     useEffect(() => {
@@ -777,7 +574,37 @@ function StepConsumptionData() {
                     <TableRow>
                         <TableCell>Unidade</TableCell>
                         {energyBills.map((bill) => (
-                            <TableCell key={bill.name}>{bill.name}</TableCell>
+                            <>
+                                <TableCell key={bill.name}>
+                                    {bill.name}
+                                    <Button
+                                        color='black'
+                                        variant='contained'
+                                        size='small'
+                                        onClick={() =>
+                                            handleOpenEditDialog(bill.id)
+                                        }
+                                        sx={{
+                                            minWidth: 0,
+                                        }}
+                                        className='ms-2'
+                                    >
+                                        <EditRounded fontSize='small' />
+                                    </Button>
+                                    <Button
+                                        color='error'
+                                        variant='contained'
+                                        size='small'
+                                        onClick={() => handleRemove(bill.id)}
+                                        sx={{
+                                            minWidth: 0,
+                                        }}
+                                        className='ms-2'
+                                    >
+                                        <DeleteRounded fontSize='small' />
+                                    </Button>
+                                </TableCell>
+                            </>
                         ))}
                     </TableRow>
                 </TableHead>
@@ -786,9 +613,11 @@ function StepConsumptionData() {
                         <TableRow key={month}>
                             <TableCell>{month}</TableCell>
                             {energyBills.map((bill) => (
-                                <TableCell key={bill.name}>
-                                    {bill.months[month.toLowerCase()]}
-                                </TableCell>
+                                <>
+                                    <TableCell key={bill.name}>
+                                        {bill.months[month.toLowerCase()]}
+                                    </TableCell>
+                                </>
                             ))}
                         </TableRow>
                     ))}
@@ -905,11 +734,17 @@ function StepConsumptionData() {
             <AddEnergyBill
                 open={open}
                 onClose={(energyBill) => {
-                    pushNewEnergyBill({ ...energyBill, id: generateCode() })
+                    if (editingBill) {
+                        handleEdit(editingBill.id, energyBill)
+                    } else {
+                        pushNewEnergyBill({ ...energyBill, id: generateCode() })
+                    }
                     setOpen(false)
+                    setEditingBill(null)
                 }}
                 existingIds={energyBills.map((bill) => bill.name)}
                 energyBills={energyBills}
+                editingBill={editingBill}
             />
         </Box>
     )
