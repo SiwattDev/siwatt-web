@@ -5,6 +5,7 @@ import Auth from './components/pages/Auth/Auth'
 import Page404 from './components/pages/Dashboard/404/404'
 import AfterSales from './components/pages/Dashboard/AfterSales/AfterSales'
 import Agents from './components/pages/Dashboard/Agents/Agents'
+import Branchs from './components/pages/Dashboard/Branchs/Branchs'
 import Budget from './components/pages/Dashboard/Budget/Budget'
 import BudgetData from './components/pages/Dashboard/Budget/BudgetData'
 import BudgetResult from './components/pages/Dashboard/Budget/BudgetResult'
@@ -89,6 +90,7 @@ function AppRouter() {
                         path='visits/seller/:id/visit/:visitId'
                         element={<VisitDetails />}
                     />
+                    <Route path='branchs' element={<Branchs />} />
                     <Route path='*' element={<Page404 />} />
                 </Route>
                 <Route path='*' element={<Page404 fullPage={true} />} />

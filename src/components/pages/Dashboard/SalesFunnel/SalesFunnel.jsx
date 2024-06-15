@@ -6,6 +6,7 @@ import General from './General/General'
 
 function SalesFunnel() {
     const [type, setType] = useState('general')
+
     return (
         <>
             <Paper className='d-flex gap-2 align-items-center px-3 py-2 mb-3'>

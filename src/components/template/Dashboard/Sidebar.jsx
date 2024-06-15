@@ -1,4 +1,5 @@
 import {
+    ApartmentRounded,
     BadgeRounded,
     BentoRounded,
     ConstructionRounded,
@@ -230,6 +231,17 @@ function Sidebar() {
                         size='large'
                     >
                         <Typography variant='h6'>Equipes</Typography>
+                    </Button>
+                </Link>
+                <Link to='/dashboard/branchs'>
+                    <Button
+                        variant='text'
+                        color='black'
+                        className='rounded-0 text-capitalize px-4 w-100 justify-content-start'
+                        startIcon={<ApartmentRounded />}
+                        size='large'
+                    >
+                        <Typography variant='h6'>Filiais</Typography>
                     </Button>
                 </Link>
             </Links>

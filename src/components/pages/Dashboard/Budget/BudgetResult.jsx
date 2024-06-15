@@ -617,23 +617,14 @@ function BudgetResult() {
                                         Financiamento bancário
                                     </Typography>
                                     <Typography>
-                                        <strong>Com entrada de 10%:</strong>{' '}
-                                        {(
-                                            result.plantValue * 0.1
-                                        ).toLocaleString('pt-BR', {
-                                            style: 'currency',
-                                            currency: 'BRL',
-                                        })}
-                                    </Typography>
-                                    <Typography>
                                         <strong>Financiamento de:</strong>{' '}
-                                        {(
-                                            result.plantValue -
-                                            result.plantValue * 0.1
-                                        ).toLocaleString('pt-BR', {
-                                            style: 'currency',
-                                            currency: 'BRL',
-                                        })}
+                                        {result.plantValue.toLocaleString(
+                                            'pt-BR',
+                                            {
+                                                style: 'currency',
+                                                currency: 'BRL',
+                                            }
+                                        )}
                                     </Typography>
                                     <Box className='d-flex'>
                                         <Box className='w-100'>

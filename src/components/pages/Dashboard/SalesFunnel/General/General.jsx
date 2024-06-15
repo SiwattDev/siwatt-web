@@ -439,14 +439,14 @@ function General() {
                             <TableFooter>
                                 <TableRow>
                                     {(() => {
-                                        const totalKWp = budgets
+                                        const totalKWp = filteredBudgets
                                             .reduce(
                                                 (sum, budget) =>
                                                     sum + budget.peakGeneration,
                                                 0
                                             )
                                             .toFixed(2)
-                                        const totalInvestment = budgets
+                                        const totalInvestment = filteredBudgets
                                             .reduce(
                                                 (sum, budget) =>
                                                     sum + budget.plantValue,

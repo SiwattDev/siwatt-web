@@ -311,6 +311,27 @@ function StepKits() {
         setKits([kit])
     }
 
+    const correctData = (kit) => {
+        kit.modules.amount = Math.round(kit.modules.amount)
+        kit.inverter.amount = Math.round(kit.inverter.amount)
+        kit.module.unitPrice = parseFloat(
+            kit.modules.unitPrice.replace(',', '.').replace(/R\$ /g, '')
+        )
+        kit.module.totalPrice = parseFloat(
+            kit.modules.totalPrice.replace(',', '.').replace(/R\$ /g, '')
+        )
+        kit.inverter.unitPrice = parseFloat(
+            kit.inverter.unitPrice.replace(',', '.').replace(/R\$ /g, '')
+        )
+        kit.inverter.totalPrice = parseFloat(
+            kit.inverter.totalPrice.replace(',', '.').replace(/R\$ /g, '')
+        )
+
+        console.log(kit)
+
+        return kit
+    }
+
     useEffect(() => {
         async function fetchData() {
             const averageConsumption = calculateAverageEnergyBill(budget)
@@ -389,7 +410,7 @@ function StepKits() {
                                     budget.kit.modules.amount) /
                                 1000
                             ).toFixed(2)}{' '}
-                            KWp
+                            KWh/mês
                         </Typography>
                     </Paper>
                 )}
@@ -567,7 +588,12 @@ function StepKits() {
                                 variant='contained'
                                 color='black'
                                 className='w-100'
-                                onClick={() => setBudget({ ...budget, kit })}
+                                onClick={() =>
+                                    setBudget({
+                                        ...budget,
+                                        kit: correctData(kit),
+                                    })
+                                }
                             >
                                 Selecionar
                             </Button>
@@ -650,26 +676,31 @@ function StepKits() {
                                     label='Preço por Unidade'
                                     fullWidth
                                     className='mt-3'
+                                    type='number'
                                     value={
                                         editedKit
-                                            ? editedKit.modules.unitPrice.toLocaleString(
-                                                  'pt-BR',
-                                                  {
-                                                      style: 'currency',
-                                                      currency: 'BRL',
-                                                  }
+                                            ? parseFloat(
+                                                  editedKit.modules.unitPrice
                                               )
                                             : 0
                                     }
-                                    onChange={(e) =>
-                                        setEditedKit({
-                                            ...editedKit,
-                                            modules: {
-                                                ...editedKit.modules,
-                                                unitPrice: e.target.value,
-                                            },
-                                        })
-                                    }
+                                    onChange={(e) => {
+                                        let value = e.target.value.replace(
+                                            ',',
+                                            '.'
+                                        )
+                                        value =
+                                            value.replace(/[^0-9.]/g, '') || 0
+                                        if (!isNaN(value)) {
+                                            setEditedKit({
+                                                ...editedKit,
+                                                modules: {
+                                                    ...editedKit.modules,
+                                                    unitPrice: e.target.value,
+                                                },
+                                            })
+                                        }
+                                    }}
                                 ></TextField>
                                 <TextField
                                     color='black'
@@ -678,26 +709,31 @@ function StepKits() {
                                     label='Preço Total'
                                     fullWidth
                                     className='mt-3'
+                                    type='number'
                                     value={
                                         editedKit
-                                            ? editedKit.modules.totalPrice.toLocaleString(
-                                                  'pt-BR',
-                                                  {
-                                                      style: 'currency',
-                                                      currency: 'BRL',
-                                                  }
+                                            ? parseFloat(
+                                                  editedKit.modules.totalPrice
                                               )
                                             : 0
                                     }
-                                    onChange={(e) =>
-                                        setEditedKit({
-                                            ...editedKit,
-                                            modules: {
-                                                ...editedKit.modules,
-                                                totalPrice: e.target.value,
-                                            },
-                                        })
-                                    }
+                                    onChange={(e) => {
+                                        let value = e.target.value.replace(
+                                            ',',
+                                            '.'
+                                        )
+                                        value =
+                                            value.replace(/[^0-9.]/g, '') || 0
+                                        if (!isNaN(value)) {
+                                            setEditedKit({
+                                                ...editedKit,
+                                                modules: {
+                                                    ...editedKit.modules,
+                                                    totalPrice: e.target.value,
+                                                },
+                                            })
+                                        }
+                                    }}
                                 ></TextField>
                             </Box>
                             <Box className='col-6 mt-2'>
@@ -774,26 +810,31 @@ function StepKits() {
                                     label='Preço por Unidade'
                                     fullWidth
                                     className='mt-3'
+                                    type='number'
                                     value={
                                         editedKit
-                                            ? editedKit.inverter.unitPrice.toLocaleString(
-                                                  'pt-BR',
-                                                  {
-                                                      style: 'currency',
-                                                      currency: 'BRL',
-                                                  }
+                                            ? parseFloat(
+                                                  editedKit.inverter.unitPrice
                                               )
                                             : 0
                                     }
-                                    onChange={(e) =>
-                                        setEditedKit({
-                                            ...editedKit,
-                                            inverter: {
-                                                ...editedKit.inverter,
-                                                unitPrice: e.target.value,
-                                            },
-                                        })
-                                    }
+                                    onChange={(e) => {
+                                        let value = e.target.value.replace(
+                                            ',',
+                                            '.'
+                                        )
+                                        value =
+                                            value.replace(/[^0-9.]/g, '') || 0
+                                        if (!isNaN(value)) {
+                                            setEditedKit({
+                                                ...editedKit,
+                                                inverter: {
+                                                    ...editedKit.inverter,
+                                                    unitPrice: e.target.value,
+                                                },
+                                            })
+                                        }
+                                    }}
                                 ></TextField>
                                 <TextField
                                     color='black'
@@ -802,26 +843,31 @@ function StepKits() {
                                     label='Preço Total'
                                     fullWidth
                                     className='mt-3'
+                                    type='text'
                                     value={
                                         editedKit
-                                            ? editedKit.inverter.totalPrice.toLocaleString(
-                                                  'pt-BR',
-                                                  {
-                                                      style: 'currency',
-                                                      currency: 'BRL',
-                                                  }
+                                            ? parseFloat(
+                                                  editedKit.inverter.totalPrice
                                               )
-                                            : 0
+                                            : ''
                                     }
-                                    onChange={(e) =>
-                                        setEditedKit({
-                                            ...editedKit,
-                                            inverter: {
-                                                ...editedKit.inverter,
-                                                totalPrice: e.target.value,
-                                            },
-                                        })
-                                    }
+                                    onChange={(e) => {
+                                        let value = e.target.value.replace(
+                                            ',',
+                                            '.'
+                                        )
+                                        value =
+                                            value.replace(/[^0-9.]/g, '') || 0
+                                        if (!isNaN(value)) {
+                                            setEditedKit({
+                                                ...editedKit,
+                                                inverter: {
+                                                    ...editedKit.inverter,
+                                                    totalPrice: value,
+                                                },
+                                            })
+                                        }
+                                    }}
                                 ></TextField>
                             </Box>
                         </>
