@@ -19,7 +19,10 @@ const useFirebase = () => {
             const docRef = doc(db, path, id)
             getDoc(docRef)
                 .then((doc) => {
-                    if (!doc.exists()) reject('No such document!')
+                    if (!doc.exists()) {
+                        console.log('No such document! Document: ', path + '/' + id)
+                        reject('No such document!')
+                    }
                     else resolve(doc.data())
                 })
                 .catch((error) => {
