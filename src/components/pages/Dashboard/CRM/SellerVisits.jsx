@@ -168,7 +168,7 @@ function SellerVisits() {
                 setSellerVisits(visitsBySeller)
             })
             .catch((error) => console.error(error))
-    }, [id, getDocumentsInCollection])
+    }, [id])
 
     useEffect(() => {
         setVisitsByDate(filterVisitsByDate())

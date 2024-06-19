@@ -33,6 +33,7 @@ const useFirebase = () => {
     }
 
     const getDocumentsInCollection = (path) => {
+        console.log(path)
         return new Promise((resolve, reject) => {
             const collectionRef = collection(db, path)
             getDocs(collectionRef)
