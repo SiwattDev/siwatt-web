@@ -105,14 +105,8 @@ function Client(props) {
     return (
         <form className='row g-3'>
             <div className='col-12 col-md-6'>
-                <FormControl
-                    fullWidth
-                    size='small'
-                >
-                    <InputLabel
-                        id='type-entity'
-                        color='black'
-                    >
+                <FormControl fullWidth size='small'>
+                    <InputLabel id='type-entity' color='black'>
                         Tipo de pessoa:
                     </InputLabel>
                     <Select
@@ -149,6 +143,7 @@ function Client(props) {
                                 } else value = value.replace(/\D/g, '')
                                 updateState('cpf', value)
                             }}
+                            autoComplete='off'
                         />
                     </div>
                 )}
@@ -163,6 +158,7 @@ function Client(props) {
                             color='black'
                             value={state.cnpj || ''}
                             onChange={(e) => cnpjAutoComplete(e)}
+                            autoComplete='off'
                         />
                     </div>
                     <div className='col-12 col-md-6'>
@@ -177,6 +173,7 @@ function Client(props) {
                                 let value = e.target.value
                                 updateState('state_registration', value)
                             }}
+                            autoComplete='off'
                         />
                     </div>
                 </>
@@ -190,6 +187,7 @@ function Client(props) {
                     color='black'
                     value={state.name || ''}
                     onChange={(e) => updateState('name', e.target.value)}
+                    autoComplete='off'
                 />
             </div>
             {state.type_entity === 'legal-entity' && (
@@ -204,6 +202,7 @@ function Client(props) {
                         onChange={(e) =>
                             updateState('fantasy_name', e.target.value)
                         }
+                        autoComplete='off'
                     />
                 </div>
             )}
@@ -216,6 +215,7 @@ function Client(props) {
                     color='black'
                     value={state.email || ''}
                     onChange={(e) => updateState('email', e.target.value)}
+                    autoComplete='off'
                 />
             </div>
             <div className='col-12 col-md-6'>
@@ -233,6 +233,7 @@ function Client(props) {
                         else value = value.replace(/\D/g, '')
                         updateState('phone', value)
                     }}
+                    autoComplete='off'
                 />
             </div>
             {state.type === 'client' && (
@@ -316,14 +317,8 @@ function Client(props) {
             )}
             {state.type === 'client' && (
                 <div className='col-12'>
-                    <FormControl
-                        fullWidth
-                        size='small'
-                    >
-                        <InputLabel
-                            id='seller'
-                            color='black'
-                        >
+                    <FormControl fullWidth size='small'>
+                        <InputLabel id='seller' color='black'>
                             Vendedor:
                         </InputLabel>
                         <Select
@@ -342,10 +337,7 @@ function Client(props) {
                         >
                             {sellers.length > 0 &&
                                 sellers.map((seller) => (
-                                    <MenuItem
-                                        key={seller.id}
-                                        value={seller.id}
-                                    >
+                                    <MenuItem key={seller.id} value={seller.id}>
                                         {seller.name}
                                     </MenuItem>
                                 ))}

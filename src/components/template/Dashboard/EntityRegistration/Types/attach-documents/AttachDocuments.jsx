@@ -30,14 +30,14 @@ function AttachDocuments({ open, onClose, urls }) {
     useEffect(() => {
         if (urls && urls.length > 0) {
             setFilesList(
-                urls.map((url, index) => {
+                urls.map((url) => {
                     if (typeof url === 'string')
                         return {
                             type: 'URL',
                             name: url.split('%2F').pop().split('?')[0],
                             url,
                         }
-                    else if (urls.hasOwnProperty('url'))
+                    else if (Object.prototype.hasOwnProperty.call(urls, 'url'))
                         return {
                             type: 'URL',
                             name: url.url.split('%2F').pop().split('?')[0],
@@ -200,11 +200,7 @@ function AttachDocuments({ open, onClose, urls }) {
                 </Button>
             )}
             <DialogActions className='p-3 mt-2'>
-                <Button
-                    color='black'
-                    variant='contained'
-                    onClick={handleClose}
-                >
+                <Button color='black' variant='contained' onClick={handleClose}>
                     Cancelar
                 </Button>
                 <Button

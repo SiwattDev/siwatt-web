@@ -33,10 +33,7 @@ function Address(props) {
 
     return (
         <form className='row g-3 p-0'>
-            <Typography
-                className='col-12'
-                variant='h6'
-            >
+            <Typography className='col-12' variant='h6'>
                 Endereço
             </Typography>
             <div className='col-12 col-md-6'>
@@ -48,6 +45,7 @@ function Address(props) {
                     color='black'
                     value={state.address.cep || ''}
                     onChange={(e) => handleCepChange(e.target.value)}
+                    autoComplete='off'
                 />
             </div>
             <div className='col-12 col-md-6'>
@@ -65,6 +63,7 @@ function Address(props) {
                             e.target.value
                         )
                     }
+                    autoComplete='off'
                 />
             </div>
             <div className='col-12 col-md-6'>
@@ -78,6 +77,7 @@ function Address(props) {
                     onChange={(e) =>
                         updateStateSubObject('address', 'road', e.target.value)
                     }
+                    autoComplete='off'
                 />
             </div>
             <div className='col-12 col-md-6'>
@@ -95,6 +95,7 @@ function Address(props) {
                             e.target.value
                         )
                     }
+                    autoComplete='off'
                 />
             </div>
             <div className='col-12 col-md-6'>
@@ -108,6 +109,7 @@ function Address(props) {
                     onChange={(e) =>
                         updateStateSubObject('address', 'city', e.target.value)
                     }
+                    autoComplete='off'
                 />
             </div>
             <div className='col-12 col-md-6'>
@@ -125,6 +127,7 @@ function Address(props) {
                             e.target.value
                         )
                     }
+                    autoComplete='off'
                 />
             </div>
             <div className='col-12 col-md-6'>
@@ -138,6 +141,7 @@ function Address(props) {
                     onChange={(e) =>
                         updateStateSubObject('address', 'uf', e.target.value)
                     }
+                    autoComplete='off'
                 />
             </div>
         </form>

@@ -15,6 +15,7 @@ import {
     TableContainer,
     TableHead,
     TableRow,
+    TableSortLabel,
     Typography,
 } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -40,6 +41,10 @@ function SellerVisits() {
     const { id } = useParams()
     const [seller, setSeller] = useState(null)
     const [sellerVisits, setSellerVisits] = useState([])
+    const [sortConfig, setSortConfig] = useState({
+        key: 'date',
+        direction: 'asc',
+    })
     const [dateRange, setDateRange] = useState({
         startDate: dayjs(new Date()),
         endDate: dayjs(new Date()),
@@ -168,6 +173,41 @@ function SellerVisits() {
     useEffect(() => {
         setVisitsByDate(filterVisitsByDate())
     }, [sellerVisits, dateRange])
+
+    const sortData = (data, config) => {
+        const sortedData = Object.keys(data).map((key) => data[key][0])
+
+        sortedData.sort((a, b) => {
+            if (config.key === 'date') {
+                return new Date(a.date) - new Date(b.date)
+            } else if (config.key === 'photos') {
+                return a.visitImages.length - b.visitImages.length
+            } else if (config.key === 'energyBills') {
+                return (
+                    (a.energyBills?.length || 0) - (b.energyBills?.length || 0)
+                )
+            } else if (config.key === 'client') {
+                return a.clientData.name.localeCompare(b.clientData.name)
+            }
+            return 0
+        })
+
+        if (config.direction === 'desc') {
+            sortedData.reverse()
+        }
+
+        return sortedData
+    }
+
+    const handleSort = (key) => {
+        let direction = 'asc'
+        if (sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc'
+        }
+        setSortConfig({ key, direction })
+    }
+
+    const sortedVisits = sortData(visitsByDate, sortConfig)
 
     return (
         <>
@@ -385,28 +425,67 @@ function SellerVisits() {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell>
-                                                <Typography
-                                                    variant='body1'
-                                                    className='fw-bold'
+                                                <TableSortLabel
+                                                    active={
+                                                        sortConfig.key ===
+                                                        'client'
+                                                    }
+                                                    direction={
+                                                        sortConfig.direction
+                                                    }
+                                                    onClick={() =>
+                                                        handleSort('client')
+                                                    }
                                                 >
-                                                    Cliente
-                                                </Typography>
+                                                    <Typography
+                                                        variant='body1'
+                                                        className='fw-bold'
+                                                    >
+                                                        Cliente
+                                                    </Typography>
+                                                </TableSortLabel>
                                             </TableCell>
                                             <TableCell>
-                                                <Typography
-                                                    variant='body1'
-                                                    className='fw-bold'
+                                                <TableSortLabel
+                                                    active={
+                                                        sortConfig.key ===
+                                                        'photos'
+                                                    }
+                                                    direction={
+                                                        sortConfig.direction
+                                                    }
+                                                    onClick={() =>
+                                                        handleSort('photos')
+                                                    }
                                                 >
-                                                    Fotos da Visita
-                                                </Typography>
+                                                    <Typography
+                                                        variant='body1'
+                                                        className='fw-bold'
+                                                    >
+                                                        Fotos da Visita
+                                                    </Typography>
+                                                </TableSortLabel>
                                             </TableCell>
                                             <TableCell>
-                                                <Typography
-                                                    variant='body1'
-                                                    className='fw-bold'
+                                                <TableSortLabel
+                                                    active={
+                                                        sortConfig.key ===
+                                                        'date'
+                                                    }
+                                                    direction={
+                                                        sortConfig.direction
+                                                    }
+                                                    onClick={() =>
+                                                        handleSort('date')
+                                                    }
                                                 >
-                                                    Data da Visita
-                                                </Typography>
+                                                    <Typography
+                                                        variant='body1'
+                                                        className='fw-bold'
+                                                    >
+                                                        Data da Visita
+                                                    </Typography>
+                                                </TableSortLabel>
                                             </TableCell>
                                             <TableCell>
                                                 <Typography
@@ -417,12 +496,27 @@ function SellerVisits() {
                                                 </Typography>
                                             </TableCell>
                                             <TableCell>
-                                                <Typography
-                                                    variant='body1'
-                                                    className='fw-bold'
+                                                <TableSortLabel
+                                                    active={
+                                                        sortConfig.key ===
+                                                        'energyBills'
+                                                    }
+                                                    direction={
+                                                        sortConfig.direction
+                                                    }
+                                                    onClick={() =>
+                                                        handleSort(
+                                                            'energyBills'
+                                                        )
+                                                    }
                                                 >
-                                                    Contas de Energia
-                                                </Typography>
+                                                    <Typography
+                                                        variant='body1'
+                                                        className='fw-bold'
+                                                    >
+                                                        Contas de Energia
+                                                    </Typography>
+                                                </TableSortLabel>
                                             </TableCell>
                                             <TableCell>
                                                 <Typography
@@ -435,73 +529,50 @@ function SellerVisits() {
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
-                                        {Object.keys(visitsByDate).map(
-                                            (date) => (
-                                                <TableRow
-                                                    key={date}
-                                                    sx={{
-                                                        '&:last-child td, &:last-child th':
-                                                            {
-                                                                border: 0,
-                                                            },
-                                                    }}
-                                                >
-                                                    <TableCell>
-                                                        {
-                                                            visitsByDate[
-                                                                date
-                                                            ][0].clientData.name
+                                        {sortedVisits.map((visit, index) => (
+                                            <TableRow
+                                                key={index}
+                                                sx={{
+                                                    '&:last-child td, &:last-child th':
+                                                        { border: 0 },
+                                                }}
+                                            >
+                                                <TableCell>
+                                                    {visit.clientData.name}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {visit.visitImages.length}{' '}
+                                                    fotos
+                                                </TableCell>
+                                                <TableCell>
+                                                    {new Date(
+                                                        visit.date
+                                                    ).toLocaleDateString(
+                                                        'pt-BR'
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>{`${visit.locationData.latitude}, ${visit.locationData.longitude}`}</TableCell>
+                                                <TableCell>
+                                                    {visit.energyBills
+                                                        ? `Sim, ${visit.energyBills.length} conta(s)`
+                                                        : 'Não'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Button
+                                                        variant='contained'
+                                                        color='black'
+                                                        size='small'
+                                                        onClick={() =>
+                                                            navigate(
+                                                                `visit/${visit.id}`
+                                                            )
                                                         }
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {
-                                                            visitsByDate[
-                                                                date
-                                                            ][0].visitImages
-                                                                .length
-                                                        }{' '}
-                                                        fotos
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {new Date(
-                                                            visitsByDate[
-                                                                date
-                                                            ][0].date
-                                                        ).toLocaleDateString(
-                                                            'pt-BR'
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {`${visitsByDate[date][0].locationData.latitude}, ${visitsByDate[date][0].locationData.longitude}`}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {visitsByDate[date][0]
-                                                            .energyBills
-                                                            ? 'Sim, ' +
-                                                              visitsByDate[
-                                                                  date
-                                                              ][0].energyBills
-                                                                  .length +
-                                                              ' conta(s)'
-                                                            : 'Não'}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Button
-                                                            variant='contained'
-                                                            color='black'
-                                                            size='small'
-                                                            onClick={() =>
-                                                                navigate(
-                                                                    `visit/${visitsByDate[date][0].id}`
-                                                                )
-                                                            }
-                                                        >
-                                                            <VisibilityRounded fontSize='small' />
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            )
-                                        )}
+                                                    >
+                                                        <VisibilityRounded fontSize='small' />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
                                     </TableBody>
                                 </Table>
                             </TableContainer>

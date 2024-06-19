@@ -7,10 +7,7 @@ function DirectContact(props) {
     return (
         <form className='row g-3'>
             <div className='col-12 row g-3'>
-                <Typography
-                    className='col-12'
-                    variant='h6'
-                >
+                <Typography className='col-12' variant='h6'>
                     Contato direto:
                 </Typography>
                 <div className='col-12 col-md-6'>
@@ -28,6 +25,7 @@ function DirectContact(props) {
                                 e.target.value
                             )
                         }
+                        autoComplete='off'
                     />
                 </div>
                 <div className='col-12 col-md-6'>
@@ -45,6 +43,7 @@ function DirectContact(props) {
                                 e.target.value
                             )
                         }
+                        autoComplete='off'
                     />
                 </div>
                 <div className='col-12 col-md-6'>
@@ -66,6 +65,7 @@ function DirectContact(props) {
                                 value
                             )
                         }}
+                        autoComplete='off'
                     />
                 </div>
                 <div className='col-12 col-md-6'>
@@ -94,6 +94,7 @@ function DirectContact(props) {
                                 value
                             )
                         }}
+                        autoComplete='off'
                     />
                 </div>
                 <div className='col-12 col-md-6'>
@@ -110,6 +111,7 @@ function DirectContact(props) {
                             else value = value.replace(/\D/g, '')
                             updateStateSubObject('direct_contact', 'cpf', value)
                         }}
+                        autoComplete='off'
                     />
                 </div>
             </div>

@@ -52,6 +52,7 @@ function TypeOne(props) {
                     color='black'
                     value={state.name || ''}
                     onChange={(e) => updateState('name', e.target.value)}
+                    autoComplete='off'
                 />
             </div>
             <div className='col-12 col-md-6'>
@@ -67,6 +68,7 @@ function TypeOne(props) {
                         if (validateBr.email(e.target.value))
                             checkIfEntityExists(e.target.value)
                     }}
+                    autoComplete='off'
                 />
             </div>
             <div className='col-12 col-md-6'>
@@ -84,6 +86,7 @@ function TypeOne(props) {
                         else value = value.replace(/\D/g, '')
                         updateState('phone', value)
                     }}
+                    autoComplete='off'
                 />
             </div>
             {type === 'user' && (
@@ -117,6 +120,7 @@ function TypeOne(props) {
                                 </InputAdornment>
                             ),
                         }}
+                        autoComplete='off'
                     />
                 </div>
             )}

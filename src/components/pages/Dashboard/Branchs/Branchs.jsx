@@ -239,6 +239,18 @@ function Branchs() {
                         fullWidth
                         margin='dense'
                     />
+                    <TextField
+                        label='CNPJ'
+                        variant='outlined'
+                        color='black'
+                        size='small'
+                        value={branch.cnpj || ''}
+                        onChange={(e) =>
+                            setBranch({ ...branch, cnpj: e.target.value })
+                        }
+                        fullWidth
+                        margin='dense'
+                    />
                     <Typography variant='subtitle1' className='mb-2'>
                         <strong>Equipes</strong>
                     </Typography>
