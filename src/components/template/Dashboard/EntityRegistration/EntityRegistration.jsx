@@ -126,23 +126,26 @@ function EntityRegistration() {
         }
 
         try {
-            if (!validateBr.celular(entity.phone))
+            if (!entity.phone || !validateBr.celular(entity.phone))
                 throw new Error('Telefone inválido')
             if (!validateBr.cep(entity.address.cep))
                 throw new Error('Cep inválido')
             if (
                 (entity.type === 'client' || entity.type === 'supplier') &&
                 entity.type_entity === 'individual' &&
-                !validateBr.cpf(entity.cpf)
+                (!entity.cpf || !validateBr.cpf(entity.cpf))
             )
                 throw new Error('CPF inválido')
 
             if (
                 (entity.type === 'client' || entity.type === 'supplier') &&
                 entity.type_entity === 'legal-entity' &&
-                !validateBr.cnpj(entity.cnpj)
+                (!entity.cnpj || !validateBr.cnpj(entity.cnpj))
             )
                 throw new Error('CNPJ inválido')
+
+            if (entity.type === 'client' && !entity.seller)
+                throw new Error('O campo vendedor é obrigatório')
 
             if (action === 'edit' && id) {
                 const oldData = await getDocumentById(`${entity.type}s`, id)
@@ -172,6 +175,7 @@ function EntityRegistration() {
                 }
             }
         } catch (err) {
+            console.error(err)
             showToast('error', err.toString().replace('Error: ', ''))
         }
     }

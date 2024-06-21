@@ -94,11 +94,7 @@ function StepKits() {
         const modulesWithPrice = modules.map((mod) => {
             const modPower = mod.power / 1000
             const modPrice = parseFloat(
-                mod.price
-                    .split(',')[0]
-                    .replace('R$ ', '')
-                    .replace(',', '')
-                    .replace('.', '')
+                mod.price.replace('R$ ', '').replace('.', '').replace(',', '.')
             )
             const quantityNeeded = neededPower / modPower
             const totalPrice = modPrice * quantityNeeded
@@ -106,8 +102,8 @@ function StepKits() {
                 id: mod.id,
                 model: mod.model,
                 quantityNeeded,
-                totalPrice,
-                pricePerUnit: modPrice,
+                totalPrice: totalPrice || 0,
+                pricePerUnit: modPrice || 0,
                 power: mod.power,
             }
         })
@@ -136,20 +132,20 @@ function StepKits() {
                 model: compatibleInverters[0].model,
                 amount: 1,
                 power: compatibleInverters[0].power,
-                pricePerUnit: parseFloat(
-                    compatibleInverters[0].price
-                        .split(',')[0]
-                        .replace('R$', '')
-                        .replace(',', '')
-                        .replace('.', '')
-                ),
-                totalPrice: parseFloat(
-                    compatibleInverters[0].price
-                        .split(',')[0]
-                        .replace('R$', '')
-                        .replace(',', '')
-                        .replace('.', '')
-                ),
+                pricePerUnit:
+                    parseFloat(
+                        compatibleInverters[0].price
+                            .replace('R$', '')
+                            .replace('.', '')
+                            .replace(',', '.')
+                    ) || 0,
+                totalPrice:
+                    parseFloat(
+                        compatibleInverters[0].price
+                            .replace('R$', '')
+                            .replace('.', '')
+                            .replace(',', '.')
+                    ) || 0,
             }
         } else {
             const identicalInverters = inverters.filter(
@@ -269,67 +265,47 @@ function StepKits() {
             modules: {
                 id: products.modules[moduleIndex].id,
                 model: products.modules[moduleIndex].model,
-                unitPrice: parseFloat(
-                    products.modules[moduleIndex].price
-                        .split(',')[0]
-                        .replace('R$', '')
-                        .replace(',', '')
-                        .replace('.', '')
-                ),
-                totalPrice: parseFloat(
-                    products.modules[moduleIndex].price
-                        .split(',')[0]
-                        .replace('R$', '')
-                        .replace(',', '')
-                        .replace('.', '')
-                ),
+                unitPrice:
+                    parseFloat(
+                        products.modules[moduleIndex].price
+                            .replace('R$', '')
+                            .replace('.', '')
+                            .replace(',', '.')
+                    ) || 0,
+                totalPrice:
+                    parseFloat(
+                        products.modules[moduleIndex].price
+                            .replace('R$', '')
+                            .replace('.', '')
+                            .replace(',', '.')
+                    ) || 0,
                 amount: 0,
                 power: products.modules[moduleIndex].power,
             },
             inverter: {
                 id: products.inverters[inverterIndex].id,
                 model: products.inverters[inverterIndex].model,
-                unitPrice: parseFloat(
-                    products.inverters[inverterIndex].price
-                        .split(',')[0]
-                        .replace('R$', '')
-                        .replace(',', '')
-                        .replace('.', '')
-                ),
-                totalPrice: parseFloat(
-                    products.inverters[inverterIndex].price
-                        .split(',')[0]
-                        .replace('R$', '')
-                        .replace(',', '')
-                        .replace('.', '')
-                ),
+                unitPrice:
+                    parseFloat(
+                        products.inverters[inverterIndex].price
+                            .replace('R$', '')
+                            .replace('.', '')
+                            .replace(',', '.')
+                    ) || 0,
+                totalPrice:
+                    parseFloat(
+                        products.inverters[inverterIndex].price
+                            .replace('R$', '')
+                            .replace('.', '')
+                            .replace(',', '.')
+                    ) || 0,
+
                 amount: 0,
                 powerMax: products.inverters[inverterIndex].power,
             },
         }
 
         setKits([kit])
-    }
-
-    const correctData = (kit) => {
-        kit.modules.amount = Math.round(kit.modules.amount)
-        kit.inverter.amount = Math.round(kit.inverter.amount)
-        kit.module.unitPrice = parseFloat(
-            kit.modules.unitPrice.replace(',', '.').replace(/R\$ /g, '')
-        )
-        kit.module.totalPrice = parseFloat(
-            kit.modules.totalPrice.replace(',', '.').replace(/R\$ /g, '')
-        )
-        kit.inverter.unitPrice = parseFloat(
-            kit.inverter.unitPrice.replace(',', '.').replace(/R\$ /g, '')
-        )
-        kit.inverter.totalPrice = parseFloat(
-            kit.inverter.totalPrice.replace(',', '.').replace(/R\$ /g, '')
-        )
-
-        console.log(kit)
-
-        return kit
     }
 
     useEffect(() => {
@@ -591,7 +567,7 @@ function StepKits() {
                                 onClick={() =>
                                     setBudget({
                                         ...budget,
-                                        kit: correctData(kit),
+                                        kit,
                                     })
                                 }
                             >
@@ -685,21 +661,22 @@ function StepKits() {
                                             : 0
                                     }
                                     onChange={(e) => {
-                                        let value = e.target.value.replace(
-                                            ',',
-                                            '.'
+                                        let value = parseFloat(
+                                            e.target.value
+                                                .replace('R$', '')
+                                                .replace('.', '')
+                                                .replace(',', '.')
                                         )
-                                        value =
-                                            value.replace(/[^0-9.]/g, '') || 0
-                                        if (!isNaN(value)) {
-                                            setEditedKit({
-                                                ...editedKit,
-                                                modules: {
-                                                    ...editedKit.modules,
-                                                    unitPrice: e.target.value,
-                                                },
-                                            })
+                                        if (isNaN(value)) {
+                                            value = 0
                                         }
+                                        setEditedKit({
+                                            ...editedKit,
+                                            modules: {
+                                                ...editedKit.modules,
+                                                unitPrice: value,
+                                            },
+                                        })
                                     }}
                                 ></TextField>
                                 <TextField
@@ -718,21 +695,22 @@ function StepKits() {
                                             : 0
                                     }
                                     onChange={(e) => {
-                                        let value = e.target.value.replace(
-                                            ',',
-                                            '.'
+                                        let value = parseFloat(
+                                            e.target.value
+                                                .replace('R$', '')
+                                                .replace('.', '')
+                                                .replace(',', '.')
                                         )
-                                        value =
-                                            value.replace(/[^0-9.]/g, '') || 0
-                                        if (!isNaN(value)) {
-                                            setEditedKit({
-                                                ...editedKit,
-                                                modules: {
-                                                    ...editedKit.modules,
-                                                    totalPrice: e.target.value,
-                                                },
-                                            })
+                                        if (isNaN(value)) {
+                                            value = 0
                                         }
+                                        setEditedKit({
+                                            ...editedKit,
+                                            modules: {
+                                                ...editedKit.modules,
+                                                totalPrice: value,
+                                            },
+                                        })
                                     }}
                                 ></TextField>
                             </Box>
@@ -819,21 +797,22 @@ function StepKits() {
                                             : 0
                                     }
                                     onChange={(e) => {
-                                        let value = e.target.value.replace(
-                                            ',',
-                                            '.'
+                                        let value = parseFloat(
+                                            e.target.value
+                                                .replace('R$', '')
+                                                .replace('.', '')
+                                                .replace(',', '.')
                                         )
-                                        value =
-                                            value.replace(/[^0-9.]/g, '') || 0
-                                        if (!isNaN(value)) {
-                                            setEditedKit({
-                                                ...editedKit,
-                                                inverter: {
-                                                    ...editedKit.inverter,
-                                                    unitPrice: e.target.value,
-                                                },
-                                            })
+                                        if (isNaN(value)) {
+                                            value = 0
                                         }
+                                        setEditedKit({
+                                            ...editedKit,
+                                            inverter: {
+                                                ...editedKit.inverter,
+                                                unitPrice: value,
+                                            },
+                                        })
                                     }}
                                 ></TextField>
                                 <TextField
@@ -852,21 +831,22 @@ function StepKits() {
                                             : ''
                                     }
                                     onChange={(e) => {
-                                        let value = e.target.value.replace(
-                                            ',',
-                                            '.'
+                                        let value = parseFloat(
+                                            e.target.value
+                                                .replace('R$', '')
+                                                .replace('.', '')
+                                                .replace(',', '.')
                                         )
-                                        value =
-                                            value.replace(/[^0-9.]/g, '') || 0
-                                        if (!isNaN(value)) {
-                                            setEditedKit({
-                                                ...editedKit,
-                                                inverter: {
-                                                    ...editedKit.inverter,
-                                                    totalPrice: value,
-                                                },
-                                            })
+                                        if (isNaN(value)) {
+                                            value = 0
                                         }
+                                        setEditedKit({
+                                            ...editedKit,
+                                            inverter: {
+                                                ...editedKit.inverter,
+                                                totalPrice: value,
+                                            },
+                                        })
                                     }}
                                 ></TextField>
                             </Box>
